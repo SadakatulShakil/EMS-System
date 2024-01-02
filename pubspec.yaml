@@ -61,6 +61,8 @@ dev_dependencies:
   line_icons: ^2.0.3
   image_picker: ^1.0.5
   permission_handler: ^8.2.4
+  intl: ^0.19.0
+  stream: ^3.0.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
