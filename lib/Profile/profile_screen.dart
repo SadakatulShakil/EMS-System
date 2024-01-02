@@ -1,3 +1,4 @@
+import 'package:employe_management_system/Profile/update_profile.dart';
 import 'package:flutter/material.dart';
 class ProfileScreen extends StatefulWidget {
   bool backExits;
@@ -88,17 +89,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                 child: Divider(thickness: 1,),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0, right: 8),
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Icon(Icons.settings, size: 25,),
-                        SizedBox(width: 10,),
-                        Text('Settings', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18),)
-                      ],
+              GestureDetector(
+                onTap: (){
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfileUpdateScreen()));                },
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.settings, size: 25,),
+                          SizedBox(width: 10,),
+                          Text('Settings', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18),)
+                        ],
+                      ),
                     ),
                   ),
                 ),

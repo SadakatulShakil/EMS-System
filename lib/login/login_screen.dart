@@ -50,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     Text(
-                      'Continue with company domain URL',
+                      'Continue with company email',
                       style: TextStyle(
                           fontSize: 16 / MediaQuery.textScaleFactorOf(context), color: Colors.black),
                     ),
@@ -58,8 +58,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     GetTextFormField(
                       //onChangeText: dataProvider.updateTextFieldUsersEmail,
                       controller: emailController,
-                      hintName: "e.g company.com/.net/.org/etc",
-                      lebelName: "Domain Address",
+                      hintName: "e.g username@company.com",
+                      lebelName: "Email Address",
                       inputType: TextInputType.emailAddress,
                     ),
                     SizedBox(height: 20),

@@ -53,7 +53,7 @@ class _GetTextFormFieldState extends State<GetTextFormField> {
         },
         decoration: InputDecoration(
           prefixIcon: Visibility(
-            visible: widget.lebelName == 'Domain Address' ? true : false,
+            visible: widget.lebelName == 'Email Address' ? true : false,
             child: IconButton(
               icon: Icon(
                 Icons.language,
