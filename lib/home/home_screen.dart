@@ -1,9 +1,12 @@
 import 'dart:async';
-
+import 'package:employe_management_system/Model/address_model.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 import '../../utill/color_resources.dart';
 import 'package:intl/intl.dart';
 import 'package:stream/stream.dart';
+
+import '../LocalDatabase/database_helper.dart';
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -13,18 +16,173 @@ class _HomeScreenState extends State<HomeScreen> {
   late String currentTime;
   late String currentDate;
   late String greeting;
+  String checkIn = '00:00 AM';
+  String checkOut = '00:00 AM';
+  late DateTime firstEntryTime;
+  late DateTime lastCheckoutTime;
+  final GeolocatorPlatform geolocator = GeolocatorPlatform.instance;
+  final double geofenceRadius = 50.0; // Adjust the geofence radius as needed
+  final String apiUrl = 'YOUR_API_ENDPOINT';
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _startLocationTracking();
 // Initial update
     _updateDateTime();
+    //get current entry status
+    _getCurrentAttendanceData();
+    _getTodayEntryData();
+    _getTodayExitData();
 
     // Start a periodic timer to update every minute
     Timer.periodic(Duration(minutes: 1), (timer) {
       _updateDateTime();
     });
   }
+
+  Future<void> _startLocationTracking() async {
+    geolocator.getPositionStream(
+      locationSettings: LocationSettings(
+        accuracy: LocationAccuracy.best,
+        distanceFilter: 10,// Minimum distance for updates (in meters)
+      ),
+    ).listen((Position position) async {
+      if (await _isInsideGeofence(position)) {
+        firstEntryTime = DateTime.now();
+        print('First entry time: $firstEntryTime');
+        _storeAttendance(position, 'checked_in');
+        setState(() {
+
+        });
+      } else {
+        lastCheckoutTime = DateTime.now();
+        print('Last checkout time: $lastCheckoutTime');
+        _storeAttendance(position, 'checked_out');
+        setState(() {
+
+        });
+      }
+    });
+  }
+
+  Future<bool> _isInsideGeofence(Position position) async {
+    // Replace with your geofence center coordinates //23.79141428281947, 90.40498680319003
+    double geofenceCenterLatitude = 23.79141428281947;
+    double geofenceCenterLongitude = 90.40498680319003;
+
+    double distance = await geolocator.distanceBetween(
+      position.latitude,
+      position.longitude,
+      geofenceCenterLatitude,
+      geofenceCenterLongitude,
+    );
+    print('distance: '+ distance.toString());
+    return distance <= geofenceRadius;
+  }
+  Future<void> _storeAttendance(Position position, String status) async {
+    final now = DateTime.now();
+    // Format date as "01/01/2024, Monday"
+    String todayDate = DateFormat('MM/dd/yyyy, EEEE').format(now);
+    final attendanceData =AttendanceDataModel(
+      id: null,
+      user_id: '007',
+      latitude: position.latitude.toString(),
+      longitude: position.longitude.toString(),
+      timestamp: DateTime.now().millisecondsSinceEpoch,
+      date: todayDate,
+      status: status,
+    );
+    await DatabaseHelper.instance.insertUserData(attendanceData);
+  }
+
+  Future<void> _getCurrentAttendanceData() async {
+    final DateTime date = DateTime.now();
+    // Convert the date to milliseconds since epoch to match the stored timestamp format
+    final int startOfDay = DateTime(date.year, date.month, date.day).millisecondsSinceEpoch;
+    final int endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59).millisecondsSinceEpoch;
+
+    final attendanceData = await DatabaseHelper.instance.getAllCurrentAttendanceData(startOfDay, endOfDay);
+
+    for (final entry in attendanceData) {
+      final timestamp = entry['timestamp'] as int;
+      final status = entry['status'] as String;
+
+      final formattedTime = DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(timestamp));
+      print('Status: $status, Time: $formattedTime');
+    }
+    setState(() {});
+  }
+
+  double calculateHours(String startTimes, String endTimes) {
+    final DateFormat timeFormat = DateFormat('HH:mm');
+    DateTime startTime = timeFormat.parse(startTimes);
+    DateTime endTime = timeFormat.parse(endTimes);
+    Duration difference = endTime.difference(startTime);
+    double hours = difference.inMinutes / 60.0;
+    return hours;
+  }
+
+  Future<void> _getTodayEntryData() async {
+    try {
+      final now = DateTime.now();
+      // Format date as "01/01/2024, Monday"
+      String todayDate = DateFormat('MM/dd/yyyy, EEEE').format(now);
+      final entryData = await DatabaseHelper.instance.getEntry(todayDate);
+
+      if (entryData.isNotEmpty) {
+        checkIn = DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(entryData.first.timestamp));
+        print('List: ' + entryData.first.timestamp.toString());
+      } else {
+        checkIn = '00:00 AM';
+        // Handle case when no entry data is found for today
+        print('No entry data found for today.');
+      }
+
+      setState(() {});
+    } catch (error) {
+      // Handle the error, e.g., print an error message
+      print('Error fetching today\'s entry data: $error');
+    }
+  }
+
+  Future<void> _getTodayExitData() async {
+    try {
+      final now = DateTime.now();
+      // Format date as "01/01/2024, Monday"
+      String todayDate = DateFormat('MM/dd/yyyy, EEEE').format(now);
+      final exitData = await DatabaseHelper.instance.getExit(todayDate);
+
+      if (exitData.isNotEmpty) {
+        checkOut = DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(exitData.first.timestamp));
+        print('List: ' + exitData.first.timestamp.toString());
+      } else {
+        checkOut = '00:00 AM';
+        // Handle case when no exit data is found for today
+        print('No exit data found for today.');
+      }
+
+      setState(() {});
+    } catch (error) {
+      // Handle the error, e.g., print an error message
+      print('Error fetching today\'s exit data: $error');
+    }
+  }
+
+
+  // Future<void> _storeAttendance() async {
+  //   try {
+  //     // Replace with your API request to store attendance
+  //     await http.post(
+  //       Uri.parse(apiUrl),
+  //       // Include any necessary headers, body, etc.
+  //     );
+  //
+  //     print('Attendance stored successfully!');
+  //   } catch (e) {
+  //     print('Error storing attendance: $e');
+  //   }
+  // }
 
   void _updateDateTime() {
     final now = DateTime.now();
@@ -231,7 +389,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Column(
                       children: [
                         Icon(Icons.ads_click, color: Colors.green, size: 40,),
-                        Text('--:--', style: TextStyle(
+                        Text(checkIn == '00:00 AM' ? '--:--': checkIn, style: TextStyle(
                             fontSize: 18 / MediaQuery.textScaleFactorOf(context),
                             color: Colors.grey[600], fontWeight: FontWeight.bold),),
                         Text('Check in', style: TextStyle(
@@ -242,7 +400,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Column(
                       children: [
                         Icon(Icons.ads_click, color: Colors.green,size: 40),
-                        Text('--:--', style: TextStyle(
+                        Text(checkOut == '00:00 AM' ? '--:--': checkOut, style: TextStyle(
                             fontSize: 18 / MediaQuery.textScaleFactorOf(context),
                             color: Colors.grey[600], fontWeight: FontWeight.bold),),
                         Text('Check out', style: TextStyle(
@@ -253,7 +411,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Column(
                       children: [
                         Icon(Icons.ads_click, color: Colors.green, size: 40),
-                        Text('--:--', style: TextStyle(
+                        Text(checkOut != '00:00 AM' ? calculateHours(checkIn, checkOut).toStringAsFixed(1) : '--:--', style: TextStyle(
                             fontSize: 18 / MediaQuery.textScaleFactorOf(context),
                             color: Colors.grey[600], fontWeight: FontWeight.bold),),
                         Text('Total hours', style: TextStyle(

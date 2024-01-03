@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../utill/color_resources.dart';
@@ -17,6 +18,30 @@ class _LoginScreenState extends State<LoginScreen> {
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    requestPermission();
+  }
+
+  Future<void> requestPermission() async {
+    final permission = Permission.location;
+
+    if (await permission.isDenied) {
+      final result = await permission.request();
+
+      if (result.isGranted) {
+        // Permission is granted
+      } else if (result.isDenied) {
+        // Permission is denied
+      } else if (result.isPermanentlyDenied) {
+        // Permission is permanently denied
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
