@@ -10,6 +10,8 @@ import '../LocalDatabase/database_helper.dart';
 import 'package:flutter/services.dart';
 import 'package:background_fetch/background_fetch.dart';
 
+import '../utill/stored_images.dart';
+
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -267,7 +269,7 @@ class _HomeScreenState extends State<HomeScreen> {
       String todayDate = DateFormat('MM/dd/yyyy, EEEE').format(now);
       final exitData = await DatabaseHelper.instance.getExit(todayDate);
 
-      if (exitData.isNotEmpty) {
+      if (exitData.isNotEmpty && checkIn != '00:00 AM') {
         checkOut = DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(exitData.first.timestamp));
         print('List: ' + exitData.first.timestamp.toString());
         setState(() {});
@@ -320,6 +322,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() {}); // Update the UI with the new values
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -484,7 +487,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Icon(Icons.ads_click, color: Colors.green,),
+                          checkIn != '00:00 AM' ?Image.asset(Images.checkout):Image.asset(Images.checkin),
                           SizedBox(height: 8,),
                           Text('Check in', style: TextStyle(
                               fontSize: 15 / MediaQuery.textScaleFactorOf(context),
@@ -502,7 +505,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Column(
                       children: [
-                        Icon(Icons.ads_click, color: Colors.green, size: 40,),
+                        Image.asset(Images.checkin),
                         Text(checkIn == '00:00 AM' ? '--:--': checkIn, style: TextStyle(
                             fontSize: 18 / MediaQuery.textScaleFactorOf(context),
                             color: Colors.grey[600], fontWeight: FontWeight.bold),),
@@ -513,7 +516,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     Column(
                       children: [
-                        Icon(Icons.ads_click, color: Colors.green,size: 40),
+                        Image.asset(Images.checkout),
                         Text(checkOut == '00:00 AM' ? '--:--': checkOut, style: TextStyle(
                             fontSize: 18 / MediaQuery.textScaleFactorOf(context),
                             color: Colors.grey[600], fontWeight: FontWeight.bold),),
@@ -524,7 +527,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     Column(
                       children: [
-                        Icon(Icons.ads_click, color: Colors.green, size: 40),
+                        Image.asset(Images.total),
                         Text(checkOut != '00:00 AM' ? calculateHours(checkIn, checkOut).toStringAsFixed(1) : '--:--', style: TextStyle(
                             fontSize: 18 / MediaQuery.textScaleFactorOf(context),
                             color: Colors.grey[600], fontWeight: FontWeight.bold),),
