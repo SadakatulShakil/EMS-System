@@ -1,12 +1,15 @@
 import 'dart:async';
-import 'package:employe_management_system/Model/address_model.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:flutter/material.dart';
-import '../../utill/color_resources.dart';
-import 'package:intl/intl.dart';
-import 'package:stream/stream.dart';
 
+import 'package:employe_management_system/Model/address_model.dart';
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
+
+import '../../utill/color_resources.dart';
 import '../LocalDatabase/database_helper.dart';
+import 'package:flutter/services.dart';
+import 'package:background_fetch/background_fetch.dart';
+
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -23,11 +26,16 @@ class _HomeScreenState extends State<HomeScreen> {
   final GeolocatorPlatform geolocator = GeolocatorPlatform.instance;
   final double geofenceRadius = 50.0; // Adjust the geofence radius as needed
   final String apiUrl = 'YOUR_API_ENDPOINT';
+  bool _enabled = true;
+  int _status = 0;
+  List<DateTime> _events = [];
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _startLocationTracking();
+    initPlatformState();
+    //_startLocationTracking();
 // Initial update
     _updateDateTime();
     //get current entry status
@@ -40,6 +48,112 @@ class _HomeScreenState extends State<HomeScreen> {
       _updateDateTime();
     });
   }
+
+  Future<void> initPlatformState() async {
+    // Configure BackgroundFetch.
+    int status = await BackgroundFetch.configure(BackgroundFetchConfig(
+        minimumFetchInterval: 15,
+        stopOnTerminate: false,
+        enableHeadless: true,
+        requiresBatteryNotLow: false,
+        requiresCharging: false,
+        requiresStorageNotLow: false,
+        requiresDeviceIdle: false,
+        requiredNetworkType: NetworkType.NONE
+    ), (String taskId) async {  // <-- Event handler
+      // This is the fetch-event callback.
+      print("[BackgroundFetch] Event received $taskId");
+        // Get the current location
+        Position position = await geolocator.getCurrentPosition();
+
+        // Check if inside the geofence
+        if (await _isInsideGeofence(position)) {
+          firstEntryTime = DateTime.now();
+          print('First entry time: $firstEntryTime');
+          _storeAttendance(position, 'checked_in');
+        } else {
+          lastCheckoutTime = DateTime.now();
+          print('Last checkout time: $lastCheckoutTime');
+          _storeAttendance(position, 'checked_out');
+        }
+
+        // Other background tasks...
+
+        // You can also update the UI if needed
+        setState(() {
+          // Update UI based on background tasks
+        });
+      // IMPORTANT:  You must signal completion of your task or the OS can punish your app
+      // for taking too long in the background.
+      BackgroundFetch.finish(taskId);
+    }, (String taskId) async {  // <-- Task timeout handler.
+      // This task has exceeded its allowed running-time.  You must stop what you're doing and immediately .finish(taskId)
+      print("[BackgroundFetch] TASK TIMEOUT taskId: $taskId");
+      BackgroundFetch.finish(taskId);
+    });
+    print('[BackgroundFetch] configure success: $status');
+    setState(() {
+      _status = status;
+    });
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+  }
+
+  void _onClickEnable(enabled) {
+    setState(() {
+      _enabled = enabled;
+    });
+    if (enabled) {
+      BackgroundFetch.start().then((int status) {
+        print('[BackgroundFetch] start success: $status');
+      }).catchError((e) {
+        print('[BackgroundFetch] start FAILURE: $e');
+      });
+    } else {
+      BackgroundFetch.stop().then((int status) {
+        print('[BackgroundFetch] stop success: $status');
+      });
+    }
+  }
+
+  void _onClickStatus() async {
+    int status = await BackgroundFetch.status;
+    print('[BackgroundFetch] status: $status');
+    setState(() {
+      _status = status;
+    });
+  }
+  // Background fetch callback function
+  // void _backgroundFetchCallback() async {
+  //   print('Background fetch executed.');
+  //
+  //   // Get the current location
+  //   Position position = await geolocator.getCurrentPosition();
+  //
+  //   // Check if inside the geofence
+  //   if (await _isInsideGeofence(position)) {
+  //     firstEntryTime = DateTime.now();
+  //     print('First entry time: $firstEntryTime');
+  //     _storeAttendance(position, 'checked_in');
+  //   } else {
+  //     lastCheckoutTime = DateTime.now();
+  //     print('Last checkout time: $lastCheckoutTime');
+  //     _storeAttendance(position, 'checked_out');
+  //   }
+  //
+  //   // Other background tasks...
+  //
+  //   // You can also update the UI if needed
+  //   setState(() {
+  //     // Update UI based on background tasks
+  //   });
+  //
+  //   // Call finish to signal that the background fetch is complete
+  //   BackgroundFetch.finish();
+  // }
 
   Future<void> _startLocationTracking() async {
     geolocator.getPositionStream(
@@ -133,13 +247,13 @@ class _HomeScreenState extends State<HomeScreen> {
       if (entryData.isNotEmpty) {
         checkIn = DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(entryData.first.timestamp));
         print('List: ' + entryData.first.timestamp.toString());
+        setState(() {});
       } else {
         checkIn = '00:00 AM';
         // Handle case when no entry data is found for today
         print('No entry data found for today.');
+        setState(() {});
       }
-
-      setState(() {});
     } catch (error) {
       // Handle the error, e.g., print an error message
       print('Error fetching today\'s entry data: $error');
@@ -156,13 +270,13 @@ class _HomeScreenState extends State<HomeScreen> {
       if (exitData.isNotEmpty) {
         checkOut = DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(exitData.first.timestamp));
         print('List: ' + exitData.first.timestamp.toString());
+        setState(() {});
       } else {
         checkOut = '00:00 AM';
         // Handle case when no exit data is found for today
         print('No exit data found for today.');
+        setState(() {});
       }
-
-      setState(() {});
     } catch (error) {
       // Handle the error, e.g., print an error message
       print('Error fetching today\'s exit data: $error');
