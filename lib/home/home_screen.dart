@@ -36,14 +36,11 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    initPlatformState();
-    //_startLocationTracking();
+    _startLocationTracking();
 // Initial update
     _updateDateTime();
     //get current entry status
     _getCurrentAttendanceData();
-    _getTodayEntryData();
-    _getTodayExitData();
 
     // Start a periodic timer to update every minute
     Timer.periodic(Duration(minutes: 1), (timer) {
@@ -104,59 +101,6 @@ class _HomeScreenState extends State<HomeScreen> {
     if (!mounted) return;
   }
 
-  void _onClickEnable(enabled) {
-    setState(() {
-      _enabled = enabled;
-    });
-    if (enabled) {
-      BackgroundFetch.start().then((int status) {
-        print('[BackgroundFetch] start success: $status');
-      }).catchError((e) {
-        print('[BackgroundFetch] start FAILURE: $e');
-      });
-    } else {
-      BackgroundFetch.stop().then((int status) {
-        print('[BackgroundFetch] stop success: $status');
-      });
-    }
-  }
-
-  void _onClickStatus() async {
-    int status = await BackgroundFetch.status;
-    print('[BackgroundFetch] status: $status');
-    setState(() {
-      _status = status;
-    });
-  }
-  // Background fetch callback function
-  // void _backgroundFetchCallback() async {
-  //   print('Background fetch executed.');
-  //
-  //   // Get the current location
-  //   Position position = await geolocator.getCurrentPosition();
-  //
-  //   // Check if inside the geofence
-  //   if (await _isInsideGeofence(position)) {
-  //     firstEntryTime = DateTime.now();
-  //     print('First entry time: $firstEntryTime');
-  //     _storeAttendance(position, 'checked_in');
-  //   } else {
-  //     lastCheckoutTime = DateTime.now();
-  //     print('Last checkout time: $lastCheckoutTime');
-  //     _storeAttendance(position, 'checked_out');
-  //   }
-  //
-  //   // Other background tasks...
-  //
-  //   // You can also update the UI if needed
-  //   setState(() {
-  //     // Update UI based on background tasks
-  //   });
-  //
-  //   // Call finish to signal that the background fetch is complete
-  //   BackgroundFetch.finish();
-  // }
-
   Future<void> _startLocationTracking() async {
     geolocator.getPositionStream(
       locationSettings: LocationSettings(
@@ -168,16 +112,10 @@ class _HomeScreenState extends State<HomeScreen> {
         firstEntryTime = DateTime.now();
         print('First entry time: $firstEntryTime');
         _storeAttendance(position, 'checked_in');
-        setState(() {
-
-        });
       } else {
         lastCheckoutTime = DateTime.now();
         print('Last checkout time: $lastCheckoutTime');
         _storeAttendance(position, 'checked_out');
-        setState(() {
-
-        });
       }
     });
   }
@@ -249,12 +187,10 @@ class _HomeScreenState extends State<HomeScreen> {
       if (entryData.isNotEmpty) {
         checkIn = DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(entryData.first.timestamp));
         print('List: ' + entryData.first.timestamp.toString());
-        setState(() {});
       } else {
         checkIn = '00:00 AM';
         // Handle case when no entry data is found for today
         print('No entry data found for today.');
-        setState(() {});
       }
     } catch (error) {
       // Handle the error, e.g., print an error message
@@ -272,12 +208,10 @@ class _HomeScreenState extends State<HomeScreen> {
       if (exitData.isNotEmpty) {
         checkOut = DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(exitData.first.timestamp));
         print('List: ' + exitData.first.timestamp.toString());
-        setState(() {});
       } else {
         checkOut = '00:00 AM';
         // Handle case when no exit data is found for today
         print('No exit data found for today.');
-        setState(() {});
       }
     } catch (error) {
       // Handle the error, e.g., print an error message
@@ -486,13 +420,33 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          checkIn != '00:00 AM'? Image.asset(Images.checkout):Image.asset(Images.checkin),
+                          FutureBuilder(
+                            future: _getTodayEntryData(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.done) {
+                                return Image.asset(checkIn == '00:00 AM' ? Images.checkin : Images.checkout);
+                              } else {
+                                return CircularProgressIndicator();
+                              }
+                            },
+                          ),
                           SizedBox(height: 8,),
-                          checkIn != '00:00 AM'?Text('Check out', style: TextStyle(
-                              fontSize: 15 / MediaQuery.textScaleFactorOf(context),
-                              color: Colors.green[600])):Text('Check in', style: TextStyle(
-                              fontSize: 15 / MediaQuery.textScaleFactorOf(context),
-                              color: Colors.green[600])),
+                          FutureBuilder(
+                            future: _getTodayEntryData(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.done) {
+                                return Text(
+                                  checkIn == '00:00 AM' ? 'Check in' : 'Check out',
+                                  style: TextStyle(
+                                    fontSize: 15 / MediaQuery.textScaleFactorOf(context),
+                                    color: Colors.green[600],
+                                  ),
+                                );
+                              } else {
+                                return CircularProgressIndicator();
+                              }
+                            },
+                          ),
                         ],
                       ),
                     )
@@ -504,28 +458,44 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      children: [
-                        Image.asset(Images.checkin),
-                        Text(checkIn == '00:00 AM' ? '--:--': checkIn, style: TextStyle(
-                            fontSize: 18 / MediaQuery.textScaleFactorOf(context),
-                            color: Colors.grey[600], fontWeight: FontWeight.bold),),
-                        Text('Check in', style: TextStyle(
-                            fontSize: 15 / MediaQuery.textScaleFactorOf(context),
-                            color: Colors.green[600]),),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Image.asset(Images.checkout),
-                        Text(checkOut == '00:00 AM' ? '--:--': checkOut, style: TextStyle(
-                            fontSize: 18 / MediaQuery.textScaleFactorOf(context),
-                            color: Colors.grey[600], fontWeight: FontWeight.bold),),
-                        Text('Check out', style: TextStyle(
-                            fontSize: 15 / MediaQuery.textScaleFactorOf(context),
-                            color: Colors.green[600])),
-                      ],
-                    ),
+                    FutureBuilder(
+                        future: _getTodayEntryData(),
+                        builder: (context, snapshot){
+                          if(snapshot.connectionState == ConnectionState.done){
+                            return Column(
+                              children: [
+                                Image.asset(Images.checkin),
+                                Text(checkIn == '00:00 AM' ? '--:--': checkIn, style: TextStyle(
+                                    fontSize: 18 / MediaQuery.textScaleFactorOf(context),
+                                    color: Colors.grey[600], fontWeight: FontWeight.bold),),
+                                Text('Check in', style: TextStyle(
+                                    fontSize: 15 / MediaQuery.textScaleFactorOf(context),
+                                    color: Colors.green[600]),),
+                              ],
+                            );
+                          }else{
+                            return CircularProgressIndicator();
+                          }
+                        }),
+                    FutureBuilder(
+                        future: _getTodayExitData(),
+                        builder: (context, snapshot){
+                          if(snapshot.connectionState == ConnectionState.done){
+                            return  Column(
+                              children: [
+                                Image.asset(Images.checkout),
+                                Text(checkOut == '00:00 AM' ? '--:--': checkOut, style: TextStyle(
+                                    fontSize: 18 / MediaQuery.textScaleFactorOf(context),
+                                    color: Colors.grey[600], fontWeight: FontWeight.bold),),
+                                Text('Check out', style: TextStyle(
+                                    fontSize: 15 / MediaQuery.textScaleFactorOf(context),
+                                    color: Colors.green[600])),
+                              ],
+                            );
+                          }else{
+                            return CircularProgressIndicator();
+                          }
+                        }),
                     Column(
                       children: [
                         Image.asset(Images.total),
