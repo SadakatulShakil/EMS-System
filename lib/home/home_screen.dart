@@ -269,7 +269,7 @@ class _HomeScreenState extends State<HomeScreen> {
       String todayDate = DateFormat('MM/dd/yyyy, EEEE').format(now);
       final exitData = await DatabaseHelper.instance.getExit(todayDate);
 
-      if (exitData.isNotEmpty && checkIn != '00:00 AM') {
+      if (exitData.isNotEmpty) {
         checkOut = DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(exitData.first.timestamp));
         print('List: ' + exitData.first.timestamp.toString());
         setState(() {});
@@ -322,7 +322,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() {}); // Update the UI with the new values
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -481,15 +480,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       children:[
                     Image.asset('assets/images/button.png', height: 200, width: 200,),
                     Positioned(
-                      left: 55,
-                      top: 55,
+                      left: 53,
+                      top: 53,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          checkIn != '00:00 AM' ?Image.asset(Images.checkout):Image.asset(Images.checkin),
+                          checkIn != '00:00 AM'? Image.asset(Images.checkout):Image.asset(Images.checkin),
                           SizedBox(height: 8,),
-                          Text('Check in', style: TextStyle(
+                          checkIn != '00:00 AM'?Text('Check out', style: TextStyle(
+                              fontSize: 15 / MediaQuery.textScaleFactorOf(context),
+                              color: Colors.green[600])):Text('Check in', style: TextStyle(
                               fontSize: 15 / MediaQuery.textScaleFactorOf(context),
                               color: Colors.green[600])),
                         ],
