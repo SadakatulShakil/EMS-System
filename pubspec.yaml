@@ -65,6 +65,7 @@ dev_dependencies:
   stream: ^3.0.3
   geolocator: ^10.1.0
   background_fetch: ^1.2.1
+  multiselect_formfield: ^0.1.7
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

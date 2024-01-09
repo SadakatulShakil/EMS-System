@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../utill/color_resources.dart';
 import '../utill/dimensions.dart';
+import 'package:multiselect_formfield/multiselect_formfield.dart';
 import 'package:image_picker/image_picker.dart';
 class LeaveScreen extends StatefulWidget {
   bool backExits;
@@ -12,15 +13,27 @@ class LeaveScreen extends StatefulWidget {
 class _LeaveScreenState extends State<LeaveScreen> {
 
   List<String> leaveTypes = ['', 'Casual Leave', 'Sick Leave', 'Paid Leave', 'Unpaid Leave'];
-  List<String> reportingPersons = ['', 'Broak Stephen (HR)', 'Stephen clark (PM)', 'Ellon Mask (Team Lead)', 'Mark Zukarbag (Acting Lead)'];
+  //List<String> reportingPersons = ['Broak Stephen (HR)', 'Stephen clark (PM)', 'Ellon Mask (Team Lead)', 'Mark Zukarbag (Acting Lead)'];
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   // Variables to store selected values
   String? selectedLeaveType;
-  String? selectedReportingPerson;
+  late String selectedReporters;
+  List<dynamic> selectedReportingPersons = [];
   String leaveReason = '';
   String leaveFromDate = '';
   String leaveToDate = '';
   String fileName = '';
+
+  _saveForm() {
+    var form = _formKey.currentState!;
+    if (form.validate()) {
+      form.save();
+      setState(() {
+        selectedReporters = selectedReportingPersons.toString();
+      });
+    }
+  }
 
   _showFromDatePicker() {
     /// TODO changing the color of date picker
@@ -79,7 +92,7 @@ class _LeaveScreenState extends State<LeaveScreen> {
                 Text('From Date: ${leaveFromDate}'),
                 Text('To Date: ${leaveFromDate}'),
                 Text('Leave Reason: $leaveReason'),
-                Text('Reporting person: $selectedReportingPerson'),
+                Text('Reporting person: '+selectedReporters),
                 Text('File name: $fileName'),
               ],
             ),
@@ -158,7 +171,7 @@ class _LeaveScreenState extends State<LeaveScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
+    selectedReporters = '';
   }
   @override
   Widget build(BuildContext context) {
@@ -265,32 +278,55 @@ class _LeaveScreenState extends State<LeaveScreen> {
                           ],
                         ))),
                 SizedBox(height: 16.0),
-                DropdownButtonFormField<String>(
-                  value: selectedReportingPerson,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedReportingPerson = newValue;
-                    });
-                  },
-                  items: reportingPersons.map((String leaveType) {
-                    return DropdownMenuItem<String>(
-                      value: leaveType,
-                      child: Text(leaveType.isEmpty ? 'Select reporting person' : leaveType, style: TextStyle(fontSize: 16 / MediaQuery.textScaleFactorOf(context)),),
-                    );
-                  }).toList(),
-                  decoration: InputDecoration(
-                    labelText: 'Reporting person', labelStyle: TextStyle(fontSize: 16 / MediaQuery.textScaleFactorOf(context)),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                Container(
+                  child: MultiSelectFormField(
+                    autovalidate: AutovalidateMode.disabled,
+                    chipBackGroundColor: Colors.blue,
+                    chipLabelStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                    dialogTextStyle: TextStyle(fontWeight: FontWeight.bold),
+                    checkBoxActiveColor: Colors.blue,
+                    checkBoxCheckColor: Colors.white,
+                    dialogShapeBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(12.0))),
+                    title: Text(
+                      "My workouts",
+                      style: TextStyle(fontSize: 16),
                     ),
+                    dataSource: [
+                      {
+                        "display": "Broak Stephen (HR)",
+                        "value": "Broak Stephen (HR)",
+                      },
+                      {
+                        "display": "Stephen clark (PM)",
+                        "value": "Stephen clark (PM)",
+                      },
+                      {
+                        "display": "Ellon Mask (Team Lead)",
+                        "value": "Ellon Mask (Team Lead)",
+                      },
+                      {
+                        "display": "Mark Zukarbag (Acting Lead)",
+                        "value": "Mark Zukarbag (Acting Lead)",
+                      },
+                      {
+                        "display": "Football Coutch",
+                        "value": "Football Coutch",
+                      },
+                    ],
+                    textField: 'display',
+                    valueField: 'value',
+                    okButtonLabel: 'OK',
+                    cancelButtonLabel: 'CANCEL',
+                    hintWidget: Text('Please choose one or more'),
+                    initialValue: selectedReportingPersons,
+                    onSaved: (value) {
+                      if (value == null) return;
+                      setState(() {
+                        selectedReportingPersons = value;
+                      });
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'This Field must be selected';
-                    }
-                    return null;
-                  },
                 ),
                 SizedBox(height: 16.0),
                 TextField(
@@ -331,6 +367,7 @@ class _LeaveScreenState extends State<LeaveScreen> {
                 ElevatedButton(
                   onPressed: () {
                     // Show the entered data in a dialog
+                    _saveForm();
                     _showSubmittedData();
                   },
                   child: Text('Submit'),
