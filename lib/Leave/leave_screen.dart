@@ -3,6 +3,8 @@ import '../../utill/color_resources.dart';
 import '../utill/dimensions.dart';
 import 'package:multiselect_formfield/multiselect_formfield.dart';
 import 'package:image_picker/image_picker.dart';
+
+import 'alert_widget/alertWidget.dart';
 class LeaveScreen extends StatefulWidget {
   bool backExits;
   LeaveScreen({Key? key, required this.backExits}) : super(key: key);
@@ -13,8 +15,8 @@ class LeaveScreen extends StatefulWidget {
 class _LeaveScreenState extends State<LeaveScreen> {
 
   List<String> leaveTypes = ['', 'Casual Leave', 'Sick Leave', 'Paid Leave', 'Unpaid Leave'];
-  //List<String> reportingPersons = ['Broak Stephen (HR)', 'Stephen clark (PM)', 'Ellon Mask (Team Lead)', 'Mark Zukarbag (Acting Lead)'];
-
+  final List<String> reportingPersons = ['Broak Stephen (HR)', 'Stephen clark (PM)', 'Ellon Mask (Team Lead)', 'Mark Zukarbag (Acting Lead)'];
+  List<String> _selectedItems = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   // Variables to store selected values
   String? selectedLeaveType;
@@ -25,16 +27,36 @@ class _LeaveScreenState extends State<LeaveScreen> {
   String leaveToDate = '';
   String fileName = '';
 
-  _saveForm() {
-    var form = _formKey.currentState!;
-    if (form.validate()) {
-      form.save();
+  void _removeFromList(String item) {
+    setState(() {
+      _selectedItems.remove(item);
+    });
+  }
+
+  void _itemChange(String itemValue, bool isSelected) {
+    setState(() {
+      if (isSelected) {
+        _selectedItems.add(itemValue);
+      } else {
+        _selectedItems.remove(itemValue);
+      }
+    });
+  }
+
+  void _showMultiSelect() async {
+    final List<String>? results = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return MultiSelect(items: reportingPersons);
+      },
+    );
+
+    if (results != null) {
       setState(() {
-        selectedReporters = selectedReportingPersons.toString();
+        _selectedItems = results;
       });
     }
   }
-
   _showFromDatePicker() {
     /// TODO changing the color of date picker
     DateTime currentDate = DateTime.now();
@@ -92,7 +114,7 @@ class _LeaveScreenState extends State<LeaveScreen> {
                 Text('From Date: ${leaveFromDate}'),
                 Text('To Date: ${leaveFromDate}'),
                 Text('Leave Reason: $leaveReason'),
-                Text('Reporting person: '+selectedReporters),
+                Text('Reporting person: '+_selectedItems.toString()),
                 Text('File name: $fileName'),
               ],
             ),
@@ -185,7 +207,7 @@ class _LeaveScreenState extends State<LeaveScreen> {
             padding: const EdgeInsets.only(right: 12.0),
             child: IconButton(
               onPressed: () {
-                //Navigator.push(context, MaterialPageRoute(builder: (_) => const CartScreen()));
+                //Navigator.of(context).push(MaterialPageRoute(builder: (context) => FinalView()));
               },
               icon: Stack(clipBehavior: Clip.none, children: [
                 Icon(Icons.notifications, size: 30,),
@@ -278,55 +300,73 @@ class _LeaveScreenState extends State<LeaveScreen> {
                           ],
                         ))),
                 SizedBox(height: 16.0),
-                Container(
-                  child: MultiSelectFormField(
-                    autovalidate: AutovalidateMode.disabled,
-                    chipBackGroundColor: Colors.blue,
-                    chipLabelStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-                    dialogTextStyle: TextStyle(fontWeight: FontWeight.bold),
-                    checkBoxActiveColor: Colors.blue,
-                    checkBoxCheckColor: Colors.white,
-                    dialogShapeBorder: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(12.0))),
-                    title: Text(
-                      "My workouts",
-                      style: TextStyle(fontSize: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                      onTap: (){
+                        _showMultiSelect();
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(16.0),
+                        decoration:BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(color: Colors.grey.shade500, spreadRadius: .8),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Select Your Reporting person'),
+                            Icon(Icons.arrow_drop_down, color: Colors.grey.shade700,)
+                          ],
+                        ),
+                      ),
                     ),
-                    dataSource: [
-                      {
-                        "display": "Broak Stephen (HR)",
-                        "value": "Broak Stephen (HR)",
-                      },
-                      {
-                        "display": "Stephen clark (PM)",
-                        "value": "Stephen clark (PM)",
-                      },
-                      {
-                        "display": "Ellon Mask (Team Lead)",
-                        "value": "Ellon Mask (Team Lead)",
-                      },
-                      {
-                        "display": "Mark Zukarbag (Acting Lead)",
-                        "value": "Mark Zukarbag (Acting Lead)",
-                      },
-                      {
-                        "display": "Football Coutch",
-                        "value": "Football Coutch",
-                      },
-                    ],
-                    textField: 'display',
-                    valueField: 'value',
-                    okButtonLabel: 'OK',
-                    cancelButtonLabel: 'CANCEL',
-                    hintWidget: Text('Please choose one or more'),
-                    initialValue: selectedReportingPersons,
-                    onSaved: (value) {
-                      if (value == null) return;
-                      setState(() {
-                        selectedReportingPersons = value;
-                      });
-                    },
-                  ),
+                    if (_selectedItems.isEmpty)
+                      const SizedBox(
+                        width: double.infinity,
+                        child: Column(
+                          children: [
+                            SizedBox(height: 10),
+                            Text("Please select at least one person"),
+                          ],
+                        ),
+                      )
+                    else
+                      Wrap(
+                        children: _selectedItems
+                            .map(
+                              (e) => Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 4, vertical: 2),
+                            child: Chip(
+                              label: GestureDetector(
+                                onTap: () {
+                                  _removeFromList(e);
+                                },
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(e),
+                                    const SizedBox(
+                                      width: 3,
+                                    ),
+                                    const Icon(Icons.delete_forever, color: Colors.red,),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                            .toList(),
+                      )
+                  ],
+                ),
+                const Divider(
+                  height: 10,
                 ),
                 SizedBox(height: 16.0),
                 TextField(
@@ -367,7 +407,7 @@ class _LeaveScreenState extends State<LeaveScreen> {
                 ElevatedButton(
                   onPressed: () {
                     // Show the entered data in a dialog
-                    _saveForm();
+                    //_saveForm();
                     _showSubmittedData();
                   },
                   child: Text('Submit'),
