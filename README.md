@@ -1,6 +1,6 @@
-# employe_management_system
+# Employe_management_system
 
-A new Flutter project.
+Employee Management System for SAS project developed with backend Laravel and REST API, GEO Fencing, Live location tracking, notification
 
 ## Screenshots
 
