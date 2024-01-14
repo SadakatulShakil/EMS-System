@@ -2,15 +2,8 @@
 
 A new Flutter project.
 
-## Getting Started
+## Screenshots
 
-This project is a starting point for a Flutter application.
+![Screenshot_2024-01-10-12-23-43-34_5f455db02a2cbde129b16e3700f48f1e](https://github.com/SadakatulShakil/EMS-System/assets/58100333/00da869f-9b29-4d82-9b05-d60c490fa457)
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
