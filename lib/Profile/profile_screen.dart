@@ -1,5 +1,8 @@
 import 'package:employe_management_system/Profile/update_profile.dart';
+import 'package:employe_management_system/report/report_page.dart';
 import 'package:flutter/material.dart';
+
+import '../report/report_page2.dart';
 class ProfileScreen extends StatefulWidget {
   bool backExits;
   ProfileScreen({Key? key, required this.backExits}) : super(key: key);
@@ -22,12 +25,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(height: 50,),
+              SizedBox(height: 40,),
               Align(
                 alignment: Alignment.center,
                 child: CircleAvatar(
                   backgroundImage: AssetImage('assets/images/user.png',),
-                  radius: 80,
+                  radius: 60,
                 ),
               ),
               SizedBox(height: 8,),
@@ -108,17 +111,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0, right: 8),
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Icon(Icons.history, size: 25,),
-                        SizedBox(width: 10,),
-                        Text('Pending request', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18),)
-                      ],
+              GestureDetector(
+                onTap: (){
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => PieChartSample1()));
+                  },
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.report_outlined, size: 25,),
+                          SizedBox(width: 10,),
+                          Text('Reports', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18),)
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: (){
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => BarChartSample2()));
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.history, size: 25,),
+                          SizedBox(width: 10,),
+                          Text('Pending request', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18),)
+                        ],
+                      ),
                     ),
                   ),
                 ),

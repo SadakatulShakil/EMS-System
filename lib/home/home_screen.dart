@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _getCurrentAttendanceData();
 
     // Start a periodic timer to update every minute
-    Timer.periodic(Duration(minutes: 1), (timer) {
+    Timer.periodic(Duration(seconds: 5), (timer) {
       _updateDateTime();
     });
   }
@@ -165,7 +165,6 @@ class _HomeScreenState extends State<HomeScreen> {
       final formattedTime = DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(timestamp));
       print('Status: $status, Time: $formattedTime');
     }
-    setState(() {});
   }
 
   double calculateHours(String startTimes, String endTimes) {
@@ -253,8 +252,10 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       greeting = 'Good night, \r\nRelax & have a sweet dream.';
     }
+    setState(() {
 
-    setState(() {}); // Update the UI with the new values
+    });
+    // Update the UI with the new values
   }
   @override
   Widget build(BuildContext context) {
@@ -280,7 +281,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     CircleAvatar(
-                      backgroundImage: AssetImage('assets/images/user.png',),
+                      backgroundImage: AssetImage('assets/images/user.png',), 
                       radius: 30,
                     )
                   ],
