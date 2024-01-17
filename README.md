@@ -1,16 +1,14 @@
-# employe_management_system
+# Employe_management_system
 
-A new Flutter project.
+Employee Management System for SAS project developed with backend Laravel and REST API, GEO Fencing, Live location tracking, notification
 
-## Getting Started
+## Screenshots
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+![ScreenShot](https://i.postimg.cc/WbmWJ0pD/image1.jpg)  ![ScreenShot](https://i.postimg.cc/c4GkHFWy/image2.jpg)
+![ScreenShot](https://i.postimg.cc/fymHC9xr/image3.jpg)  ![ScreenShot](https://i.postimg.cc/LXrCjTZP/image4.jpg)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+
+
