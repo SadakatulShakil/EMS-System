@@ -1,8 +1,6 @@
 import 'package:employe_management_system/Profile/update_profile.dart';
 import 'package:employe_management_system/report/report_page.dart';
 import 'package:flutter/material.dart';
-
-import '../report/report_page2.dart';
 class ProfileScreen extends StatefulWidget {
   bool backExits;
   ProfileScreen({Key? key, required this.backExits}) : super(key: key);
@@ -113,7 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               GestureDetector(
                 onTap: (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => PieChartSample1()));
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => ReportPageSection()));
                   },
                 child: Padding(
                   padding: const EdgeInsets.only(left: 8.0, right: 8),
@@ -133,7 +131,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               GestureDetector(
                 onTap: (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => BarChartSample2()));
+                  //Navigator.of(context).push(MaterialPageRoute(builder: (context) => BarChartSample2()));
                 },
                 child: Padding(
                   padding: const EdgeInsets.only(left: 8.0, right: 8),
