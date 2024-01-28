@@ -1,6 +1,8 @@
 import 'package:employe_management_system/home/dashboard_screen.dart';
+import 'package:employe_management_system/providers/auth_provider.dart';
+import 'package:employe_management_system/providers/auth_session_provider.dart';
 import 'package:employe_management_system/splash_screen.dart';
-import 'package:employe_management_system/utill/color_resources.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:background_fetch/background_fetch.dart';
@@ -32,17 +34,23 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          primarySwatch: Colors.green
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => AuthSessionProvider())
+      ],
+      child: GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+            primarySwatch: Colors.green
+        ),
+        initialRoute: '/',
+        routes: {
+          '/': (context) => SplashScreen(),
+          '/auth': (context) => LoginScreen(),
+          '/home': (context) => DashBoardScreen(),
+        },
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => SplashScreen(),
-        '/auth': (context) => LoginScreen(),
-        '/home': (context) => DashBoardScreen(),
-      },
     );
   }
 }

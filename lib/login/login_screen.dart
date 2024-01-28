@@ -1,14 +1,13 @@
 import 'package:employe_management_system/home/dashboard_screen.dart';
 import 'package:employe_management_system/login/widget/text_from_field.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../utill/color_resources.dart';
 import '../home/home_screen.dart';
+import '../providers/auth_session_provider.dart';
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -40,6 +39,12 @@ class _LoginScreenState extends State<LoginScreen> {
         // Permission is permanently denied
       }
     }
+  }
+
+  void _domainValided(BuildContext context, String domain) {
+    final sessionProvider = Provider.of<AuthSessionProvider>(context, listen: false);
+
+    sessionProvider.verifyDomain(context, domain);
   }
 
   @override
@@ -92,8 +97,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: 200,
                       child: ElevatedButton(
                         onPressed: () async{
-                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => DashBoardScreen()),
-                                  (route) => false);
+                          _domainValided(context, emailController.text);
+                          //Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => DashBoardScreen()), (route) => false);
                           // Implement sign-in logic here
                           // if(emailController.text == '' && passwordController.text == ''){
                           //   // Obtain shared preferences.

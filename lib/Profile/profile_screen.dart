@@ -1,6 +1,10 @@
 import 'package:employe_management_system/Profile/update_profile.dart';
 import 'package:employe_management_system/report/report_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../login/widget/main_login_widget.dart';
+import '../providers/auth_session_provider.dart';
 class ProfileScreen extends StatefulWidget {
   bool backExits;
   ProfileScreen({Key? key, required this.backExits}) : super(key: key);
@@ -19,6 +23,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final sessionProvider = Provider.of<AuthSessionProvider>(context);
     return Scaffold(
         body: SingleChildScrollView(
           child: Column(
@@ -92,7 +97,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               GestureDetector(
                 onTap: (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfileUpdateScreen()));                },
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfileUpdateScreen()));
+                  },
                 child: Padding(
                   padding: const EdgeInsets.only(left: 8.0, right: 8),
                   child: Card(
@@ -180,19 +186,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               SizedBox(height: 15,),
-              Container(
-                width: MediaQuery.of(context).size.width*.5,
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(Icons.logout, size: 25, color: Colors.red,),
-                        SizedBox(width: 10,),
-                        Text('Logout', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20, color: Colors.red),)
-                      ],
+              GestureDetector(
+                onTap: ()async{
+                  sessionProvider.userToken= '';
+                  await  sessionProvider.remove().then((value) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => MainLoginPage()),
+                    );
+                  });
+                },
+                child: Container(
+                  width: MediaQuery.of(context).size.width*.5,
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.logout, size: 25, color: Colors.red,),
+                          SizedBox(width: 10,),
+                          Text('Logout', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20, color: Colors.red),)
+                        ],
+                      ),
                     ),
                   ),
                 ),

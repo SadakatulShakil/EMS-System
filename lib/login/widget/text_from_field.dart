@@ -68,7 +68,7 @@ class _GetTextFormFieldState extends State<GetTextFormField> {
           ),
           suffixIcon:
           Visibility(
-            visible: widget.hintName == 'পাসওয়ার্ড' || widget.hintName == 'Confirm Password' ? true : false,
+            visible: widget.hintName == 'password' || widget.hintName == 'Confirm Password' ? true : false,
             child: IconButton(
               icon: Icon(
                 !widget.isObscureText
