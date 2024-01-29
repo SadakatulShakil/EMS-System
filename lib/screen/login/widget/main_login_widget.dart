@@ -1,10 +1,11 @@
 import 'package:employe_management_system/Model/auth_session_model.dart';
-import 'package:employe_management_system/login/widget/text_from_field.dart';
+import 'package:employe_management_system/screen/login/widget/text_from_field.dart';
+
 import 'package:flutter/material.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../providers/auth_session_provider.dart';
+import '../../../utill/color_resources.dart';
 import '../../home/dashboard_screen.dart';
-import '../../providers/auth_provider.dart';
-import '../../providers/auth_session_provider.dart';
-import '../../utill/color_resources.dart';
 import 'package:provider/provider.dart';
 
 

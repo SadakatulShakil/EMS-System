@@ -5,7 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../utill/stored_images.dart';
+import '../../utill/stored_images.dart';
+
 
 class ProfileUpdateScreen extends StatefulWidget {
   const ProfileUpdateScreen({Key? key}) : super(key: key);

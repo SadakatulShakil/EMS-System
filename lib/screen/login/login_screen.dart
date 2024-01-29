@@ -1,13 +1,12 @@
-import 'package:employe_management_system/home/dashboard_screen.dart';
-import 'package:employe_management_system/login/widget/text_from_field.dart';
+import 'package:employe_management_system/screen/login/widget/text_from_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../providers/auth_session_provider.dart';
 import '../../utill/color_resources.dart';
-import '../home/home_screen.dart';
-import '../providers/auth_session_provider.dart';
+
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();

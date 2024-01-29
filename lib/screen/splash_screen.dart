@@ -1,12 +1,13 @@
-import 'package:employe_management_system/home/dashboard_screen.dart';
-import 'package:employe_management_system/login/login_screen.dart';
-import 'package:employe_management_system/login/widget/main_login_widget.dart';
 import 'package:employe_management_system/providers/auth_session_provider.dart';
 import 'package:employe_management_system/utill/color_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
+
+import 'home/dashboard_screen.dart';
+import 'login/login_screen.dart';
+import 'login/widget/main_login_widget.dart';
 
 class SplashScreen extends StatefulWidget {
   @override

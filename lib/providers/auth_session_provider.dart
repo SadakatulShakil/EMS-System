@@ -3,25 +3,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../Model/auth_session_model.dart';
-import '../login/widget/main_login_widget.dart';
+import '../screen/login/widget/main_login_widget.dart';
 
 class AuthSessionProvider with ChangeNotifier{
 
   bool? isLoggedIn;
   String userToken ='';
   bool? isDomainVerified;
-
-  Future<void> checkLoginStatus() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-    notifyListeners();
-  }
-
-  Future<void> checkDomainStatus() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    isDomainVerified = prefs.getBool('isDomainVerified') ?? false;
-    notifyListeners();
-  }
 
   Future<void> saveDomainSession() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -47,8 +35,8 @@ class AuthSessionProvider with ChangeNotifier{
       saveDomainSession();
 
       final snackBar = SnackBar(
-        backgroundColor: Colors.black,
-        content: Text('Login successfully'),
+        backgroundColor: Colors.red,
+        content: Text('Domain Verify Successfully'),
         duration: Duration(seconds: 1),
       );
 

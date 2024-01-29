@@ -1,10 +1,10 @@
-import 'package:employe_management_system/Profile/update_profile.dart';
-import 'package:employe_management_system/report/report_page.dart';
+import 'package:employe_management_system/screen/Profile/update_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../providers/auth_session_provider.dart';
 import '../login/widget/main_login_widget.dart';
-import '../providers/auth_session_provider.dart';
+import '../report/report_page.dart';
 class ProfileScreen extends StatefulWidget {
   bool backExits;
   ProfileScreen({Key? key, required this.backExits}) : super(key: key);

@@ -1,14 +1,13 @@
-import 'package:employe_management_system/home/dashboard_screen.dart';
 import 'package:employe_management_system/providers/auth_provider.dart';
 import 'package:employe_management_system/providers/auth_session_provider.dart';
-import 'package:employe_management_system/splash_screen.dart';
+import 'package:employe_management_system/screen/home/dashboard_screen.dart';
+import 'package:employe_management_system/screen/login/login_screen.dart';
+import 'package:employe_management_system/screen/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:background_fetch/background_fetch.dart';
 
-import 'home/home_screen.dart';
-import 'login/login_screen.dart';
 
 void backgroundFetchHeadlessTask(HeadlessTask task) async {
   String taskId = task.taskId;

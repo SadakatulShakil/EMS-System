@@ -1,9 +1,10 @@
-import 'package:employe_management_system/report/widget/extention.dart';
-import 'package:employe_management_system/report/widget/indicator.dart';
+import 'package:employe_management_system/screen/report/widget/extention.dart';
+import 'package:employe_management_system/screen/report/widget/indicator.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-import '../utill/color_resources.dart';
+import '../../utill/color_resources.dart';
+
 
 class ReportPageSection extends StatefulWidget {
   ReportPageSection({super.key});
