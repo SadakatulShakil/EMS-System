@@ -68,6 +68,7 @@ dev_dependencies:
   background_fetch: ^1.2.1
   multiselect_formfield: ^0.1.7
   fl_chart: 0.60.0
+  loading_animation_widget: ^1.2.0+4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

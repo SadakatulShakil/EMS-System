@@ -8,6 +8,7 @@ import '../screen/login/widget/main_login_widget.dart';
 class AuthSessionProvider with ChangeNotifier{
 
   bool? isLoggedIn;
+  bool isLoggedOut = false;
   String userToken ='';
   bool? isDomainVerified;
 
@@ -90,7 +91,7 @@ class AuthSessionProvider with ChangeNotifier{
   }
 
   Future<bool> remove() async {
-    isLoggedIn = true;
+    isLoggedOut = true;
     final SharedPreferences sp = await SharedPreferences.getInstance();
     sp.remove("token");
     sp.remove("userAccountType");
