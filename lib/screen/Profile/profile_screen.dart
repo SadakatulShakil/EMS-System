@@ -57,7 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Department: '),
-                    Text('Technology')
+                    Flexible(child: Text('Technology', textAlign: TextAlign.end))
                   ],
                 ),
               ),
@@ -67,7 +67,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Email: '),
-                    Text('haasanmanud@company.com')
+                    Flexible(child: Text('haasanmanud@company.com', textAlign: TextAlign.end))
                   ],
                 ),
               ),
@@ -77,7 +77,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Phone: '),
-                    Text('+8801751330394')
+                    Flexible(child: Text('+8801751330394', textAlign: TextAlign.end))
                   ],
                 ),
               ),
@@ -86,8 +86,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Blood group: '),
-                    Text('A(ev+)')
+                    Text('Address: '),
+                    Flexible(child: Text('Level 4 House, 73 Rd No 13A, Dhaka 1213', textAlign: TextAlign.end,))
                   ],
                 ),
               ),

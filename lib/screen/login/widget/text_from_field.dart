@@ -52,19 +52,19 @@ class _GetTextFormFieldState extends State<GetTextFormField> {
           return null;
         },
         decoration: InputDecoration(
-          prefixIcon: Visibility(
-            visible: widget.lebelName == 'Email Address' ? true : false,
-            child: IconButton(
-              icon: Icon(
-                Icons.language,
-                color: Colors.black,
-              ),
-              onPressed: () {
-                setState(() {
-                  widget.isObscureText = !widget.isObscureText;
-                });
-              },
+          prefixIcon: IconButton(
+            icon: widget.lebelName == 'Email Address'?Icon(
+              Icons.language,
+              color: Colors.black,
+            ):Icon(
+              Icons.lock,
+              color: Colors.black,
             ),
+            onPressed: () {
+              setState(() {
+                widget.isObscureText = !widget.isObscureText;
+              });
+            },
           ),
           suffixIcon:
           Visibility(
@@ -74,7 +74,7 @@ class _GetTextFormFieldState extends State<GetTextFormField> {
                 !widget.isObscureText
                     ? Icons.visibility
                     : Icons.visibility_off,
-                color: Colors.green,
+                color: Colors.green[900],
               ),
               onPressed: () {
                 setState(() {

@@ -19,7 +19,6 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _doSessionTask ()async {
     final sessionProvider = Provider.of<AuthSessionProvider>(context, listen: false);
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
     bool isDomainVerified = prefs.getBool('isDomainVerified') ?? false;
     sessionProvider.getUser().then((value) async{
       if(isDomainVerified){
@@ -44,36 +43,15 @@ class _SplashScreenState extends State<SplashScreen> {
       }
     });
 
-    // Timer(Duration(seconds: 3), () {
-    //   if (isDomainVerified) {
-    //     // Domain is verified
-    //     if (isLoggedIn) {
-    //       // User is logged in
-    //       Navigator.pushReplacement(
-    //         context,
-    //         MaterialPageRoute(builder: (context) => DashBoardScreen()),
-    //       );
-    //     } else {
-    //       // User is not logged in, go to login page
-    //       Navigator.pushReplacement(
-    //         context,
-    //         MaterialPageRoute(builder: (context) => MainLoginPage()),
-    //       );
-    //     }
-    //   } else {
-    //     // Domain is not verified, go to domain page
-    //     Navigator.pushReplacement(
-    //       context,
-    //       MaterialPageRoute(builder: (context) => LoginScreen()),
-    //     );
-    //   }
-    //
-    // });
   }
   @override
   void initState() {
     super.initState();
-    _doSessionTask();
+    //_doSessionTask();
+    Future.delayed(const Duration(seconds: 3)).then((value) => Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    ));
   }
 
   @override

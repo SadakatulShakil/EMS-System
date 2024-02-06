@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../providers/auth_session_provider.dart';
 import '../../utill/color_resources.dart';
+import '../home/dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -15,7 +16,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
 
   TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  TextEditingController passwordTextEditingController = TextEditingController();
 
   @override
   void initState() {
@@ -43,7 +44,9 @@ class _LoginScreenState extends State<LoginScreen> {
   void _domainValided(BuildContext context, String domain) {
     final sessionProvider = Provider.of<AuthSessionProvider>(context, listen: false);
 
-    sessionProvider.verifyDomain(context, domain);
+    //sessionProvider.verifyDomain(context, domain);
+    // Navigator.pushReplacement(context,
+    //     MaterialPageRoute(builder: (context) => DashBoardScreen()));
   }
 
   @override
@@ -70,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Image.asset('assets/images/logo.png', height: 80,width: 80,),
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
                     Align(
                       alignment: Alignment.center,
                       child: Text(
@@ -78,25 +81,28 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: TextStyle(fontSize: 24 / MediaQuery.textScaleFactorOf(context), fontWeight: FontWeight.bold, color: Colors.black),
                       ),
                     ),
-                    Text(
-                      'Continue with company email',
-                      style: TextStyle(
-                          fontSize: 16 / MediaQuery.textScaleFactorOf(context), color: Colors.black),
-                    ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
                     GetTextFormField(
                       //onChangeText: dataProvider.updateTextFieldUsersEmail,
                       controller: emailController,
-                      hintName: "e.g username@company.com",
+                      hintName: "name@company.com",
                       lebelName: "Email Address",
                       inputType: TextInputType.emailAddress,
                     ),
-                    SizedBox(height: 20),
+                    GetTextFormField(
+                      hintName: 'password',
+                      controller: passwordTextEditingController,
+                      inputType: TextInputType.text,
+                      isObscureText: true,
+                    ),
+                    SizedBox(height: 10),
                     Container(
                       width: 200,
                       child: ElevatedButton(
                         onPressed: () async{
-                          _domainValided(context, emailController.text);
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(builder: (context) => DashBoardScreen()));
+                          //_domainValided(context, emailController.text);
                           //Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => DashBoardScreen()), (route) => false);
                           // Implement sign-in logic here
                           // if(emailController.text == '' && passwordController.text == ''){

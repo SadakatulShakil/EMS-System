@@ -271,7 +271,7 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                                 children: [
                                   Icon(Icons.location_history_outlined, color: Colors.red, size: 20),
                                   const SizedBox(width: 5),
-                                  Text('Address'),
+                                  Text('Current Address'),
                                 ],
                               ),
                               const SizedBox(height: 5),
@@ -300,39 +300,70 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                             children: [
                               Row(
                                 children: [
-                                  Icon(Icons.location_on, color: Colors.red, size: 20),
+                                  Icon(Icons.location_history_outlined, color: Colors.red, size: 20),
                                   const SizedBox(width: 5),
-                                  Text('Blood Group'),
+                                  Text('Parmanent Address'),
                                 ],
                               ),
                               const SizedBox(height: 5),
-                              DropdownButtonFormField<String>(
-                                value: selectedBloodType,
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    selectedBloodType = newValue;
-                                  });
+                              TextField(
+                                textInputAction: TextInputAction.done,
+                                keyboardType: TextInputType.text,
+                                focusNode: _addressFocus,
+                                onSubmitted: (term) {
+                                  _addressFocus.unfocus();
                                 },
-                                items: bloodGroups.map((String group) {
-                                  return DropdownMenuItem<String>(
-                                    value: group,
-                                    child: Text(
-                                      group.isEmpty ? 'Select blood group' : group,
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                  );
-                                }).toList(),
                                 decoration: InputDecoration(
-                                  hintText: 'Select blood group',
-                                  fillColor: Colors.green[50],
-                                  filled: true,
+                                    hintText: 'Enter address',
+                                    fillColor: Colors.green[50],
+                                    filled: true,
                                     border: InputBorder.none
                                 ),
+                                controller: _addressController,
                               ),
                             ],
                           ),
                         ),
                         const SizedBox(height: 10),
+                        // Container(
+                        //   margin: const EdgeInsets.only(left: 10, right: 10),
+                        //   child: Column(
+                        //     children: [
+                        //       Row(
+                        //         children: [
+                        //           Icon(Icons.location_on, color: Colors.red, size: 20),
+                        //           const SizedBox(width: 5),
+                        //           Text('Blood Group'),
+                        //         ],
+                        //       ),
+                        //       const SizedBox(height: 5),
+                        //       DropdownButtonFormField<String>(
+                        //         value: selectedBloodType,
+                        //         onChanged: (String? newValue) {
+                        //           setState(() {
+                        //             selectedBloodType = newValue;
+                        //           });
+                        //         },
+                        //         items: bloodGroups.map((String group) {
+                        //           return DropdownMenuItem<String>(
+                        //             value: group,
+                        //             child: Text(
+                        //               group.isEmpty ? 'Select blood group' : group,
+                        //               style: TextStyle(fontSize: 16),
+                        //             ),
+                        //           );
+                        //         }).toList(),
+                        //         decoration: InputDecoration(
+                        //           hintText: 'Select blood group',
+                        //           fillColor: Colors.green[50],
+                        //           filled: true,
+                        //             border: InputBorder.none
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
+                        // const SizedBox(height: 10),
                         Container(
                           margin: const EdgeInsets.all(10),
                           child: ElevatedButton(
