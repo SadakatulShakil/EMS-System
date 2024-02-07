@@ -1,4 +1,5 @@
 import 'package:employe_management_system/screen/Profile/update_profile.dart';
+import 'package:employe_management_system/screen/login/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -192,7 +193,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   await  sessionProvider.remove().then((value) {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => MainLoginPage()),
+                      MaterialPageRoute(builder: (context) => LoginScreen()),
                     );
                   });
                 },

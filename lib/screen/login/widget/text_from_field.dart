@@ -12,6 +12,7 @@ class GetTextFormField extends StatefulWidget {
   bool isObscureText;
   TextInputType inputType;
   Function(String)? onChangeText;
+  Function(String)? validator;
 
   GetTextFormField({
     this.controller,
@@ -22,6 +23,7 @@ class GetTextFormField extends StatefulWidget {
     this.isObscureText = false,
     this.inputType = TextInputType.text,
     this.onChangeText,
+    this.validator,
   });
 
   @override

@@ -55,7 +55,9 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
     String phoneNumber = _phoneController.text.trim();
 
     /// Do update functionality here
-    print('Update button clicked');
+    if (kDebugMode) {
+      print('Update button clicked');
+    }
   }
 
   @override

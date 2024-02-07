@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -234,7 +235,9 @@ class ProfileProvider extends ChangeNotifier {
         );
 
         if (response.statusCode == 200) {
-          print("res pro: "+ response.body.toString());
+          if (kDebugMode) {
+            print("res pro: "+ response.body.toString());
+          }
           file.writeAsStringSync(response.body,
               flush: true, mode: FileMode.write);
           final jsonData = jsonDecode(response.body);
@@ -272,7 +275,9 @@ class ProfileProvider extends ChangeNotifier {
           notifyListeners();
         }
       } catch (e) {
-        print("error catch: "+e.toString());
+        if (kDebugMode) {
+          print("error catch: "+e.toString());
+        }
       }
     }
     else {
@@ -288,7 +293,9 @@ class ProfileProvider extends ChangeNotifier {
         );
 
         if (response.statusCode == 200) {
-          print("res pro: "+ response.body.toString());
+          if (kDebugMode) {
+            print("res pro: "+ response.body.toString());
+          }
           file.writeAsStringSync(response.body,
               flush: true, mode: FileMode.write);
           final jsonData = jsonDecode(response.body);
@@ -337,7 +344,9 @@ class ProfileProvider extends ChangeNotifier {
           );
         }
       } catch (e) {
-        print("error catch: "+e.toString());
+        if (kDebugMode) {
+          print("error catch: "+e.toString());
+        }
       }
     }
   }

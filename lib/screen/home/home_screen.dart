@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:employe_management_system/Model/address_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
@@ -60,12 +61,16 @@ class _HomeScreenState extends State<HomeScreen> {
     ).listen((Position position) async {
       if (await _isInsideGeofence(position)) {
         firstEntryTime = DateTime.now();
-        print('First entry time: $firstEntryTime');
+        if (kDebugMode) {
+          print('First entry time: $firstEntryTime');
+        }
         /// need to implement background notification for area area arrival
         //_storeAttendance(position, 'checked_in');
       } else {
         lastCheckoutTime = DateTime.now();
-        print('Last checkout time: $lastCheckoutTime');
+        if (kDebugMode) {
+          print('Last checkout time: $lastCheckoutTime');
+        }
         /// need to implement background notification for area area leave
         //_storeAttendance(position, 'checked_out');
       }
@@ -80,7 +85,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Format date as "01/01/2024, Monday"
     currentDate = DateFormat('MM/dd/yyyy, EEEE').format(now);
+    setState(() {
 
+    });
     // // Determine the greeting based on the time
     // if (now.isBefore(DateTime(now.year, now.month, now.day, 12, 0))) {
     //   greeting = 'Good morning, \r\nMark your Attendance time.';
@@ -108,7 +115,9 @@ class _HomeScreenState extends State<HomeScreen> {
       geofenceCenterLatitude,
       geofenceCenterLongitude,
     );
-    print('distance: '+ distance.toString());
+    if (kDebugMode) {
+      print('distance: '+ distance.toString());
+    }
     return distance <= geofenceRadius;
   }
 

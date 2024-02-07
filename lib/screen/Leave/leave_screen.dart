@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../utill/color_resources.dart';
 
@@ -149,9 +150,11 @@ class _LeaveScreenState extends State<LeaveScreen> {
                     Navigator.pop(context);
                     final ImagePicker picker = ImagePicker();
                     final XFile? image = await picker.pickImage(source: ImageSource.camera);
-                    print('file Name: '+ image!.name.toString());
+                    if (kDebugMode) {
+                      print('file Name: '+ image!.name.toString());
+                    }
                     setState(() {
-                      fileName = image.name.toString();
+                      fileName = image!.name.toString();
                     });
                   },
                   child: Column(
@@ -168,9 +171,11 @@ class _LeaveScreenState extends State<LeaveScreen> {
                     Navigator.pop(context);
                     final ImagePicker picker = ImagePicker();
                     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-                    print('file Name: '+ image!.name.toString());
+                    if (kDebugMode) {
+                      print('file Name: '+ image!.name.toString());
+                    }
                     setState(() {
-                      fileName = image.name.toString();
+                      fileName = image!.name.toString();
                     });
                   },
                   child: Column(

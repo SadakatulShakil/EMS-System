@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -62,9 +63,13 @@ class DatabaseHelper {
         conflictAlgorithm: ConflictAlgorithm.replace,
 
       );
-      print('data inserted succesfully !');
+      if (kDebugMode) {
+        print('data inserted succesfully !');
+      }
     }catch(e){
-      print('insert: '+e.toString());
+      if (kDebugMode) {
+        print('insert: '+e.toString());
+      }
     }
   }
 

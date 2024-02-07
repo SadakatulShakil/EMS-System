@@ -21,24 +21,17 @@ class _SplashScreenState extends State<SplashScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool isDomainVerified = prefs.getBool('isDomainVerified') ?? false;
     sessionProvider.getUser().then((value) async{
-      if(isDomainVerified){
-        if (value.authToken == '' || value.authToken == 'null') {
-          await Future.delayed(const Duration(seconds: 3));
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => MainLoginPage()),
-          );
-        }else{
-          sessionProvider.userToken = value.authToken;
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => DashBoardScreen()),
-          );
-        }
-      }else{
+      if (value.authToken == '' || value.authToken == 'null') {
+        await Future.delayed(const Duration(seconds: 3));
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => LoginScreen()),
+        );
+      }else{
+        sessionProvider.userToken = value.authToken;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => DashBoardScreen()),
         );
       }
     });
@@ -47,11 +40,11 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    //_doSessionTask();
-    Future.delayed(const Duration(seconds: 3)).then((value) => Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginScreen()),
-    ));
+    _doSessionTask();
+    // Future.delayed(const Duration(seconds: 3)).then((value) => Navigator.pushReplacement(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => LoginScreen()),
+    // ));
   }
 
   @override

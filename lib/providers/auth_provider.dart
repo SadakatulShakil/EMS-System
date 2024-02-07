@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../Model/auth_model.dart';
@@ -22,9 +23,10 @@ class AuthProvider extends ChangeNotifier {
         url,
         headers: {
           'Content-Type': 'application/json',
+          "Accept" : "application/json"
         },
         body: json.encode({
-          'username': username,
+          'email': username,
           'password': password,
         }),
       );
@@ -32,12 +34,16 @@ class AuthProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         return AuthModel.fromJson(jsonDecode(response.body));
       } else {
-        print("res: "+ response.statusCode.toString());
+        if (kDebugMode) {
+          print("res: "+ response.statusCode.toString());
+          print("res: "+ response.body.toString());
+        }
         //throw Exception('Failed to authenticate');
-        if(response.statusCode == 401){
+        if(response.statusCode == 422){
+          String responseData = response.body.toString();
           Get.snackbar(
             'Warning',
-            'User id or Password is incorrect !',
+            responseData[0].toString(),
             snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.redAccent,
             colorText: Colors.white,
