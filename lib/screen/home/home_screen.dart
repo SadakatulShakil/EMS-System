@@ -1,13 +1,18 @@
 import 'dart:async';
 
 import 'package:employe_management_system/Model/address_model.dart';
+import 'package:employe_management_system/screen/login/login_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../LocalDatabase/database_helper.dart';
+import '../../Model/auth_model.dart';
+import '../../Model/profile_model.dart';
 import '../../providers/attendence_provider.dart';
+import '../../providers/auth_session_provider.dart';
+import '../../providers/profile_provider.dart';
 import '../../utill/color_resources.dart';
 
 import 'package:flutter/services.dart';
@@ -45,11 +50,26 @@ class _HomeScreenState extends State<HomeScreen> {
     _updateDateTime();
     //get current entry status
     //_getCurrentAttendanceData();
-
+    getProfileData();
     // Start a periodic timer to update every minute
     Timer.periodic(Duration(seconds: 50), (timer) {
       _updateDateTime();
     });
+  }
+
+  Future<void> getProfileData() async {
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    String? token = sp.getString("tokenId");
+    print('hgvf: '+token!);
+    try {
+      profileProvider.fetchProfile(token: token);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching profile: $e');
+      }
+      throw e;
+    }
   }
 
   Future<void> _startLocationTracking() async {
@@ -269,8 +289,10 @@ class _HomeScreenState extends State<HomeScreen> {
         Provider.of<AttendanceProvider>(context, listen: false).autoResetData();
       });
     });
+    final profileProvider = Provider.of<ProfileProvider>(context);
+    final profileData = profileProvider.userData;
     return Scaffold(
-        body: SingleChildScrollView(
+        body: profileData != null?SingleChildScrollView(
           child: Column(
             children: [
               SizedBox(height: 50,),
@@ -284,16 +306,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Hey, Haasan Masud!', style: TextStyle(
+                          Text(profileData.data.name != ''?profileData.data.name:'name of user', style: TextStyle(
                               fontSize: 25 / MediaQuery.textScaleFactorOf(context), fontWeight: FontWeight.w600),maxLines: 1,overflow: TextOverflow.ellipsis,),
                           SizedBox(height: 10,),
-                          Text('Senior Software Engineer', style: TextStyle(
+                          Text(profileData.data.designation != ''?profileData.data.designation:'Senior Software Engineer', style: TextStyle(
                               fontSize: 15 / MediaQuery.textScaleFactorOf(context), color: Colors.grey[600]),),
                         ],
                       ),
                     ),
                     CircleAvatar(
-                      backgroundImage: AssetImage('assets/images/user.png',), 
+                      backgroundImage: AssetImage(profileData.data.photo != ''?profileData.data.photo:'assets/images/user.png',),
                       radius: 30,
                     )
                   ],
@@ -314,50 +336,50 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: MediaQuery.of(context).size.width*.4,
                       child: Card(
                           child: Column(
-                        children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width,
-                            color: accent,
-                              child: Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: Align(
-                                  alignment: Alignment.center,
-                                    child: Text('Attendance', style: TextStyle(fontSize: 18, color: Colors.white),)),
-                              )),
-                          SizedBox(height: 8,),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 5),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('Working day: ',style: TextStyle(color: Colors.blueAccent)),
-                                Text('25',style: TextStyle(color: Colors.blueAccent)),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 5),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('On time: ',style: TextStyle(color: Colors.green)),
-                                Text('20',style: TextStyle(color: Colors.green)),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 5),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('Late entry: ', style: TextStyle(color: Colors.redAccent),),
-                                Text('5', style: TextStyle(color: Colors.redAccent)),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 8,),
-                        ],
-                      )),
+                            children: [
+                              Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  color: accent,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: Align(
+                                        alignment: Alignment.center,
+                                        child: Text('Attendance', style: TextStyle(fontSize: 18, color: Colors.white),)),
+                                  )),
+                              SizedBox(height: 8,),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 5),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text('Working day: ',style: TextStyle(color: Colors.blueAccent)),
+                                    Text('25',style: TextStyle(color: Colors.blueAccent)),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 5),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text('On time: ',style: TextStyle(color: Colors.green)),
+                                    Text('20',style: TextStyle(color: Colors.green)),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 5),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text('Late entry: ', style: TextStyle(color: Colors.redAccent),),
+                                    Text('5', style: TextStyle(color: Colors.redAccent)),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 8,),
+                            ],
+                          )),
                     ),
                   ),
                   Padding(
@@ -431,32 +453,32 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Stack(
                         alignment: Alignment.center,
                         children:[
-                      Image.asset('assets/images/button.png', height: 200, width: 200,),
-                      Positioned(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Consumer<AttendanceProvider>(
-                              builder: (context, provider, child) {
-                                return Image.asset(provider.checkInTime.isEmpty
-                                    ? Images.checkin : provider.checkOutTime.isEmpty
-                                    ? Images.checkout: Images.total);
-                              },
+                          Image.asset('assets/images/button.png', height: 200, width: 200,),
+                          Positioned(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Consumer<AttendanceProvider>(
+                                  builder: (context, provider, child) {
+                                    return Image.asset(provider.checkInTime.isEmpty
+                                        ? Images.checkin : provider.checkOutTime.isEmpty
+                                        ? Images.checkout: Images.total);
+                                  },
+                                ),
+                                SizedBox(height: 8,),
+                                Consumer<AttendanceProvider>(
+                                  builder: (context, provider, child) {
+                                    return Text(provider.checkInTime.isEmpty
+                                        ? 'Check In' : provider.checkOutTime.isEmpty
+                                        ? 'Check Out': 'Done',
+                                      style: TextStyle(color: Colors.green[900], fontWeight: FontWeight.bold),);
+                                  },
+                                ),
+                              ],
                             ),
-                            SizedBox(height: 8,),
-                            Consumer<AttendanceProvider>(
-                              builder: (context, provider, child) {
-                                return Text(provider.checkInTime.isEmpty
-                                    ? 'Check In' : provider.checkOutTime.isEmpty
-                                    ? 'Check Out': 'Done',
-                                  style: TextStyle(color: Colors.green[900], fontWeight: FontWeight.bold),);
-                              },
-                            ),
-                          ],
-                        ),
-                      )
-                    ] )
+                          )
+                        ] )
                 ),
               ),
               SizedBox(height: 20,),
@@ -521,7 +543,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-        ));
+        ):Center(child: CircularProgressIndicator(),));
   }
 }
 

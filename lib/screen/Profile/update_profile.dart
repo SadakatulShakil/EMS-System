@@ -4,8 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:provider/provider.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/auth_session_provider.dart';
+import '../../providers/profile_provider.dart';
 import '../../utill/stored_images.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class ProfileUpdateScreen extends StatefulWidget {
@@ -21,17 +25,20 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _phoneFocus = FocusNode();
   final FocusNode _addressFocus = FocusNode();
-  final FocusNode _bloodGroupFocus = FocusNode();
+  final FocusNode _departmentNameFocus = FocusNode();
+  final FocusNode _designationFocus = FocusNode();
 
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _bloodGroupController = TextEditingController();
+  final TextEditingController _departmentNameController = TextEditingController();
+  final TextEditingController _designationController = TextEditingController();
   String? selectedBloodType;
   List<String> bloodGroups = ['', 'A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
   File? file;
+  String path ='';
   final picker = ImagePicker();
   final GlobalKey<ScaffoldMessengerState> _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
 
@@ -40,6 +47,7 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
     setState(() {
       if (pickedFile != null) {
         file = File(pickedFile.path);
+        path = pickedFile.path;
       } else {
         if (kDebugMode) {
           print('No image selected.');
@@ -49,12 +57,16 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
   }
 
   _updateUserAccount() async {
-    String firstName = _firstNameController.text.trim();
-    String lastName = _lastNameController.text.trim();
-    String email = _emailController.text.trim();
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    String fName = _firstNameController.text.trim();
+    String lName = _lastNameController.text.trim();
     String phoneNumber = _phoneController.text.trim();
+    String address = _addressController.text.trim();
 
     /// Do update functionality here
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    String? token = sp.getString("tokenId");
+    profileProvider.updateProfile(token??'', fName, lName, phoneNumber, address, file);
     if (kDebugMode) {
       print('Update button clicked');
     }
@@ -62,14 +74,17 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _firstNameController.text = 'Mr. Haasan Masud';
-    _lastNameController.text = 'Developer';
-    _emailController.text = 'haasanmasud@company.com';
-    _phoneController.text = '01751330394';
-
+    final profileProvider = Provider.of<ProfileProvider>(context);
+    final profileData = profileProvider.userData;
+    _firstNameController.text = profileData!.data.name;
+    _emailController.text = profileData.data.email;
+    _phoneController.text = profileData.data.phone;
+    _departmentNameController.text = profileData.data.department;
+    _designationController.text = profileData.data.designation;
+    _addressController.text = profileData.data.address;
     return Scaffold(
       key: _scaffoldKey,
-      body: Stack(
+      body:Stack(
         clipBehavior: Clip.none,
         children: [
           Padding(
@@ -150,7 +165,7 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                       ),
                     ),
                     Text(
-                      'Mr. Haasan Masud',
+                      profileData.data.name != ''?profileData.data.name:'Mr. Haasan Masud',
                       style: TextStyle(color: Colors.white, fontSize: 20.0),
                     )
                   ],
@@ -176,7 +191,7 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                                 children: [
                                   Icon(Icons.person, color: Colors.red, size: 20),
                                   const SizedBox(width: 5),
-                                  Text('Name'),
+                                  Text('First Name'),
                                 ],
                               ),
                               const SizedBox(height: 5),
@@ -195,6 +210,38 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                                   border: InputBorder.none, // Remove underline
                                 ),
                                 controller: _firstNameController,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          margin: const EdgeInsets.only(left: 10, right: 10),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(Icons.person, color: Colors.red, size: 20),
+                                  const SizedBox(width: 5),
+                                  Text('Last Name'),
+                                ],
+                              ),
+                              const SizedBox(height: 5),
+                              TextField(
+                                textInputAction: TextInputAction.next,
+                                keyboardType: TextInputType.name,
+                                focusNode: _lNameFocus,
+                                onSubmitted: (term) {
+                                  _lNameFocus.unfocus();
+                                  FocusScope.of(context).requestFocus(_phoneFocus);
+                                },
+                                decoration: InputDecoration(
+                                  hintText: 'Enter last name',
+                                  fillColor: Colors.green[50],
+                                  filled: true,
+                                  border: InputBorder.none, // Remove underline
+                                ),
+                                controller: _lastNameController,
                               ),
                             ],
                           ),
@@ -273,24 +320,26 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                                 children: [
                                   Icon(Icons.location_history_outlined, color: Colors.red, size: 20),
                                   const SizedBox(width: 5),
-                                  Text('Current Address'),
+                                  Text('Department'),
                                 ],
                               ),
                               const SizedBox(height: 5),
                               TextField(
                                 textInputAction: TextInputAction.done,
                                 keyboardType: TextInputType.text,
-                                focusNode: _addressFocus,
+                                focusNode: _departmentNameFocus,
                                 onSubmitted: (term) {
-                                  _addressFocus.unfocus();
+                                  _departmentNameFocus.unfocus();
+                                  FocusScope.of(context).requestFocus(_designationFocus);
                                 },
                                 decoration: InputDecoration(
                                   hintText: 'Enter address',
                                   fillColor: Colors.green[50],
                                   filled: true,
+                                    enabled: false,
                                     border: InputBorder.none
                                 ),
-                                controller: _addressController,
+                                controller: _departmentNameController,
                               ),
                             ],
                           ),
@@ -304,7 +353,40 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                                 children: [
                                   Icon(Icons.location_history_outlined, color: Colors.red, size: 20),
                                   const SizedBox(width: 5),
-                                  Text('Parmanent Address'),
+                                  Text('Designation'),
+                                ],
+                              ),
+                              const SizedBox(height: 5),
+                              TextField(
+                                textInputAction: TextInputAction.done,
+                                keyboardType: TextInputType.text,
+                                focusNode: _designationFocus,
+                                onSubmitted: (term) {
+                                  _designationFocus.unfocus();
+                                },
+                                decoration: InputDecoration(
+                                    hintText: 'Enter Designation',
+                                    fillColor: Colors.green[50],
+                                    filled: true,
+                                    enabled: false,
+                                    border: InputBorder.none
+                                ),
+                                controller: _designationController,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+
+                        Container(
+                          margin: const EdgeInsets.only(left: 10, right: 10),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(Icons.location_history_outlined, color: Colors.red, size: 20),
+                                  const SizedBox(width: 5),
+                                  Text('Address'),
                                 ],
                               ),
                               const SizedBox(height: 5),
@@ -327,45 +409,6 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        // Container(
-                        //   margin: const EdgeInsets.only(left: 10, right: 10),
-                        //   child: Column(
-                        //     children: [
-                        //       Row(
-                        //         children: [
-                        //           Icon(Icons.location_on, color: Colors.red, size: 20),
-                        //           const SizedBox(width: 5),
-                        //           Text('Blood Group'),
-                        //         ],
-                        //       ),
-                        //       const SizedBox(height: 5),
-                        //       DropdownButtonFormField<String>(
-                        //         value: selectedBloodType,
-                        //         onChanged: (String? newValue) {
-                        //           setState(() {
-                        //             selectedBloodType = newValue;
-                        //           });
-                        //         },
-                        //         items: bloodGroups.map((String group) {
-                        //           return DropdownMenuItem<String>(
-                        //             value: group,
-                        //             child: Text(
-                        //               group.isEmpty ? 'Select blood group' : group,
-                        //               style: TextStyle(fontSize: 16),
-                        //             ),
-                        //           );
-                        //         }).toList(),
-                        //         decoration: InputDecoration(
-                        //           hintText: 'Select blood group',
-                        //           fillColor: Colors.green[50],
-                        //           filled: true,
-                        //             border: InputBorder.none
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
-                        // const SizedBox(height: 10),
                         Container(
                           margin: const EdgeInsets.all(10),
                           child: ElevatedButton(
@@ -389,7 +432,7 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
             ),
           ),
         ],
-      ),
+      )
     );
   }
 }

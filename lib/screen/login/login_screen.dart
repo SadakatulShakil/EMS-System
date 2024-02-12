@@ -10,6 +10,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/auth_session_provider.dart';
 import '../../utill/color_resources.dart';
 import '../home/dashboard_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -58,11 +59,13 @@ class _LoginScreenState extends State<LoginScreen> {
           username: username, password: password);
 
       if (authResponse.status == 'SUCCESS') {
+        SharedPreferences sp = await SharedPreferences.getInstance();
+        sp.setString('tokenId', authResponse.data.token.toString());
         AuthSessionModel authSessionModel = AuthSessionModel(
-            authToken: authResponse.data.token.toString(),
-            userAccountType: authResponse.data.user.name);
+            authToken: authResponse.data.token.toString());
         sessionProvider.saveLoginSession();
         sessionProvider.saveUser(authSessionModel, authResponse.data.expiry);
+        sessionProvider.setAuthData(authResponse);
         Get.snackbar(
           'Success',
           'Logged in Successfully !',
