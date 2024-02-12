@@ -121,7 +121,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Text('Phone: '),
                   Flexible(
                     child: Text(
-                      '+8801751330394',
+                      profileData.data.phone != ''
+                          ? profileData.data.phone
+                          : '01751330394',
                       textAlign: TextAlign.end,
                     ),
                   )
@@ -136,7 +138,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Text('Address: '),
                   Flexible(
                     child: Text(
-                      'Level 4 House, 73 Rd No 13A, Dhaka 1213',
+                      profileData.data.address != ''
+                          ? profileData.data.address
+                          : 'Dhaka, Bangladesh',
                       textAlign: TextAlign.end,
                     ),
                   )

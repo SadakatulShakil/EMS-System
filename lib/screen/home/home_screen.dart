@@ -149,6 +149,66 @@ class _HomeScreenState extends State<HomeScreen> {
     double hours = difference.inMinutes / 60.0;
     return hours;
   }
+  void showLateEntryDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: MediaQuery.of(context).size.height/3,
+          child: AlertDialog(
+            title: Text('Late Entry Validation', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
+            content: TextField(
+              autofocus: true,
+              decoration: InputDecoration(
+                  labelText: 'Reason',
+                hintText: 'Reason for being late'
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Submit'),
+                onPressed: () {
+                  Provider.of<AttendanceProvider>(context, listen: false).toggleCheckInOut();
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+  void showEarlyExitDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: MediaQuery.of(context).size.height/3,
+          child: AlertDialog(
+            title: Text('Early Exit Validation', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
+            content: TextField(
+              autofocus: true,
+              decoration: InputDecoration(
+                  labelText: 'Reason',
+                  hintText: 'Reason for being early'
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Submit'),
+                onPressed: () {
+                  Provider.of<AttendanceProvider>(context, listen: false).toggleCheckInOut();
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+
 
   // Future<void> initPlatformState() async {
   //   // Configure BackgroundFetch.
@@ -315,7 +375,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     CircleAvatar(
-                      backgroundImage: AssetImage(profileData.data.photo != ''?profileData.data.photo:'assets/images/user.png',),
+                      backgroundImage: NetworkImage(profileData.data.photo !=''?profileData.data.photo:'https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg'),
                       radius: 30,
                     )
                   ],
@@ -353,7 +413,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text('Working day: ',style: TextStyle(color: Colors.blueAccent)),
-                                    Text('25',style: TextStyle(color: Colors.blueAccent)),
+                                    Text(profileData.data.attendance.workingDays.toString() != ''?profileData.data.attendance.workingDays.toString():'N/A',style: TextStyle(color: Colors.blueAccent)),
                                   ],
                                 ),
                               ),
@@ -363,7 +423,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text('On time: ',style: TextStyle(color: Colors.green)),
-                                    Text('20',style: TextStyle(color: Colors.green)),
+                                    Text(profileData.data.attendance.onTime.toString() != ''?profileData.data.attendance.onTime.toString():'N/A',style: TextStyle(color: Colors.green)),
                                   ],
                                 ),
                               ),
@@ -373,7 +433,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text('Late entry: ', style: TextStyle(color: Colors.redAccent),),
-                                    Text('5', style: TextStyle(color: Colors.redAccent)),
+                                    Text(profileData.data.attendance.lateTime.toString() != ''?profileData.data.attendance.lateTime.toString():'N/A', style: TextStyle(color: Colors.redAccent)),
                                   ],
                                 ),
                               ),
@@ -405,7 +465,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text('Total Leave: ',style: TextStyle(color: Colors.blueAccent)),
-                                    Text('25',style: TextStyle(color: Colors.blueAccent)),
+                                    Text(profileData.data.leave.total.toString() != ''?profileData.data.leave.total.toString():'N/A',style: TextStyle(color: Colors.blueAccent)),
                                   ],
                                 ),
                               ),
@@ -415,7 +475,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text('Leave Use: ',style: TextStyle(color: Colors.green)),
-                                    Text('12',style: TextStyle(color: Colors.green)),
+                                    Text(profileData.data.leave.used.toString() != ''?profileData.data.leave.used.toString():'N/A',style: TextStyle(color: Colors.green)),
                                   ],
                                 ),
                               ),
@@ -425,7 +485,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text('Remaining: ', style: TextStyle(color: Colors.redAccent),),
-                                    Text('13', style: TextStyle(color: Colors.redAccent)),
+                                    Text((profileData.data.leave.total-profileData.data.leave.used).toString(), style: TextStyle(color: Colors.redAccent)),
                                   ],
                                 ),
                               ),
@@ -439,8 +499,21 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 20,),
               GestureDetector(
                 onTap: (){
-                  Provider.of<AttendanceProvider>(context, listen: false)
-                      .toggleCheckInOut();
+                  final int entryHour = 9; // 9 AM
+                  final int exitHour = 9; // 9 AM
+                  DateTime now = DateTime.now();
+                  DateTime entryTime = DateTime(now.year, now.month, now.day, entryHour);
+                  DateTime exitTime = DateTime(now.year, now.month, now.day, exitHour);
+
+                  bool isAfterEntryTime = now.isAfter(entryTime);
+                  bool isBeforeExitTime = now.isBefore(exitTime);
+                  if(Provider.of<AttendanceProvider>(context, listen: false).checkInTime == '' && isAfterEntryTime){
+                    showLateEntryDialog();
+                  }else if(Provider.of<AttendanceProvider>(context, listen: false).checkInTime != '' && isBeforeExitTime){
+                    showEarlyExitDialog();
+                  }else{
+                    Provider.of<AttendanceProvider>(context, listen: false).toggleCheckInOut();
+                  }
                 },
                 child: Container(
                     height: 170, width:170,
