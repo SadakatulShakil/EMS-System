@@ -1,12 +1,9 @@
-import 'dart:convert';
-
 import 'package:employe_management_system/Model/auth_model.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/cupertino.dart';
 
 import '../Model/auth_session_model.dart';
-import '../screen/login/widget/main_login_widget.dart';
 
 class AuthSessionProvider with ChangeNotifier{
 

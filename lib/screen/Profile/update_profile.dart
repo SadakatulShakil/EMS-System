@@ -76,7 +76,8 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<ProfileProvider>(context);
     final profileData = profileProvider.userData;
-    _firstNameController.text = profileData!.data.name;
+    _firstNameController.text = profileData!.data.firstName;
+    _lastNameController.text = profileData.data.lastName;
     _emailController.text = profileData.data.email;
     _phoneController.text = profileData.data.phone;
     _departmentNameController.text = profileData.data.department;
@@ -165,7 +166,7 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                       ),
                     ),
                     Text(
-                      profileData.data.name != ''?profileData.data.name:'Mr. Haasan Masud',
+                      profileData.data.firstName != ''?'${profileData.data.firstName} ${profileData.data.lastName}':'Mr. Haasan Masud',
                       style: TextStyle(color: Colors.white, fontSize: 20.0),
                     )
                   ],

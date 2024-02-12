@@ -1,24 +1,18 @@
 import 'dart:async';
 
-import 'package:employe_management_system/Model/address_model.dart';
-import 'package:employe_management_system/screen/login/login_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../LocalDatabase/database_helper.dart';
-import '../../Model/auth_model.dart';
-import '../../Model/profile_model.dart';
+
 import '../../providers/attendence_provider.dart';
-import '../../providers/auth_session_provider.dart';
 import '../../providers/profile_provider.dart';
 import '../../utill/color_resources.dart';
-
-import 'package:flutter/services.dart';
-import 'package:background_fetch/background_fetch.dart';
-import 'package:provider/provider.dart';
 import '../../utill/stored_images.dart';
+import 'package:network_info_plus/network_info_plus.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -32,15 +26,14 @@ class _HomeScreenState extends State<HomeScreen> {
   late String greeting;
   String checkIn = '00:00 AM';
   String checkOut = '00:00 AM';
+  String lat = '';
+  String lan = '';
+  String ipv6 = '';
   late DateTime firstEntryTime;
   late DateTime lastCheckoutTime;
   final GeolocatorPlatform geolocator = GeolocatorPlatform.instance;
   final double geofenceRadius = 50.0; // Adjust the geofence radius as needed
-  final String apiUrl = 'YOUR_API_ENDPOINT';
-  bool _enabled = true;
-  int _status = 0;
-  List<DateTime> _events = [];
-
+  final info = NetworkInfo();
   @override
   void initState() {
     // TODO: implement initState
@@ -79,6 +72,11 @@ class _HomeScreenState extends State<HomeScreen> {
         distanceFilter: 10,// Minimum distance for updates (in meters)
       ),
     ).listen((Position position) async {
+      lat = position.latitude.toString();
+      lan = position.longitude.toString();
+      ipv6 = (await info.getWifiIP())!;
+      String wifiname = (await info.getWifiName())!;
+      print('position : $lat....$lan....$ipv6....$wifiname');
       if (await _isInsideGeofence(position)) {
         firstEntryTime = DateTime.now();
         if (kDebugMode) {
@@ -150,6 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return hours;
   }
   void showLateEntryDialog() {
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -366,7 +365,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(profileData.data.name != ''?profileData.data.name:'name of user', style: TextStyle(
+                          Text(profileData.data.firstName != ''?'${profileData.data.firstName} ${profileData.data.lastName}':'name of user', style: TextStyle(
                               fontSize: 25 / MediaQuery.textScaleFactorOf(context), fontWeight: FontWeight.w600),maxLines: 1,overflow: TextOverflow.ellipsis,),
                           SizedBox(height: 10,),
                           Text(profileData.data.designation != ''?profileData.data.designation:'Senior Software Engineer', style: TextStyle(
@@ -499,11 +498,9 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 20,),
               GestureDetector(
                 onTap: (){
-                  final int entryHour = 9; // 9 AM
-                  final int exitHour = 9; // 9 AM
                   DateTime now = DateTime.now();
-                  DateTime entryTime = DateTime(now.year, now.month, now.day, entryHour);
-                  DateTime exitTime = DateTime(now.year, now.month, now.day, exitHour);
+                  DateTime entryTime = DateFormat.jm().parse(profileData.data.settings.office.startTime);
+                  DateTime exitTime = DateFormat.jm().parse(profileData.data.settings.office.endTime);
 
                   bool isAfterEntryTime = now.isAfter(entryTime);
                   bool isBeforeExitTime = now.isBefore(exitTime);
@@ -616,7 +613,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-        ):Center(child: CircularProgressIndicator(),));
+        ):Center(child: LoadingAnimationWidget.threeRotatingDots(
+          color: Colors.green,
+          size: 30,
+        ),));
   }
 }
 

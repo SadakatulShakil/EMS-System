@@ -31,7 +31,8 @@ class ProfileModel {
 
 class Data {
   final String uuid;
-  final String name;
+  final String firstName;
+  final String lastName;
   final String email;
   final String phone;
   final String address;
@@ -44,7 +45,8 @@ class Data {
 
   Data({
     required this.uuid,
-    required this.name,
+    required this.firstName,
+    required this.lastName,
     required this.email,
     required this.phone,
     required this.address,
@@ -58,7 +60,8 @@ class Data {
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
     uuid: json["uuid"],
-    name: json["name"],
+    firstName: json["first_name"],
+    lastName: json["last_name"],
     email: json["email"],
     phone: json["phone"],
     address: json["address"],
@@ -72,7 +75,8 @@ class Data {
 
   Map<String, dynamic> toJson() => {
     "uuid": uuid,
-    "name": name,
+    "first_name": firstName,
+    "last_name": lastName,
     "email": email,
     "phone": phone,
     "address": address,
@@ -146,8 +150,8 @@ class Settings {
 }
 
 class Office {
-  final int startTime;
-  final int endTime;
+  final String startTime;
+  final String endTime;
 
   Office({
     required this.startTime,

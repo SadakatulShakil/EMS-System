@@ -1,15 +1,14 @@
 import 'package:employe_management_system/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../Model/profile_model.dart';
-import '../../providers/profile_provider.dart';
+
 import '../../providers/auth_session_provider.dart';
+import '../../providers/profile_provider.dart';
+import '../Profile/update_profile.dart';
 import '../login/login_screen.dart';
 import '../report/report_page.dart';
-import '../Profile/update_profile.dart';
 
 class ProfileScreen extends StatefulWidget {
   final bool backExits;
@@ -36,11 +35,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Align(
               alignment: Alignment.center,
               child: CircleAvatar(
-                backgroundImage: AssetImage(
-                  profileData.data.photo != ''
-                      ? profileData.data.photo
-                      : 'assets/images/user.png',
-                ),
+                backgroundImage: NetworkImage(profileData.data.photo !=''?profileData.data.photo:'https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg'),
                 radius: 60,
               ),
             ),
@@ -48,8 +43,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Align(
               alignment: Alignment.center,
               child: Text(
-                profileData.data.name != ''
-                    ? profileData.data.name
+                profileData.data.firstName != ''
+                    ? '${profileData.data.firstName} ${profileData.data.lastName}'
                     : 'Mr. Haasan Masud',
                 style: TextStyle(
                   fontSize: 28,
@@ -330,7 +325,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       )
-          : Center(child: CircularProgressIndicator()),
+          : Center(child: LoadingAnimationWidget.threeRotatingDots(
+        color: Colors.green,
+        size: 30,
+      )),
     );
   }
 }
