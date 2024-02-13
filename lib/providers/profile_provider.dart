@@ -9,6 +9,7 @@ import '../utill/app_constant.dart';
 
 class ProfileProvider with ChangeNotifier {
   ProfileModel? _userData;
+  bool isLoading = false;
 
   ProfileModel? get userData => _userData;
 
@@ -70,7 +71,7 @@ class ProfileProvider with ChangeNotifier {
   }
 
   Future<void> updateProfile(String token, String firstName, String lastName, String phone, String address, File? photo) async {
-
+    isLoading = true;
     Map<String, String> headers = {
       HttpHeaders.authorizationHeader: 'Bearer $token',
       HttpHeaders.contentTypeHeader: 'application/json',
@@ -93,6 +94,7 @@ class ProfileProvider with ChangeNotifier {
     var response = await request.send();
 
     if (response.statusCode == 200) {
+      isLoading = false;
       var responseJson = await response.stream.bytesToString();
       final profileData = ProfileModel.fromJson(jsonDecode(responseJson));
       setUserData(profileData); // Update user data
@@ -101,9 +103,42 @@ class ProfileProvider with ChangeNotifier {
       notifyListeners();
       print('Profile updated successfully');
     } else {
-      // Failed to update profile
-      // You can handle error scenario here, such as showing an error message
-      print('Failed to update profile');
+      isLoading = false;
+      if (kDebugMode) {
+        print("res: " + response.statusCode.toString());
+      }
+      if (response.statusCode == 422) {
+        isLoading = false;
+        var responseJson = await response.stream.bytesToString();
+        final profileData = ProfileModel.fromJson(jsonDecode(responseJson));
+        Get.snackbar(
+          'Warning',
+          profileData.message,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+          borderRadius: 10,
+          margin: EdgeInsets.all(10),
+        );
+      } else if (response.statusCode == 500) {
+        isLoading = false;
+        var responseJson = await response.stream.bytesToString();
+        final profileData = ProfileModel.fromJson(jsonDecode(responseJson));
+        Get.snackbar(
+          'Warning',
+          profileData.message,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+          borderRadius: 10,
+          margin: EdgeInsets.all(10),
+        );
+      }else{
+        isLoading = false;
+        print("res222: " + response.statusCode.toString());
+      }
+      notifyListeners();
+      return null; // Add a return statement
     }
   }
 

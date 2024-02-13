@@ -1,16 +1,15 @@
 import 'package:employe_management_system/screen/login/widget/text_from_field.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:get/get.dart';
-import '../../Model/auth_session_model.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../providers/auth_provider.dart';
-import '../../providers/auth_session_provider.dart';
 import '../../utill/color_resources.dart';
 import '../home/dashboard_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -48,8 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
     print('input data: ' + username + "...." + password);
     final authenticationProvider =
     Provider.of<AuthProvider>(context, listen: false);
-    final sessionProvider =
-    Provider.of<AuthSessionProvider>(context, listen: false);
+    //final sessionProvider = Provider.of<AuthSessionProvider>(context, listen: false);
 
     authenticationProvider.updateDataLoadingIndicator(true);
 
@@ -60,11 +58,14 @@ class _LoginScreenState extends State<LoginScreen> {
       if (authResponse.status == 'SUCCESS') {
         SharedPreferences sp = await SharedPreferences.getInstance();
         sp.setString('tokenId', authResponse.data.token.toString());
-        AuthSessionModel authSessionModel = AuthSessionModel(
-            authToken: authResponse.data.token.toString());
-        sessionProvider.saveLoginSession();
-        sessionProvider.saveUser(authSessionModel, authResponse.data.expiry);
-        sessionProvider.setAuthData(authResponse);
+        final currentTime = DateTime.now();
+        final expirationTime = currentTime.add(Duration(hours: authResponse.data.expiry));
+        sp.setString('session_expiry', expirationTime.toIso8601String());
+        // AuthSessionModel authSessionModel = AuthSessionModel(
+        //     authToken: authResponse.data.token.toString());
+        // sessionProvider.saveLoginSession();
+        // sessionProvider.saveUser(authSessionModel, authResponse.data.expiry);
+        // sessionProvider.setAuthData(authResponse);
         Get.snackbar(
           'Success',
           'Logged in Successfully !',

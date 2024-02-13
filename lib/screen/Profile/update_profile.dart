@@ -1,16 +1,16 @@
 import 'dart:io';
+
 import 'package:employe_management_system/utill/color_resources.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import '../../providers/auth_provider.dart';
-import '../../providers/auth_session_provider.dart';
-import '../../providers/profile_provider.dart';
-import '../../utill/stored_images.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../providers/profile_provider.dart';
+import '../../utill/stored_images.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class ProfileUpdateScreen extends StatefulWidget {
   const ProfileUpdateScreen({Key? key}) : super(key: key);
@@ -83,7 +83,12 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
     _departmentNameController.text = profileData.data.department;
     _designationController.text = profileData.data.designation;
     _addressController.text = profileData.data.address;
-    return Scaffold(
+    return profileProvider.isLoading?Center(
+      child: LoadingAnimationWidget.threeRotatingDots(
+        color: Colors.green,
+        size: 30,
+      ),
+    ):Scaffold(
       key: _scaffoldKey,
       body:Stack(
         clipBehavior: Clip.none,
@@ -133,21 +138,12 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(50),
-                            child: file == null
-                                ? FadeInImage.assetNetwork(
-                              placeholder: Images.user,
-                              width: 100,
-                              height: 100,
-                              fit: BoxFit.cover,
-                              image: Images.user,
-                              imageErrorBuilder: (c, o, s) => Image.asset(
-                                Images.user,
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
-                              ),
-                            )
-                                : Image.file(file!, width: 100, height: 100, fit: BoxFit.fill),
+                            child:
+                                file != null
+                                ? Image.file(file!, width: 100, height: 100,fit: BoxFit.cover,)
+                                :file == null && profileData.data.photo != ''
+                                ?Image.network(profileData.data.photo, width: 100, height: 100,)
+                                :Image.network('https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg')
                           ),
                           Positioned(
                             bottom: 0,

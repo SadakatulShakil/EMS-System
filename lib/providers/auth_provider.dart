@@ -33,6 +33,7 @@ class AuthProvider extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
+        /// save token and expiry time
         return AuthModel.fromJson(jsonDecode(response.body));
       } else {
         if (kDebugMode) {
@@ -44,7 +45,7 @@ class AuthProvider extends ChangeNotifier {
           String responseData = response.body.toString();
           Get.snackbar(
             'Warning',
-            responseData[0].toString(),
+            'Check the input data format',
             snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.redAccent,
             colorText: Colors.white,

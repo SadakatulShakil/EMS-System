@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:employe_management_system/providers/leave_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -13,7 +14,7 @@ import '../../providers/profile_provider.dart';
 import '../../utill/color_resources.dart';
 import '../../utill/stored_images.dart';
 import 'package:network_info_plus/network_info_plus.dart';
-
+import 'package:get/get.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -29,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String lat = '';
   String lan = '';
   String ipv6 = '';
+  String? token;
   late DateTime firstEntryTime;
   late DateTime lastCheckoutTime;
   final GeolocatorPlatform geolocator = GeolocatorPlatform.instance;
@@ -44,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
     //get current entry status
     //_getCurrentAttendanceData();
     getProfileData();
+    getLeaveData();
     // Start a periodic timer to update every minute
     Timer.periodic(Duration(seconds: 50), (timer) {
       _updateDateTime();
@@ -53,10 +56,24 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> getProfileData() async {
     final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
     SharedPreferences sp = await SharedPreferences.getInstance();
-    String? token = sp.getString("tokenId");
+    token = sp.getString("tokenId");
     print('hgvf: '+token!);
     try {
-      profileProvider.fetchProfile(token: token);
+      profileProvider.fetchProfile(token: token!);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching profile: $e');
+      }
+      throw e;
+    }
+  }
+  Future<void> getLeaveData() async {
+    final leaveProvider = Provider.of<LeaveProvider>(context, listen: false);
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    token = sp.getString("tokenId");
+    print('hgvf: '+token!);
+    try {
+      leaveProvider.fetchLeaveTypes(token: token!);
     } catch (e) {
       if (kDebugMode) {
         print('Error fetching profile: $e');
@@ -148,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return hours;
   }
   void showLateEntryDialog() {
-
+    TextEditingController _entryReasonController = TextEditingController();
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -157,6 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: AlertDialog(
             title: Text('Late Entry Validation', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
             content: TextField(
+              controller: _entryReasonController,
               autofocus: true,
               decoration: InputDecoration(
                   labelText: 'Reason',
@@ -167,7 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
               TextButton(
                 child: Text('Submit'),
                 onPressed: () {
-                  Provider.of<AttendanceProvider>(context, listen: false).toggleCheckInOut();
+                  Provider.of<AttendanceProvider>(context, listen: false).toggleCheckInOut(token, lat, lan, ipv6, _entryReasonController.text);
                   Navigator.of(context).pop();
                 },
               ),
@@ -178,6 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
   void showEarlyExitDialog() {
+    TextEditingController _exitReasonController = TextEditingController();
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -187,6 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
             title: Text('Early Exit Validation', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
             content: TextField(
               autofocus: true,
+              controller: _exitReasonController,
               decoration: InputDecoration(
                   labelText: 'Reason',
                   hintText: 'Reason for being early'
@@ -196,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
               TextButton(
                 child: Text('Submit'),
                 onPressed: () {
-                  Provider.of<AttendanceProvider>(context, listen: false).toggleCheckInOut();
+                  Provider.of<AttendanceProvider>(context, listen: false).toggleCheckInOut(token, lat, lan, ipv6, _exitReasonController.text);
                   Navigator.of(context).pop();
                 },
               ),
@@ -499,17 +519,28 @@ class _HomeScreenState extends State<HomeScreen> {
               GestureDetector(
                 onTap: (){
                   DateTime now = DateTime.now();
-                  DateTime entryTime = DateFormat.jm().parse(profileData.data.settings.office.startTime);
-                  DateTime exitTime = DateFormat.jm().parse(profileData.data.settings.office.endTime);
+                  DateTime entryTime = DateFormat('hh:mm a').parse(profileData.data.settings.office.startTime);
+                  DateTime exitTime = DateFormat('hh:mm a').parse(profileData.data.settings.office.endTime);
 
                   bool isAfterEntryTime = now.isAfter(entryTime);
                   bool isBeforeExitTime = now.isBefore(exitTime);
                   if(Provider.of<AttendanceProvider>(context, listen: false).checkInTime == '' && isAfterEntryTime){
                     showLateEntryDialog();
-                  }else if(Provider.of<AttendanceProvider>(context, listen: false).checkInTime != '' && isBeforeExitTime){
+                  }else if(Provider.of<AttendanceProvider>(context, listen: false).checkOutTime != '' && isBeforeExitTime){
                     showEarlyExitDialog();
+                  }else if(Provider.of<AttendanceProvider>(context, listen: false).checkInTime != '' &&
+                      Provider.of<AttendanceProvider>(context, listen: false).checkOutTime != ''){
+                    Get.snackbar(
+                      'Warning',
+                      'Already complete attendance',
+                      snackPosition: SnackPosition.TOP,
+                      backgroundColor: Colors.redAccent,
+                      colorText: Colors.white,
+                      borderRadius: 10,
+                      margin: EdgeInsets.all(10),
+                    );
                   }else{
-                    Provider.of<AttendanceProvider>(context, listen: false).toggleCheckInOut();
+                    Provider.of<AttendanceProvider>(context, listen: false).toggleCheckInOut(token, lat, lan, ipv6, 'no need');
                   }
                 },
                 child: Container(

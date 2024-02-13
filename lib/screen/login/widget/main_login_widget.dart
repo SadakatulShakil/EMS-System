@@ -1,14 +1,10 @@
-import 'package:employe_management_system/Model/auth_session_model.dart';
 import 'package:employe_management_system/screen/login/widget/text_from_field.dart';
-import 'package:flutter/foundation.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:flutter/material.dart';
-import '../../../providers/auth_provider.dart';
-import '../../../providers/auth_session_provider.dart';
-import '../../../utill/color_resources.dart';
-import '../../home/dashboard_screen.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:get/get.dart';
+
+import '../../../providers/auth_provider.dart';
+import '../../../utill/color_resources.dart';
 
 class MainLoginPage extends StatefulWidget {
   @override

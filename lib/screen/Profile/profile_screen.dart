@@ -4,7 +4,6 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../providers/auth_session_provider.dart';
 import '../../providers/profile_provider.dart';
 import '../Profile/update_profile.dart';
 import '../login/login_screen.dart';
@@ -23,7 +22,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<ProfileProvider>(context);
-    final sessionProvider = Provider.of<AuthSessionProvider>(context);
+    //final sessionProvider = Provider.of<AuthSessionProvider>(context);
     final authProvider = Provider.of<AuthProvider>(context);
     final profileData = profileProvider.userData;
     return Scaffold(
@@ -284,15 +283,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 final logResponse = authProvider.logout(token: token!);
                 logResponse.then((value)async{
                   if(value.status == 'SUCCESS'){
-                    sessionProvider.userToken = '';
-                    await sessionProvider.remove().then((value) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LoginScreen(),
-                        ),
-                      );
-                    });
+                    SharedPreferences sp = await SharedPreferences.getInstance();
+                    sp.setString('tokenId', '');
+                    sp.setString('session_expiry', '');
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LoginScreen(),
+                      ),
+                    );
                   }
                 });
 
