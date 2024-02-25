@@ -25,8 +25,8 @@ class _HomeScreenState extends State<HomeScreen> {
   late String currentTime;
   late String currentDate;
   late String greeting;
-  String checkIn = '00:00 AM';
-  String checkOut = '00:00 AM';
+  String checkIn = '';
+  String checkOut = '';
   String lat = '';
   String lan = '';
   String ipv6 = '';
@@ -68,6 +68,10 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
   Future<void> getLeaveData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    checkIn = prefs.getString('checkInTime') ?? '';
+    checkOut = prefs.getString('checkOutTime') ?? '';
+    print('kkkkk: '+ checkIn+'....'+checkOut+'...'+Provider.of<AttendanceProvider>(context, listen: false).checkInTime.toString());
     final leaveProvider = Provider.of<LeaveProvider>(context, listen: false);
     SharedPreferences sp = await SharedPreferences.getInstance();
     token = sp.getString("tokenId");
@@ -112,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _updateDateTime() {
+  void _updateDateTime(){
     final now = DateTime.now();
 
     // Format time as "09 : 00 AM"
@@ -185,8 +189,10 @@ class _HomeScreenState extends State<HomeScreen> {
               TextButton(
                 child: Text('Submit'),
                 onPressed: () {
-                  Provider.of<AttendanceProvider>(context, listen: false).toggleCheckInOut(token, lat, lan, ipv6, _entryReasonController.text);
+                  Provider.of<AttendanceProvider>(context, listen: false).toggleCheckInOut(token, lat, lan, ipv6, _entryReasonController.text, Provider.of<ProfileProvider>(context, listen: false).userData!.data.attendance.checkin.toString());
+                  //getProfileData();
                   Navigator.of(context).pop();
+                  getProfileData();
                 },
               ),
             ],
@@ -216,8 +222,10 @@ class _HomeScreenState extends State<HomeScreen> {
               TextButton(
                 child: Text('Submit'),
                 onPressed: () {
-                  Provider.of<AttendanceProvider>(context, listen: false).toggleCheckInOut(token, lat, lan, ipv6, _exitReasonController.text);
+                  Provider.of<AttendanceProvider>(context, listen: false).toggleCheckInOut(token, lat, lan, ipv6, _exitReasonController.text, Provider.of<ProfileProvider>(context, listen: false).userData!.data.attendance.checkin.toString());
+                  //getProfileData();
                   Navigator.of(context).pop();
+                  getProfileData();
                 },
               ),
             ],
@@ -356,6 +364,15 @@ class _HomeScreenState extends State<HomeScreen> {
   //     print('Error fetching today\'s exit data: $error');
   //   }
   // }
+  String convertTo12HourFormat(String dateTimeString) {
+    // Parse the date-time string
+    DateTime dateTime = DateTime.parse(dateTimeString);
+
+    // Format the time in 12-hour format with AM/PM
+    String formattedTime = DateFormat('hh:mm a').format(dateTime);
+
+    return formattedTime;
+  }
   @override
   Widget build(BuildContext context) {
     // Load data on app startup
@@ -394,7 +411,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     CircleAvatar(
-                      backgroundImage: NetworkImage(profileData.data.photo !=''?profileData.data.photo:'https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg'),
+                      backgroundImage: NetworkImage(profileData.data.photo !=null?profileData.data.photo:'https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg'),
                       radius: 30,
                     )
                   ],
@@ -524,23 +541,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   bool isAfterEntryTime = now.isAfter(entryTime);
                   bool isBeforeExitTime = now.isBefore(exitTime);
-                  if(Provider.of<AttendanceProvider>(context, listen: false).checkInTime == '' && isAfterEntryTime){
+                  if(profileData.data.attendance.checkin == null && isAfterEntryTime){
                     showLateEntryDialog();
-                  }else if(Provider.of<AttendanceProvider>(context, listen: false).checkOutTime != '' && isBeforeExitTime){
+                  }else if(profileData.data.attendance.checkin != null &&
+                      profileData.data.attendance.checkout == null
+                      && isBeforeExitTime){
                     showEarlyExitDialog();
-                  }else if(Provider.of<AttendanceProvider>(context, listen: false).checkInTime != '' &&
-                      Provider.of<AttendanceProvider>(context, listen: false).checkOutTime != ''){
-                    Get.snackbar(
-                      'Warning',
-                      'Already complete attendance',
-                      snackPosition: SnackPosition.TOP,
-                      backgroundColor: Colors.redAccent,
-                      colorText: Colors.white,
-                      borderRadius: 10,
-                      margin: EdgeInsets.all(10),
-                    );
                   }else{
-                    Provider.of<AttendanceProvider>(context, listen: false).toggleCheckInOut(token, lat, lan, ipv6, 'no need');
+                    showEarlyExitDialog();
                   }
                 },
                 child: Container(
@@ -562,17 +570,15 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 Consumer<AttendanceProvider>(
                                   builder: (context, provider, child) {
-                                    return Image.asset(provider.checkInTime.isEmpty
-                                        ? Images.checkin : provider.checkOutTime.isEmpty
-                                        ? Images.checkout: Images.total);
+                                    return Image.asset(profileData.data.attendance.checkin == null
+                                        ? Images.checkin : Images.checkout);
                                   },
                                 ),
                                 SizedBox(height: 8,),
                                 Consumer<AttendanceProvider>(
                                   builder: (context, provider, child) {
-                                    return Text(provider.checkInTime.isEmpty
-                                        ? 'Check In' : provider.checkOutTime.isEmpty
-                                        ? 'Check Out': 'Done',
+                                    return Text(profileData.data.attendance.checkin == null
+                                        ? 'Check In' : 'Check Out',
                                       style: TextStyle(color: Colors.green[900], fontWeight: FontWeight.bold),);
                                   },
                                 ),
@@ -593,7 +599,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Image.asset(Images.checkin),
                         Consumer<AttendanceProvider>(
                           builder: (context, provider, child) {
-                            return Text(provider.checkInTime.isEmpty?'--:--': provider.checkInTime,
+                            return Text(profileData.data.attendance.checkin == null?'--:--': convertTo12HourFormat(profileData.data.attendance.checkin),
                                 style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 16));
                           },
                         ),
@@ -610,7 +616,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Image.asset(Images.checkout),
                         Consumer<AttendanceProvider>(
                           builder: (context, provider, child) {
-                            return Text(provider.checkOutTime.isEmpty?'--:--': provider.checkOutTime,
+                            return Text(profileData.data.attendance.checkout == null?'--:--': convertTo12HourFormat(profileData.data.attendance.checkout),
                                 style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 16));
                           },
                         ),
@@ -627,7 +633,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Image.asset(Images.total),
                         Consumer<AttendanceProvider>(
                           builder: (context, provider, child) {
-                            return Text(provider.calculateTotalHours(),
+                            return Text(provider.calculateTotalHours(profileData.data.attendance.checkin.toString(), profileData.data.attendance.checkout.toString()),
                                 style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 16));
                           },
                         ),

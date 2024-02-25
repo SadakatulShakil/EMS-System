@@ -19,6 +19,7 @@ class ProfileProvider with ChangeNotifier {
   }
 
   Future<void> fetchProfile({required String token}) async {
+    isLoading = true;
     print('iiiiii:' + token);
     final url = Uri.parse(AppConstants.profileData);
     try {
@@ -31,15 +32,18 @@ class ProfileProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
+        isLoading = false;
         print("res: " + response.body.toString());
         final profileData = ProfileModel.fromJson(jsonDecode(response.body));
-        setUserData(profileData); // Update user data
+        setUserData(profileData);
+        notifyListeners();// Update user data
       } else {
         if (kDebugMode) {
           print("res: " + response.statusCode.toString());
           print("res: " + response.body.toString());
         }
         if (response.statusCode == 422) {
+          isLoading = false;
           String responseData = response.body.toString();
           Get.snackbar(
             'Warning',
@@ -51,6 +55,7 @@ class ProfileProvider with ChangeNotifier {
             margin: EdgeInsets.all(10),
           );
         } else if (response.statusCode == 500) {
+          isLoading = false;
           Get.snackbar(
             'Warning',
             'Internal server issue !',
@@ -63,6 +68,7 @@ class ProfileProvider with ChangeNotifier {
         }
       }
     } catch (e) {
+      isLoading = false;
       if (kDebugMode) {
         print("Failed: $e");
       }

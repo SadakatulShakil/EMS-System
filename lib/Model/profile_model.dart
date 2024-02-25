@@ -8,7 +8,7 @@ String profileModelToJson(ProfileModel data) => json.encode(data.toJson());
 class ProfileModel {
   final String status;
   final Data data;
-  final dynamic message;
+  final String message;
 
   ProfileModel({
     required this.status,
@@ -38,7 +38,7 @@ class Data {
   final String address;
   final String department;
   final String designation;
-  final String photo;
+  final dynamic photo;
   final Attendance attendance;
   final Leave leave;
   final Settings settings;
@@ -93,23 +93,31 @@ class Attendance {
   final int workingDays;
   final int onTime;
   final int lateTime;
+  final dynamic checkin;
+  final dynamic checkout;
 
   Attendance({
     required this.workingDays,
     required this.onTime,
     required this.lateTime,
+    required this.checkin,
+    required this.checkout,
   });
 
   factory Attendance.fromJson(Map<String, dynamic> json) => Attendance(
     workingDays: json["workingDays"],
     onTime: json["onTime"],
     lateTime: json["lateTime"],
+    checkin: json["checkin"],
+    checkout: json["checkout"],
   );
 
   Map<String, dynamic> toJson() => {
     "workingDays": workingDays,
     "onTime": onTime,
     "lateTime": lateTime,
+    "checkin": checkin,
+    "checkout": checkout,
   };
 }
 

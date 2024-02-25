@@ -1,4 +1,5 @@
 import 'package:employe_management_system/providers/auth_provider.dart';
+import 'package:employe_management_system/screen/Profile/widget/stopwatch.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
@@ -34,7 +35,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Align(
               alignment: Alignment.center,
               child: CircleAvatar(
-                backgroundImage: NetworkImage(profileData.data.photo !=''?profileData.data.photo:'https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg'),
+                backgroundImage: NetworkImage(profileData.data.photo !=null?profileData.data.photo:'https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg'),
                 radius: 60,
               ),
             ),
@@ -210,6 +211,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             GestureDetector(
               onTap: () {
                 //Navigator.of(context).push(MaterialPageRoute(builder: (context) => BarChartSample2()));
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => StopwatchPage()));
               },
               child: Padding(
                 padding: const EdgeInsets.only(left: 8.0, right: 8),

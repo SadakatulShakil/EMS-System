@@ -141,9 +141,9 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                             child:
                                 file != null
                                 ? Image.file(file!, width: 100, height: 100,fit: BoxFit.cover,)
-                                :file == null && profileData.data.photo != ''
+                                :file == null && profileData.data.photo !=null
                                 ?Image.network(profileData.data.photo, width: 100, height: 100,)
-                                :Image.network('https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg')
+                                :Image.network('https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg', width: 100, height: 100,)
                           ),
                           Positioned(
                             bottom: 0,
