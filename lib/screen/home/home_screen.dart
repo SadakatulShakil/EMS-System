@@ -197,13 +197,13 @@ class _HomeScreenState extends State<HomeScreen> {
         return Container(
           height: MediaQuery.of(context).size.height/3,
           child: AlertDialog(
-            title: Text('Late Entry Validation', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
+            title: Text('Entry Validation', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
             content: TextField(
               controller: _entryReasonController,
               autofocus: true,
               decoration: InputDecoration(
-                  labelText: 'Reason',
-                hintText: 'Reason for being late'
+                  labelText: 'Remarks',
+                hintText: 'Drop a remarks'
               ),
             ),
             actions: <Widget>[
@@ -232,13 +232,13 @@ class _HomeScreenState extends State<HomeScreen> {
         return Container(
           height: MediaQuery.of(context).size.height/3,
           child: AlertDialog(
-            title: Text('Early Exit Validation', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
+            title: Text('Exit Validation', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
             content: TextField(
               autofocus: true,
               controller: _exitReasonController,
               decoration: InputDecoration(
-                  labelText: 'Reason',
-                  hintText: 'Reason for being early'
+                  labelText: 'Remarks',
+                  hintText: 'Drop a remarks'
               ),
             ),
             actions: <Widget>[
@@ -594,20 +594,32 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 40,),
               GestureDetector(
                 onTap: (){
-                  DateTime now = DateTime.now();
-                  DateTime entryTime = DateFormat('hh:mm a').parse(profileData.data.settings.office.startTime);
-                  DateTime exitTime = DateFormat('hh:mm a').parse(profileData.data.settings.office.endTime);
+                  if(isLocMatched){
+                    DateTime now = DateTime.now();
+                    DateTime entryTime = DateFormat('hh:mm a').parse(profileData.data.settings.office.startTime);
+                    DateTime exitTime = DateFormat('hh:mm a').parse(profileData.data.settings.office.endTime);
 
-                  bool isAfterEntryTime = now.isAfter(entryTime);
-                  bool isBeforeExitTime = now.isBefore(exitTime);
-                  if(profileData.data.attendance.checkin == null && isAfterEntryTime){
-                    showLateEntryDialog();
-                  }else if(profileData.data.attendance.checkin != null &&
-                      profileData.data.attendance.checkout == null
-                      && isBeforeExitTime){
-                    showEarlyExitDialog();
+                    bool isAfterEntryTime = now.isAfter(entryTime);
+                    bool isBeforeExitTime = now.isBefore(exitTime);
+                    if(profileData.data.attendance.checkin == null && isAfterEntryTime){
+                      showLateEntryDialog();
+                    }else if(profileData.data.attendance.checkin != null &&
+                        profileData.data.attendance.checkout == null
+                        && isBeforeExitTime){
+                      showEarlyExitDialog();
+                    }else{
+                      showEarlyExitDialog();
+                    }
                   }else{
-                    showEarlyExitDialog();
+                    Get.snackbar(
+                      'Warning',
+                      'You are not in the Office!',
+                      snackPosition: SnackPosition.TOP,
+                      backgroundColor: Colors.redAccent,
+                      colorText: Colors.white,
+                      borderRadius: 10,
+                      margin: EdgeInsets.all(10),
+                    );
                   }
                 },
                 child: Container(
