@@ -58,6 +58,12 @@ class _GetTextFormFieldState extends State<GetTextFormField> {
             icon: widget.lebelName == 'Email Address'?Icon(
               Icons.language,
               color: Colors.black,
+            ):widget.hintName == 'User name'?Icon(
+              Icons.person_outline_sharp,
+              color: Colors.black,
+            ):widget.hintName == 'Email'?Icon(
+              Icons.email_outlined,
+              color: Colors.black,
             ):Icon(
               Icons.lock,
               color: Colors.black,

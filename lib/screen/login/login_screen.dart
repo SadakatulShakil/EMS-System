@@ -1,3 +1,4 @@
+import 'package:employe_management_system/screen/login/widget/email_verify_widget.dart';
 import 'package:employe_management_system/screen/login/widget/text_from_field.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -205,6 +206,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     SizedBox(height: 10),
+                    Row(children: [
+                      Text('Do not have account? '),
+                      SizedBox(width: 10,),
+                      GestureDetector(
+                        onTap: (){
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => EmailVerifyPage(),
+                            ),
+                          );
+                        },
+                          child: Text('Create Now', style: TextStyle(color: accent, fontWeight: FontWeight.bold),))
+                    ],)
                   ],
                 ),
               ),
