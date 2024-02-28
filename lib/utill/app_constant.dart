@@ -8,8 +8,12 @@ class AppConstants {
   static const String updateProfileData = '${baseUrl}auth/profile';//https://hda.whosomalia.com/v1/profile-update
   static const String checkInData = '${baseUrl}attendance/checkin';//https://hda.whosomalia.com/v1/profile-update
   static const String checkOutData = '${baseUrl}attendance/checkout';//https://hda.whosomalia.com/v1/profile-update
-  static const String leaveTypesData = '${baseUrl}leave-types';//https://hda.whosomalia.com/v1/profile-update
-  static const String applyLeave = '${baseUrl}leave-apply';//https://hda.whosomalia.com/v1/profile-update
+  static const String leaveTypesData = '${baseUrl}leave/types';//https://hda.whosomalia.com/v1/profile-update
+  static const String applyLeave = '${baseUrl}leave/apply';//https://hda.whosomalia.com/v1/profile-update
+  static const String attendanceHistory = '${baseUrl}attendance';//https://hda.whosomalia.com/v1/profile-update
+  static const String leaveHistory = '${baseUrl}leave';//https://hda.whosomalia.com/v1/profile-update
+  static const String leaveApplications = '${baseUrl}leave/applications';//https://hda.whosomalia.com/v1/profile-update
+  static const String updateLeaveApplications = '${baseUrl}leave/approved';//https://hda.whosomalia.com/v1/profile-update
   //App colors
   static const Color chwColor =  Color(0xffD35520) ;
 

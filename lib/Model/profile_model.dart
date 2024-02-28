@@ -8,7 +8,7 @@ String profileModelToJson(ProfileModel data) => json.encode(data.toJson());
 class ProfileModel {
   final String status;
   final Data data;
-  final String message;
+  final dynamic message;
 
   ProfileModel({
     required this.status,

@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import '../../providers/attendence_provider.dart';
 import '../../providers/profile_provider.dart';
 import '../../utill/color_resources.dart';
@@ -30,9 +30,13 @@ class _HomeScreenState extends State<HomeScreen> {
   String lat = '';
   String lan = '';
   String ipv6 = '';
+  bool isLocMatched = false;
   String? token;
   late DateTime firstEntryTime;
   late DateTime lastCheckoutTime;
+  final double officeLat = 23.791231408326187;
+  final double officeLan = 90.40498901045726;
+  final double threshold = 0.005;
   final GeolocatorPlatform geolocator = GeolocatorPlatform.instance;
   final double geofenceRadius = 50.0; // Adjust the geofence radius as needed
   final info = NetworkInfo();
@@ -40,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    _checkLocation();
     _startLocationTracking();
     // Initial update
     _updateDateTime();
@@ -54,6 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> getProfileData() async {
+    print('pppp: '+'call by checkout');
     final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
     SharedPreferences sp = await SharedPreferences.getInstance();
     token = sp.getString("tokenId");
@@ -86,6 +92,21 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _checkLocation() async {
+    Position currentPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    // Round the latitude and longitude values to 3 digits after the decimal point
+    double latDifference = (currentPosition.latitude-officeLat).abs();
+    double lanDifference = (currentPosition.longitude-officeLan).abs();
+
+    setState(() {
+      isLocMatched = (double.parse(latDifference.toStringAsFixed(3)) < threshold && double.parse(lanDifference.toStringAsFixed(3)) < threshold);
+    });
+    print('jjjjjjjj: '+ (latDifference.toStringAsFixed(3)+'__'+lanDifference.toStringAsFixed(3)));
+
+  }
+
   Future<void> _startLocationTracking() async {
     geolocator.getPositionStream(
       locationSettings: LocationSettings(
@@ -103,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (kDebugMode) {
           print('First entry time: $firstEntryTime');
         }
-        /// need to implement background notification for area area arrival
+        /// need to implement background notification for area area arrival 23.791231408326187, 90.40498901045726
         //_storeAttendance(position, 'checked_in');
       } else {
         lastCheckoutTime = DateTime.now();
@@ -192,7 +213,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   Provider.of<AttendanceProvider>(context, listen: false).toggleCheckInOut(token, lat, lan, ipv6, _entryReasonController.text, Provider.of<ProfileProvider>(context, listen: false).userData!.data.attendance.checkin.toString());
                   //getProfileData();
                   Navigator.of(context).pop();
-                  getProfileData();
+                  setState(() {
+                    getProfileData();
+                  });
                 },
               ),
             ],
@@ -225,7 +248,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   Provider.of<AttendanceProvider>(context, listen: false).toggleCheckInOut(token, lat, lan, ipv6, _exitReasonController.text, Provider.of<ProfileProvider>(context, listen: false).userData!.data.attendance.checkin.toString());
                   //getProfileData();
                   Navigator.of(context).pop();
-                  getProfileData();
+                  setState(() {
+                    getProfileData();
+                  });
                 },
               ),
             ],
@@ -391,148 +416,182 @@ class _HomeScreenState extends State<HomeScreen> {
         body: profileData != null?SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(height: 50,),
-              Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Stack(children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(35), // Adjust the radius as needed
+                      bottomRight: Radius.circular(35), // Adjust the radius as needed
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.teal.shade700.withOpacity(0.2), // Shadow color
+                        spreadRadius: 8, // Spread radius
+                        blurRadius: 7, // Blur radius
+                        offset: Offset(0, 4), // Offset in x and y directions
+                      ),
+                    ],
+                  ),
+                  child: Image.asset('assets/images/home_background.png'),
+                ),
+                Positioned(child: Column(
                   children: [
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    SizedBox(height: 30,),
+                    Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(profileData.data.firstName != ''?'${profileData.data.firstName} ${profileData.data.lastName}':'name of user', style: TextStyle(
-                              fontSize: 25 / MediaQuery.textScaleFactorOf(context), fontWeight: FontWeight.w600),maxLines: 1,overflow: TextOverflow.ellipsis,),
-                          SizedBox(height: 10,),
-                          Text(profileData.data.designation != ''?profileData.data.designation:'Senior Software Engineer', style: TextStyle(
-                              fontSize: 15 / MediaQuery.textScaleFactorOf(context), color: Colors.grey[600]),),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(profileData.data.firstName != ''?'${profileData.data.firstName} ${profileData.data.lastName}':'name of user', style: GoogleFonts.mulish(color: Colors.white,
+                                    fontSize: 25 / MediaQuery.textScaleFactorOf(context), fontWeight: FontWeight.w600),maxLines: 1,overflow: TextOverflow.ellipsis,),
+                                SizedBox(height: 10,),
+                                Text(profileData.data.designation != ''?profileData.data.designation:'Senior Software Engineer', style: GoogleFonts.mulish(
+                                    fontSize: 15 / MediaQuery.textScaleFactorOf(context), color: Colors.white),),
+                              ],
+                            ),
+                          ),
+                          CircleAvatar(
+                            backgroundImage: NetworkImage(profileData.data.photo !=null?profileData.data.photo:'https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg'),
+                            radius: 30,
+                          ),
                         ],
                       ),
                     ),
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(profileData.data.photo !=null?profileData.data.photo:'https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg'),
-                      radius: 30,
-                    )
+                    Text(currentTime, style: GoogleFonts.mulish(color: Colors.white,
+                      fontSize: 24 / MediaQuery.textScaleFactorOf(context), ),),
+                    Text(currentDate, style: GoogleFonts.mulish(color: Colors.white,
+                        fontSize: 12 / MediaQuery.textScaleFactorOf(context)),),
+
+                    SizedBox(height: 10,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Card(
+                              color: Colors.white.withOpacity(.2),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey), // Grey border
+                                  borderRadius: BorderRadius.circular(5), // Rounded radius
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                        width: MediaQuery.of(context).size.width *.42,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(5.0),
+                                          child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text('Attendance', style: GoogleFonts.mulish(fontSize: 15, color: Colors.white),)),
+                                        )),
+                                    Image.asset('assets/images/line.png'),
+                                    SizedBox(height: 8,),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 5),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text('Working day: ',style: GoogleFonts.mulish(color: Colors.white)),
+                                          Text(profileData.data.attendance.workingDays.toString() != ''?profileData.data.attendance.workingDays.toString():'N/A',style: GoogleFonts.mulish(color: Colors.white)),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 5),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text('On time: ',style: GoogleFonts.mulish(color: Colors.white)),
+                                          Text(profileData.data.attendance.onTime.toString() != ''?profileData.data.attendance.onTime.toString():'N/A',style: GoogleFonts.mulish(color: Colors.white)),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 5),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text('Late entry: ', style: GoogleFonts.mulish(color: Colors.white),),
+                                          Text(profileData.data.attendance.lateTime.toString() != ''?profileData.data.attendance.lateTime.toString():'N/A', style: GoogleFonts.mulish(color: Colors.white)),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(height: 8,),
+                                  ],
+                                ),
+                              )),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Card(
+                              color: Colors.white.withOpacity(.2),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey), // Grey border
+                                  borderRadius: BorderRadius.circular(5), // Rounded radius
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                        width: MediaQuery.of(context).size.width *.42,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(5.0),
+                                          child: Text('Leave', style: GoogleFonts.mulish(fontSize: 15, color: Colors.white),),
+                                        )),
+                                    Image.asset('assets/images/line.png'),
+                                    SizedBox(height: 8,),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 5),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text('Total Leave: ',style: GoogleFonts.mulish(color: Colors.white)),
+                                          Text(profileData.data.leave.total.toString() != ''?profileData.data.leave.total.toString():'N/A',style: GoogleFonts.mulish(color: Colors.white)),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 5),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text('Leave Use: ',style: GoogleFonts.mulish(color: Colors.white)),
+                                          Text(profileData.data.leave.used.toString() != ''?profileData.data.leave.used.toString():'N/A',style: GoogleFonts.mulish(color: Colors.white)),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 5),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text('Remaining: ', style: GoogleFonts.mulish(color: Colors.white),),
+                                          Text((profileData.data.leave.total-profileData.data.leave.used).toString(), style: GoogleFonts.mulish(color: Colors.white)),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(height: 8,),
+                                  ],
+                                ),
+                              )),
+                        ),
+                      ],
+                    ),
                   ],
-                ),
-              ),
-              SizedBox(height: 30,),
-              Text(currentTime, style: TextStyle(
-                fontSize: 30 / MediaQuery.textScaleFactorOf(context), ),),
-              Text(currentDate, style: TextStyle(
-                  fontSize: 15 / MediaQuery.textScaleFactorOf(context), color: Colors.grey[600]),),
-              SizedBox(height:16,),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width*.4,
-                      child: Card(
-                          child: Column(
-                            children: [
-                              Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  color: accent,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: Align(
-                                        alignment: Alignment.center,
-                                        child: Text('Attendance', style: TextStyle(fontSize: 18, color: Colors.white),)),
-                                  )),
-                              SizedBox(height: 8,),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 5),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('Working day: ',style: TextStyle(color: Colors.blueAccent)),
-                                    Text(profileData.data.attendance.workingDays.toString() != ''?profileData.data.attendance.workingDays.toString():'N/A',style: TextStyle(color: Colors.blueAccent)),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 5),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('On time: ',style: TextStyle(color: Colors.green)),
-                                    Text(profileData.data.attendance.onTime.toString() != ''?profileData.data.attendance.onTime.toString():'N/A',style: TextStyle(color: Colors.green)),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 5),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('Late entry: ', style: TextStyle(color: Colors.redAccent),),
-                                    Text(profileData.data.attendance.lateTime.toString() != ''?profileData.data.attendance.lateTime.toString():'N/A', style: TextStyle(color: Colors.redAccent)),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: 8,),
-                            ],
-                          )),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width*.4,
-                      child: Card(
-                          child: Column(
-                            children: [
-                              Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  color: accent,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: Align(
-                                        alignment: Alignment.center,
-                                        child: Text('Leave', style: TextStyle(fontSize: 18, color: Colors.white),)),
-                                  )),
-                              SizedBox(height: 8,),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 5),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('Total Leave: ',style: TextStyle(color: Colors.blueAccent)),
-                                    Text(profileData.data.leave.total.toString() != ''?profileData.data.leave.total.toString():'N/A',style: TextStyle(color: Colors.blueAccent)),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 5),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('Leave Use: ',style: TextStyle(color: Colors.green)),
-                                    Text(profileData.data.leave.used.toString() != ''?profileData.data.leave.used.toString():'N/A',style: TextStyle(color: Colors.green)),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 5),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('Remaining: ', style: TextStyle(color: Colors.redAccent),),
-                                    Text((profileData.data.leave.total-profileData.data.leave.used).toString(), style: TextStyle(color: Colors.redAccent)),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: 8,),
-                            ],
-                          )),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20,),
+                )
+                )
+              ],),
+              SizedBox(height: 40,),
               GestureDetector(
                 onTap: (){
                   DateTime now = DateTime.now();
@@ -562,7 +621,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Stack(
                         alignment: Alignment.center,
                         children:[
-                          Image.asset('assets/images/button.png', height: 200, width: 200,),
+                          Image.asset('assets/images/rounded_btn.png', height: 200, width: 200,),
                           Positioned(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -571,15 +630,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Consumer<AttendanceProvider>(
                                   builder: (context, provider, child) {
                                     return Image.asset(profileData.data.attendance.checkin == null
-                                        ? Images.checkin : Images.checkout);
-                                  },
-                                ),
-                                SizedBox(height: 8,),
-                                Consumer<AttendanceProvider>(
-                                  builder: (context, provider, child) {
-                                    return Text(profileData.data.attendance.checkin == null
-                                        ? 'Check In' : 'Check Out',
-                                      style: TextStyle(color: Colors.green[900], fontWeight: FontWeight.bold),);
+                                        ? Images.checkInBtn : Images.checkoutBtn);
                                   },
                                 ),
                               ],
@@ -588,61 +639,86 @@ class _HomeScreenState extends State<HomeScreen> {
                         ] )
                 ),
               ),
-              SizedBox(height: 20,),
+              SizedBox(height: 10,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.location_on, color: isLocMatched? Colors.green:Colors.redAccent, size: 20,),
+                  Text(isLocMatched?'Location: Office Building': 'Location: Not in Office Building' ,style: TextStyle(
+                      fontSize: 13 / MediaQuery.textScaleFactorOf(context), color: isLocMatched?Colors.green:Colors.redAccent,letterSpacing: 1.5),),
+                ],
+              ),
+              SizedBox(height: 40,),
               Padding(
-                padding: const EdgeInsets.all(15.0),
+                padding: const EdgeInsets.all(10.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
+                    Row(
                       children: [
                         Image.asset(Images.checkin),
-                        Consumer<AttendanceProvider>(
-                          builder: (context, provider, child) {
-                            return Text(profileData.data.attendance.checkin == null?'--:--': convertTo12HourFormat(profileData.data.attendance.checkin),
-                                style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 16));
-                          },
-                        ),
-                        // Text(checkIn == '00:00 AM' ? '--:--': checkIn, style: TextStyle(
-                        //     fontSize: 18 / MediaQuery.textScaleFactorOf(context),
-                        //     color: Colors.grey[600], fontWeight: FontWeight.bold),),
-                        Text('Check in', style: TextStyle(
-                            fontSize: 15 / MediaQuery.textScaleFactorOf(context),
-                            color: Colors.green[900], fontWeight: FontWeight.bold),),
+                        SizedBox(width: 5,),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Check in', style: TextStyle(
+                                fontSize: 14 / MediaQuery.textScaleFactorOf(context),
+                                color: Colors.green[900], fontWeight: FontWeight.bold),),
+                            Consumer<ProfileProvider>(
+                              builder: (context, provider, child) {
+                                return Text(provider.userData!.data.attendance.checkin == null?'--:--': convertTo12HourFormat(provider.userData!.data.attendance.checkin),
+                                    style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 14));
+                              },
+                            ),
+                          ],
+                        )
                       ],
                     ),
-                    Column(
+                    Row(
                       children: [
                         Image.asset(Images.checkout),
-                        Consumer<AttendanceProvider>(
-                          builder: (context, provider, child) {
-                            return Text(profileData.data.attendance.checkout == null?'--:--': convertTo12HourFormat(profileData.data.attendance.checkout),
-                                style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 16));
-                          },
-                        ),
-                        // Text(checkOut == '00:00 AM' ? '--:--': checkOut, style: TextStyle(
-                        //     fontSize: 18 / MediaQuery.textScaleFactorOf(context),
-                        //     color: Colors.grey[600], fontWeight: FontWeight.bold),),
-                        Text('Check out', style: TextStyle(
-                            fontSize: 15 / MediaQuery.textScaleFactorOf(context),
-                            color: Colors.green[900], fontWeight: FontWeight.bold)),
+                        SizedBox(width: 5,),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Check out', style: TextStyle(
+                                fontSize: 14 / MediaQuery.textScaleFactorOf(context),
+                                color: Colors.green[900], fontWeight: FontWeight.bold)),
+                            Consumer<ProfileProvider>(
+                              builder: (context, provider, child) {
+                                return Text(provider.userData!.data.attendance.checkout == null?'--:--': convertTo12HourFormat(provider.userData!.data.attendance.checkout),
+                                    style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 14));
+                              },
+                            ),
+
+                          ],
+                        )
+
                       ],
                     ),
-                    Column(
+                    Row(
                       children: [
                         Image.asset(Images.total),
-                        Consumer<AttendanceProvider>(
-                          builder: (context, provider, child) {
-                            return Text(provider.calculateTotalHours(profileData.data.attendance.checkin.toString(), profileData.data.attendance.checkout.toString()),
-                                style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 16));
-                          },
-                        ),
-                        // Text(checkOut != '00:00 AM' ? calculateHours(checkIn, checkOut).toStringAsFixed(1) : '--:--', style: TextStyle(
-                        //     fontSize: 18 / MediaQuery.textScaleFactorOf(context),
-                        //     color: Colors.grey[600], fontWeight: FontWeight.bold),),
-                        Text('Total hours', style: TextStyle(
-                            fontSize: 15 / MediaQuery.textScaleFactorOf(context),
-                            color: Colors.green[900], fontWeight: FontWeight.bold),),
+                        SizedBox(width: 5,),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Total hours', style: TextStyle(
+                                fontSize: 14 / MediaQuery.textScaleFactorOf(context),
+                                color: Colors.green[900], fontWeight: FontWeight.bold),),
+                            Consumer<AttendanceProvider>(
+                              builder: (context, provider, child) {
+                                return Text(provider.calculateTotalHours(profileData.data.attendance.checkin.toString(), profileData.data.attendance.checkout.toString()),
+                                    style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 14));
+                              },
+                            ),
+
+                          ],
+                        )
+
                       ],
                     )
                   ],

@@ -6,6 +6,8 @@ class Images {
   static const String user = 'assets/images/user.png';
   static const String checkin = 'assets/images/checkin.png';
   static const String checkout = 'assets/images/checkout.png';
+  static const String checkoutBtn = 'assets/images/checkout_btn.png';
+  static const String checkInBtn = 'assets/images/checkin_btn.png';
   static const String total = 'assets/images/total.png';
   static const String toolbarBackground = 'assets/images/toolbar_background.png';
 }

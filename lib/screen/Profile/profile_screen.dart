@@ -1,5 +1,10 @@
 import 'package:employe_management_system/providers/auth_provider.dart';
+import 'package:employe_management_system/providers/leave_application_provider.dart';
+import 'package:employe_management_system/screen/Profile/widget/attendance_history.dart';
+import 'package:employe_management_system/screen/Profile/widget/leave_applications.dart';
+import 'package:employe_management_system/screen/Profile/widget/leave_history.dart';
 import 'package:employe_management_system/screen/Profile/widget/stopwatch.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
@@ -20,10 +25,34 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  String? token;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getApplicationHistoryData();
+  }
+
+  Future<void> getApplicationHistoryData() async {
+    final historyProvider = Provider.of<LeaveApplicationProvider>(context, listen: false);
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    token = sp.getString("tokenId");
+    print('hgvf: '+token!);
+    try {
+      historyProvider.fetchApplications(token: token!).then((value){
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching application: $e');
+      }
+      rethrow;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<ProfileProvider>(context);
-    //final sessionProvider = Provider.of<AuthSessionProvider>(context);
+    final applicationProvider = Provider.of<LeaveApplicationProvider>(context);
     final authProvider = Provider.of<AuthProvider>(context);
     final profileData = profileProvider.userData;
     return Scaffold(
@@ -208,10 +237,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
+            Visibility(
+              visible: applicationProvider.leaveApplicationsData.length>0?true:false,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => LeaveApplicationsPage(applicationProvider.leaveApplicationsData, token)));
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.history, size: 25),
+                          SizedBox(width: 10),
+                          Text(
+                            'Pending request',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 18,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
             GestureDetector(
-              onTap: () {
-                //Navigator.of(context).push(MaterialPageRoute(builder: (context) => BarChartSample2()));
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => StopwatchPage()));
+              onTap: (){
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => LeaveHistoryPage()));
               },
               child: Padding(
                 padding: const EdgeInsets.only(left: 8.0, right: 8),
@@ -220,10 +277,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-                        Icon(Icons.history, size: 25),
+                        Icon(Icons.history_edu, size: 25),
                         SizedBox(width: 10),
                         Text(
-                          'Pending request',
+                          'Leave History',
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
                             fontSize: 18,
@@ -235,44 +292,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0, right: 8),
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Icon(Icons.history_edu, size: 25),
-                      SizedBox(width: 10),
-                      Text(
-                        'Leave History',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 18,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0, right: 8),
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Icon(Icons.history, size: 25),
-                      SizedBox(width: 10),
-                      Text(
-                        'Attendance History',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 18,
-                        ),
-                      )
-                    ],
+            GestureDetector(
+              onTap:(){
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => AttendanceHistoryPage()));
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0, right: 8),
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Icon(Icons.history, size: 25),
+                        SizedBox(width: 10),
+                        Text(
+                          'Attendance History',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 18,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),

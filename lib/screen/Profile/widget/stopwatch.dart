@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../../utill/stored_images.dart';
 
 class StopwatchPage extends StatefulWidget {
   @override
@@ -8,119 +8,102 @@ class StopwatchPage extends StatefulWidget {
 }
 
 class _StopwatchPageState extends State<StopwatchPage> {
-  bool _isRunning = false;
-  Stopwatch _stopwatch = Stopwatch();
-  Timer? _timer;
-  int _elapsedMilliseconds = 0;
-  late SharedPreferences _prefs;
-  final String _prefsKey = 'stopwatch';
+
 
   @override
   void initState() {
     super.initState();
-    _loadElapsedTime();
-  }
 
-  void _loadElapsedTime() async {
-    _prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _elapsedMilliseconds = _prefs.getInt(_prefsKey) ?? 0;
-    });
-  }
-
-  void _saveElapsedTime() {
-    _prefs.setInt(_prefsKey, _elapsedMilliseconds);
-  }
-
-  void _startTimer() {
-    if (!_isRunning) {
-      _isRunning = true;
-      _stopwatch.start();
-      _timer = Timer.periodic(Duration(milliseconds: 10), (timer) {
-        setState(() {
-          _elapsedMilliseconds = _stopwatch.elapsedMilliseconds;
-          _saveElapsedTime();
-        });
-      });
-    }
-  }
-
-  void _stopTimer() {
-    if (_isRunning) {
-      _isRunning = false;
-      _stopwatch.stop();
-      _timer?.cancel();
-    }
-  }
-
-  void _resetTimer() {
-    _stopTimer();
-    setState(() {
-      _stopwatch.reset();
-      _elapsedMilliseconds = 0;
-      _saveElapsedTime();
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Stopwatch Demo'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Time: ${_formatTime(_elapsedMilliseconds)}',
-              style: TextStyle(fontSize: 24.0),
+      body: Column(
+        children: [
+          Stack(children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(35), // Adjust the radius as needed
+                  bottomRight: Radius.circular(35), // Adjust the radius as needed
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.teal.shade700.withOpacity(0.2), // Shadow color
+                    spreadRadius: 8, // Spread radius
+                    blurRadius: 7, // Blur radius
+                    offset: Offset(0, 4), // Offset in x and y directions
+                  ),
+                ],
+              ),
+              child: Image.asset('assets/images/home_background.png'),
             ),
-            SizedBox(height: 20.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ElevatedButton(
-                  onPressed: _startTimer,
-                  child: Text('Start'),
+            Positioned(child: Column(
+              children: [
+                SizedBox(height: 30,),
+                Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Astronist Shakil', style: GoogleFonts.mulish(color: Colors.white,
+                                fontSize: 20 / MediaQuery.textScaleFactorOf(context), fontWeight: FontWeight.w600),maxLines: 1,overflow: TextOverflow.ellipsis,),
+                            SizedBox(height: 10,),
+                            Text('Senior Software Engineer', style: TextStyle(
+                                fontSize: 16 / MediaQuery.textScaleFactorOf(context), color: Colors.white),),
+                          ],
+                        ),
+                      ),
+                      CircleAvatar(
+                        backgroundImage: NetworkImage('https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg'),
+                        radius: 30,
+                      )
+                    ],
+                  ),
                 ),
-                SizedBox(width: 20.0),
-                ElevatedButton(
-                  onPressed: _stopTimer,
-                  child: Text('Stop'),
-                ),
-                SizedBox(width: 20.0),
-                ElevatedButton(
-                  onPressed: _resetTimer,
-                  child: Text('Reset'),
-                ),
+
+
               ],
+            ))
+          ],),
+          SizedBox(height: 25,),
+          GestureDetector(
+            onTap: (){
+
+            },
+            child: Container(
+                height: 170, width:170,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(120),
+                  color: Colors.white,
+
+                ),
+                //square box; equal height and width so that it won't look like oval
+                child: Stack(
+                    alignment: Alignment.center,
+                    children:[
+                      Image.asset('assets/images/rounded_btn.png', height: 200, width: 200,),
+                      Positioned(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Image.asset(Images.checkInBtn),
+                          ],
+                        ),
+                      )
+                    ] )
             ),
-          ],
-        ),
-      ),
+          ),
+        ],
+      )
     );
   }
 
-  String _formatTime(int milliseconds) {
-    int hours = milliseconds ~/ (1000 * 60 * 60);
-    int remainingMilliseconds = milliseconds % (1000 * 60 * 60);
-    int minutes = remainingMilliseconds ~/ (1000 * 60);
-    remainingMilliseconds %= (1000 * 60);
-    int seconds = remainingMilliseconds ~/ 1000;
-    remainingMilliseconds %= 1000;
-
-    String hoursStr = hours.toString().padLeft(2, '0');
-    String minutesStr = minutes.toString().padLeft(2, '0');
-    String secondsStr = seconds.toString().padLeft(2, '0');
-    String millisecondsStr = remainingMilliseconds.toString().padLeft(3, '0');
-
-    return '$hoursStr:$minutesStr:$secondsStr.$millisecondsStr';
-  }
-
-  @override
-  void dispose() {
-    _stopTimer();
-    super.dispose();
-  }
 }

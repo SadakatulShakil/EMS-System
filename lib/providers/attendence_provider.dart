@@ -2,11 +2,13 @@ import 'dart:convert';
 
 import 'package:employe_management_system/Model/checkin_model.dart';
 import 'package:employe_management_system/Model/checkout_model.dart';
+import 'package:employe_management_system/providers/profile_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 import '../Model/attendance_model.dart';
 import '../utill/app_constant.dart';
@@ -177,7 +179,7 @@ class AttendanceProvider with ChangeNotifier {
 
   Future<CheckOutModel?> checkOut(String token, String checkOut,
       String request_lat, String request_long, String request_ip, String late_reason, int action) async {
-    print('iiiiii: $checkIn....$checkOut');
+    print('iiiiii: call this time');
     final url = Uri.parse(AppConstants.checkOutData);
     try {
       final response = await http.post(
