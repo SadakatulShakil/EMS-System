@@ -1,18 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:provider/provider.dart';
-import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:provider/provider.dart';
 
-import '../../../Model/leave_types_model.dart';
 import '../../../providers/leave_provider.dart';
 import '../../../utill/color_resources.dart';
-import '../../../utill/dimensions.dart';
-import '../../Leave/alert_widget/alertWidget.dart';
-
 class RegisterWidgetScreen extends StatefulWidget {
   bool backExits;
 
@@ -144,7 +138,7 @@ class _RegisterWidgetScreenState extends State<RegisterWidgetScreen> {
                     ),
                     Text(
                       'Complete your Profile,',
-                      style: TextStyle(
+                      style: GoogleFonts.mulish(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: primaryColor),
@@ -273,7 +267,7 @@ class _RegisterWidgetScreenState extends State<RegisterWidgetScreen> {
                       style: ElevatedButton.styleFrom(
                         primary: accentLight, // Set the background color here
                       ),
-                      child: Text('Submit', style: TextStyle(color: primaryColor)),
+                      child: Text('Submit', style: GoogleFonts.mulish(color: primaryColor)),
                     ),
                   ],
                 ),

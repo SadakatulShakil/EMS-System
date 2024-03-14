@@ -4,14 +4,14 @@ import 'package:employe_management_system/utill/color_resources.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../providers/profile_provider.dart';
 import '../../utill/stored_images.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
-
 class ProfileUpdateScreen extends StatefulWidget {
   const ProfileUpdateScreen({Key? key}) : super(key: key);
 
@@ -112,7 +112,7 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                 const SizedBox(width: 10),
                 Text(
                   'Settings',
-                  style: TextStyle(fontSize: 20, color: Colors.white),
+                  style: GoogleFonts.mulish(fontSize: 20, color: Colors.white),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -163,7 +163,7 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                     ),
                     Text(
                       profileData.data.firstName != ''?'${profileData.data.firstName} ${profileData.data.lastName}':'Mr. Haasan Masud',
-                      style: TextStyle(color: Colors.white, fontSize: 20.0),
+                      style: GoogleFonts.mulish(color: Colors.white, fontSize: 20.0),
                     )
                   ],
                 ),
@@ -417,7 +417,7 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                             ),
                             child: Text(
                               'Update profile ',
-                              style: TextStyle(fontSize: 16, color: Colors.white),
+                              style: GoogleFonts.mulish(fontSize: 16, color: Colors.white),
                             ),
                           ),
                         ),

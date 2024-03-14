@@ -11,7 +11,7 @@ import 'alert_widget/alertWidget.dart';
 import 'package:provider/provider.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 class LeaveScreen extends StatefulWidget {
   bool backExits;
 
@@ -308,7 +308,7 @@ class _LeaveScreenState extends State<LeaveScreen> {
                     radius: 7,
                     backgroundColor: Colors.red,
                     child: Text('0', // need a consumer for cart data
-                        style: TextStyle(
+                        style: GoogleFonts.mulish(
                           color: Colors.white,
                           fontSize: Dimensions.fontSizeExtraSmall,
                         )),

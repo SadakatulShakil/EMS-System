@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../../../utill/stored_images.dart';
 
 class StopwatchPage extends StatefulWidget {
@@ -55,7 +56,7 @@ class _StopwatchPageState extends State<StopwatchPage> {
                             Text('Astronist Shakil', style: GoogleFonts.mulish(color: Colors.white,
                                 fontSize: 20 / MediaQuery.textScaleFactorOf(context), fontWeight: FontWeight.w600),maxLines: 1,overflow: TextOverflow.ellipsis,),
                             SizedBox(height: 10,),
-                            Text('Senior Software Engineer', style: TextStyle(
+                            Text('Senior Software Engineer', style: GoogleFonts.mulish(
                                 fontSize: 16 / MediaQuery.textScaleFactorOf(context), color: Colors.white),),
                           ],
                         ),

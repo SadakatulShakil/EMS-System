@@ -3,6 +3,7 @@ import 'package:employe_management_system/screen/login/widget/text_from_field.da
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +12,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../providers/auth_provider.dart';
 import '../../utill/color_resources.dart';
 import '../home/dashboard_screen.dart';
-
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -145,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       alignment: Alignment.center,
                       child: Text(
                         'Hey, Welcome!',
-                        style: TextStyle(
+                        style: GoogleFonts.mulish(
                           fontSize: 24 /
                               MediaQuery.textScaleFactorOf(context),
                           fontWeight: FontWeight.bold,
@@ -197,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: Text(
                           'Continue',
-                          style: TextStyle(
+                          style: GoogleFonts.mulish(
                             color: Colors.white,
                             fontSize: 16 /
                                 MediaQuery.textScaleFactorOf(context),
@@ -217,7 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           );
                         },
-                          child: Text('Create Now', style: TextStyle(color: accent, fontWeight: FontWeight.bold),))
+                          child: Text('Create Now', style: GoogleFonts.mulish(color: accent, fontWeight: FontWeight.bold),))
                     ],)
                   ],
                 ),

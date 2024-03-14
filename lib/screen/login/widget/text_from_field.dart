@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
-import '../../../utill/color_resources.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 class GetTextFormField extends StatefulWidget {
   TextEditingController? controller;
   FocusNode? node;
@@ -38,7 +35,7 @@ class _GetTextFormFieldState extends State<GetTextFormField> {
     return Padding(
       padding: const EdgeInsets.all(5.0),
       child: TextFormField(
-        style: TextStyle(fontSize: 16 / MediaQuery.textScaleFactorOf(context)/devicePixelRatio*2.8),
+        style: GoogleFonts.mulish(fontSize: 16 / MediaQuery.textScaleFactorOf(context)/devicePixelRatio*2.8),
         controller: widget.controller,
         focusNode: widget.node,
         obscureText: widget.isObscureText,
@@ -91,7 +88,7 @@ class _GetTextFormFieldState extends State<GetTextFormField> {
               },
             ),
           ),
-          labelStyle: TextStyle(color: Colors.black),
+          labelStyle: GoogleFonts.mulish(color: Colors.black),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(10.0)),
             borderSide: BorderSide(color: Colors.black),

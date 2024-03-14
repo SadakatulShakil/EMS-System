@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 class Indicator extends StatelessWidget {
   const Indicator({
     super.key,
@@ -32,7 +32,7 @@ class Indicator extends StatelessWidget {
         ),
         Text(
           text,
-          style: TextStyle(
+          style: GoogleFonts.mulish(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             letterSpacing: 2,

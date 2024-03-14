@@ -3,9 +3,9 @@ import 'package:employe_management_system/providers/leave_application_provider.d
 import 'package:employe_management_system/screen/Profile/widget/attendance_history.dart';
 import 'package:employe_management_system/screen/Profile/widget/leave_applications.dart';
 import 'package:employe_management_system/screen/Profile/widget/leave_history.dart';
-import 'package:employe_management_system/screen/Profile/widget/stopwatch.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -75,7 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 profileData.data.firstName != ''
                     ? '${profileData.data.firstName} ${profileData.data.lastName}'
                     : 'Mr. Haasan Masud',
-                style: TextStyle(
+                style: GoogleFonts.mulish(
                   fontSize: 28,
                   fontWeight: FontWeight.w600,
                   color: Colors.grey[700],
@@ -89,7 +89,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 profileData.data.designation != ''
                     ? profileData.data.designation
                     : 'Senior Software Engineer',
-                style: TextStyle(
+                style: GoogleFonts.mulish(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                   color: Colors.grey[500],
@@ -196,7 +196,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         SizedBox(width: 10),
                         Text(
                           'Settings',
-                          style: TextStyle(
+                          style: GoogleFonts.mulish(
                             fontWeight: FontWeight.w400,
                             fontSize: 18,
                           ),
@@ -226,7 +226,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         SizedBox(width: 10),
                         Text(
                           'Reports',
-                          style: TextStyle(
+                          style: GoogleFonts.mulish(
                             fontWeight: FontWeight.w400,
                             fontSize: 18,
                           ),
@@ -254,7 +254,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           SizedBox(width: 10),
                           Text(
                             'Pending request',
-                            style: TextStyle(
+                            style: GoogleFonts.mulish(
                               fontWeight: FontWeight.w400,
                               fontSize: 18,
                             ),
@@ -281,7 +281,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         SizedBox(width: 10),
                         Text(
                           'Leave History',
-                          style: TextStyle(
+                          style: GoogleFonts.mulish(
                             fontWeight: FontWeight.w400,
                             fontSize: 18,
                           ),
@@ -307,7 +307,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         SizedBox(width: 10),
                         Text(
                           'Attendance History',
-                          style: TextStyle(
+                          style: GoogleFonts.mulish(
                             fontWeight: FontWeight.w400,
                             fontSize: 18,
                           ),
@@ -352,7 +352,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         SizedBox(width: 10),
                         Text(
                           'Logout',
-                          style: TextStyle(
+                          style: GoogleFonts.mulish(
                             fontWeight: FontWeight.w400,
                             fontSize: 20,
                             color: Colors.red,

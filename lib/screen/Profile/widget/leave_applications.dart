@@ -1,13 +1,12 @@
 import 'package:employe_management_system/Model/leave_application.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../providers/leave_application_provider.dart';
-import '../../../providers/leave_history_provider.dart';
 
+import '../../../providers/leave_application_provider.dart';
 class LeaveApplicationsPage extends StatefulWidget {
   List<Datum> leaveApplicationsData;
   String? token;
@@ -112,6 +111,7 @@ class _LeaveApplicationsPageState extends State<LeaveApplicationsPage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Text('Applied by: ' + record.employee.toString()),
                             Text('Leave type: ' + record.type.toString()),
                             Text('Start from: ' + record.startedAt.toString()),
                             Text('Till at: ' + record.endedAt.toString()),
@@ -136,7 +136,7 @@ class _LeaveApplicationsPageState extends State<LeaveApplicationsPage> {
                                         padding: const EdgeInsets.all(8.0),
                                         child: Align(
                                           alignment: Alignment.center,
-                                            child: Text('Accept', style: TextStyle(color: Colors.white, fontSize: 15),)),
+                                            child: Text('Accept', style: GoogleFonts.mulish(color: Colors.white, fontSize: 15),)),
                                       )),
                                 ),
                                   Visibility(
@@ -155,7 +155,7 @@ class _LeaveApplicationsPageState extends State<LeaveApplicationsPage> {
                                           padding: const EdgeInsets.all(8.0),
                                           child: Align(
                                             alignment: Alignment.center,
-                                            child: Text('Reject', style: TextStyle(color: Colors.white, fontSize: 15),),
+                                            child: Text('Reject', style: GoogleFonts.mulish(color: Colors.white, fontSize: 15),),
                                           ),
                                         ),
                                       ),

@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../../providers/auth_provider.dart';
 import '../../../utill/color_resources.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 class EmailVerifyPage extends StatefulWidget {
   @override
   _EmailVerifyPageState createState() => _EmailVerifyPageState();
@@ -36,7 +36,7 @@ class _EmailVerifyPageState extends State<EmailVerifyPage> {
               SizedBox(height: 50,),
               Text(
                 'Verify Your Identity,',
-                style: TextStyle(
+                style: GoogleFonts.mulish(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: primaryColor),
@@ -76,7 +76,7 @@ class _EmailVerifyPageState extends State<EmailVerifyPage> {
                 style: ElevatedButton.styleFrom(
                   primary: accentLight, // Set the background color here
                 ),
-                child: Text('Verify Now', style: TextStyle(color: primaryColor)),
+                child: Text('Verify Now', style: GoogleFonts.mulish(color: primaryColor)),
               ),
             ],
           ),

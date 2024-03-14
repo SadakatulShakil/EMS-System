@@ -2,10 +2,11 @@ import 'package:employe_management_system/Model/attendance_history.dart';
 import 'package:employe_management_system/providers/attendance_history_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart';
 class AttendanceHistoryPage extends StatefulWidget {
   @override
   _AttendanceHistoryPageState createState() => _AttendanceHistoryPageState();
@@ -103,7 +104,7 @@ class _AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(5.0),
-                        child: Text('Late Entry', style: TextStyle(color: Colors.white, fontSize: 12),),
+                        child: Text('Late Entry', style: GoogleFonts.mulish(color: Colors.white, fontSize: 12),),
                       )): Text('On time'),
                   onTap: () {
                     // Handle tapping on a record if needed

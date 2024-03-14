@@ -4,17 +4,17 @@ import 'package:employe_management_system/providers/leave_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:network_info_plus/network_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../../providers/attendence_provider.dart';
 import '../../providers/profile_provider.dart';
-import '../../utill/color_resources.dart';
 import '../../utill/stored_images.dart';
-import 'package:network_info_plus/network_info_plus.dart';
-import 'package:get/get.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -197,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return Container(
           height: MediaQuery.of(context).size.height/3,
           child: AlertDialog(
-            title: Text('Entry Validation', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
+            title: Text('Entry Validation', textAlign: TextAlign.center, style: GoogleFonts.mulish(fontWeight: FontWeight.bold),),
             content: TextField(
               controller: _entryReasonController,
               autofocus: true,
@@ -232,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return Container(
           height: MediaQuery.of(context).size.height/3,
           child: AlertDialog(
-            title: Text('Exit Validation', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
+            title: Text('Exit Validation', textAlign: TextAlign.center, style: GoogleFonts.mulish(fontWeight: FontWeight.bold),),
             content: TextField(
               autofocus: true,
               controller: _exitReasonController,
@@ -656,7 +656,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.location_on, color: isLocMatched? Colors.green:Colors.redAccent, size: 20,),
-                  Text(isLocMatched?'Location: Office Building': 'Location: Not in Office Building' ,style: TextStyle(
+                  Text(isLocMatched?'Location: Office Building': 'Location: Not in Office Building' ,style: GoogleFonts.mulish(
                       fontSize: 13 / MediaQuery.textScaleFactorOf(context), color: isLocMatched?Colors.green:Colors.redAccent,letterSpacing: 1.5),),
                 ],
               ),
@@ -674,13 +674,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Check in', style: TextStyle(
+                            Text('Check in', style: GoogleFonts.mulish(
                                 fontSize: 14 / MediaQuery.textScaleFactorOf(context),
                                 color: Colors.green[900], fontWeight: FontWeight.bold),),
                             Consumer<ProfileProvider>(
                               builder: (context, provider, child) {
                                 return Text(provider.userData!.data.attendance.checkin == null?'--:--': convertTo12HourFormat(provider.userData!.data.attendance.checkin),
-                                    style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 14));
+                                    style: GoogleFonts.mulish(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 14));
                               },
                             ),
                           ],
@@ -695,13 +695,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Check out', style: TextStyle(
+                            Text('Check out', style: GoogleFonts.mulish(
                                 fontSize: 14 / MediaQuery.textScaleFactorOf(context),
                                 color: Colors.green[900], fontWeight: FontWeight.bold)),
                             Consumer<ProfileProvider>(
                               builder: (context, provider, child) {
                                 return Text(provider.userData!.data.attendance.checkout == null?'--:--': convertTo12HourFormat(provider.userData!.data.attendance.checkout),
-                                    style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 14));
+                                    style: GoogleFonts.mulish(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 14));
                               },
                             ),
 
@@ -718,13 +718,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Total hours', style: TextStyle(
+                            Text('Total hours', style: GoogleFonts.mulish(
                                 fontSize: 14 / MediaQuery.textScaleFactorOf(context),
                                 color: Colors.green[900], fontWeight: FontWeight.bold),),
                             Consumer<AttendanceProvider>(
                               builder: (context, provider, child) {
                                 return Text(provider.calculateTotalHours(profileData.data.attendance.checkin.toString(), profileData.data.attendance.checkout.toString()),
-                                    style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 14));
+                                    style: GoogleFonts.mulish(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 14));
                               },
                             ),
 

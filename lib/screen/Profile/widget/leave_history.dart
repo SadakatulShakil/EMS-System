@@ -1,10 +1,10 @@
 import 'package:employe_management_system/Model/attendance_history.dart';
-import 'package:employe_management_system/providers/attendance_history_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../providers/leave_history_provider.dart';
 class LeaveHistoryPage extends StatefulWidget {
@@ -74,7 +74,23 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Leave type: ' + record.type.toString()),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Leave type: ' + record.type.toString()),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Align(
+                                alignment: Alignment.center,
+                                child: Text(record.status == "APPROVED"
+                                    ? 'Approved': record.status == "PENDING"
+                                    ? 'Pending': 'Decline',
+                                  style: GoogleFonts.mulish(color: record.status == "APPROVED"
+                                      ?Colors.green : record.status == "PENDING"
+                                      ? Colors.blue : Colors.redAccent, fontSize: 15),)),
+                          )
+                        ],
+                      ),
                       Text('Start from: ' + record.startedAt.toString()),
                       Text('Till at: ' + record.endedAt.toString()),
                       Text('Reason: ' + record.reason.toString()),

@@ -2,17 +2,14 @@ import 'dart:convert';
 
 import 'package:employe_management_system/Model/checkin_model.dart';
 import 'package:employe_management_system/Model/checkout_model.dart';
-import 'package:employe_management_system/providers/profile_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
-
-import '../Model/attendance_model.dart';
-import '../utill/app_constant.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../utill/app_constant.dart';
 
 class AttendanceProvider with ChangeNotifier {
   String _checkInTime = '';
