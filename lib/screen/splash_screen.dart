@@ -27,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if(currentTime.isAfter(expirationTime)){
         prefs.setString('tokenId', '');
         prefs.setString('session_expiry', '');
-        await Future.delayed(const Duration(seconds: 3));
+        await Future.delayed(const Duration(seconds: 2));
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -44,31 +44,12 @@ class _SplashScreenState extends State<SplashScreen> {
         MaterialPageRoute(builder: (context) => LoginScreen()),
       );
     }
-    // sessionProvider.getUser().then((value) async{
-    //   if (value.authToken == '' || value.authToken == 'null') {
-    //     await Future.delayed(const Duration(seconds: 3));
-    //     Navigator.pushReplacement(
-    //       context,
-    //       MaterialPageRoute(builder: (context) => LoginScreen()),
-    //     );
-    //   }else{
-    //     sessionProvider.userToken = value.authToken;
-    //     Navigator.pushReplacement(
-    //       context,
-    //       MaterialPageRoute(builder: (context) => DashBoardScreen()),
-    //     );
-    //   }
-    // });
 
   }
   @override
   void initState() {
     super.initState();
     _doSessionTask();
-    // Future.delayed(const Duration(seconds: 3)).then((value) => Navigator.pushReplacement(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => LoginScreen()),
-    // ));
   }
 
   @override

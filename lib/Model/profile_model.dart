@@ -1,3 +1,7 @@
+// To parse this JSON data, do
+//
+//     final profileModel = profileModelFromJson(jsonString);
+
 import 'package:meta/meta.dart';
 import 'dart:convert';
 
@@ -8,7 +12,7 @@ String profileModelToJson(ProfileModel data) => json.encode(data.toJson());
 class ProfileModel {
   final String status;
   final Data data;
-  final dynamic message;
+  final String message;
 
   ProfileModel({
     required this.status,
@@ -35,7 +39,7 @@ class Data {
   final String lastName;
   final String email;
   final String phone;
-  final String address;
+  final dynamic address;
   final String department;
   final String designation;
   final dynamic photo;

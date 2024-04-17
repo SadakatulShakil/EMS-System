@@ -432,7 +432,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  child: Image.asset('assets/images/home_background.png'),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                      child: Image.asset('assets/images/home_background.png', fit: BoxFit.cover,)),
                 ),
                 Positioned(child: Column(
                   children: [

@@ -211,11 +211,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(width: 10,),
                       GestureDetector(
                         onTap: (){
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => EmailVerifyPage(),
-                            ),
-                          );
+                          // Navigator.of(context).push(
+                          //   MaterialPageRoute(
+                          //     builder: (context) => EmailVerifyPage(),
+                          //   ),
+                          // );
                         },
                           child: Text('Create Now', style: GoogleFonts.mulish(color: accent, fontWeight: FontWeight.bold),))
                     ],)
