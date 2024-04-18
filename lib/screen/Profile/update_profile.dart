@@ -82,8 +82,8 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
     _phoneController.text = profileData.data.phone;
     _departmentNameController.text = profileData.data.department;
     _designationController.text = profileData.data.designation;
-    _addressController.text = profileData.data.address;
-    return profileProvider.isLoading?Center(
+    _addressController.text = profileData.data.address != null ? profileData.data.address : '';
+    return profileProvider.isProLoading?Center(
       child: LoadingAnimationWidget.threeRotatingDots(
         color: Colors.green,
         size: 30,

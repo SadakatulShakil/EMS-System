@@ -31,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String lan = '';
   String ipv6 = '';
   bool isLocMatched = false;
+  bool isLoading = false;
   String? token;
   late DateTime firstEntryTime;
   late DateTime lastCheckoutTime;
@@ -59,36 +60,46 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> getProfileData() async {
-    print('pppp: '+'call by checkout');
+    print('==========================>>');
+
     final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
     SharedPreferences sp = await SharedPreferences.getInstance();
     token = sp.getString("tokenId");
-    print('hgvf: '+token!);
+
     try {
-      profileProvider.fetchProfile(token: token!);
+      await profileProvider.fetchProfile(token: token!);
     } catch (e) {
       if (kDebugMode) {
         print('Error fetching profile: $e');
       }
-      throw e;
+      // Handle error, e.g., show error message to the user
     }
   }
+
   Future<void> getLeaveData() async {
+    setState(() {
+      isLoading = true; // Show loader
+    });
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     checkIn = prefs.getString('checkInTime') ?? '';
     checkOut = prefs.getString('checkOutTime') ?? '';
-    print('kkkkk: '+ checkIn+'....'+checkOut+'...'+Provider.of<AttendanceProvider>(context, listen: false).checkInTime.toString());
+
     final leaveProvider = Provider.of<LeaveProvider>(context, listen: false);
     SharedPreferences sp = await SharedPreferences.getInstance();
     token = sp.getString("tokenId");
-    print('hgvf: '+token!);
+
     try {
-      leaveProvider.fetchLeaveTypes(token: token!);
+      await leaveProvider.fetchLeaveTypes(token: token!);
     } catch (e) {
       if (kDebugMode) {
-        print('Error fetching profile: $e');
+        print('Error fetching leave data: $e');
       }
-      throw e;
+      // Handle error, e.g., show error message to the user
+    } finally {
+      setState(() {
+        isLoading = false; // Hide loader
+      });
     }
   }
 
@@ -148,20 +159,6 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
 
     });
-    // // Determine the greeting based on the time
-    // if (now.isBefore(DateTime(now.year, now.month, now.day, 12, 0))) {
-    //   greeting = 'Good morning, \r\nMark your Attendance time.';
-    // } else if (now.isBefore(DateTime(now.year, now.month, now.day, 18, 0))) {
-    //   greeting = 'Good afternoon, \r\nEnsure lunch and sit again.';
-    // } else if (now.isBefore(DateTime(now.year, now.month, now.day, 20, 0))) {
-    //   greeting = 'Good evening, \r\nMark your sign out time.';
-    // } else {
-    //   greeting = 'Good night, \r\nRelax & have a sweet dream.';
-    // }
-    // setState(() {
-    //
-    // });
-    // Update the UI with the new values
   }
 
   Future<bool> _isInsideGeofence(Position position) async {
@@ -189,6 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
     double hours = difference.inMinutes / 60.0;
     return hours;
   }
+
   void showLateEntryDialog() {
     TextEditingController _entryReasonController = TextEditingController();
     showDialog(
@@ -209,13 +207,8 @@ class _HomeScreenState extends State<HomeScreen> {
             actions: <Widget>[
               TextButton(
                 child: Text('Submit'),
-                onPressed: () {
-                  Provider.of<AttendanceProvider>(context, listen: false).toggleCheckInOut(token, lat, lan, ipv6, _entryReasonController.text, Provider.of<ProfileProvider>(context, listen: false).userData!.data.attendance.checkin.toString());
-                  //getProfileData();
-                  Navigator.of(context).pop();
-                  setState(() {
-                    getProfileData();
-                  });
+                onPressed: () async{
+                  await submitDialog(_entryReasonController.text);
                 },
               ),
             ],
@@ -244,13 +237,8 @@ class _HomeScreenState extends State<HomeScreen> {
             actions: <Widget>[
               TextButton(
                 child: Text('Submit'),
-                onPressed: () {
-                  Provider.of<AttendanceProvider>(context, listen: false).toggleCheckInOut(token, lat, lan, ipv6, _exitReasonController.text, Provider.of<ProfileProvider>(context, listen: false).userData!.data.attendance.checkin.toString());
-                  //getProfileData();
-                  Navigator.of(context).pop();
-                  setState(() {
-                    getProfileData();
-                  });
+                onPressed: () async { // Make the onPressed callback async
+                  await submitDialog(_exitReasonController.text);
                 },
               ),
             ],
@@ -260,144 +248,73 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-
-
-  // Future<void> initPlatformState() async {
-  //   // Configure BackgroundFetch.
-  //   int status = await BackgroundFetch.configure(BackgroundFetchConfig(
-  //       minimumFetchInterval: 15,
-  //       stopOnTerminate: false,
-  //       enableHeadless: true,
-  //       requiresBatteryNotLow: false,
-  //       requiresCharging: false,
-  //       requiresStorageNotLow: false,
-  //       requiresDeviceIdle: false,
-  //       requiredNetworkType: NetworkType.NONE
-  //   ), (String taskId) async {  // <-- Event handler
-  //     // This is the fetch-event callback.
-  //     print("[BackgroundFetch] Event received $taskId");
-  //       // Get the current location
-  //       Position position = await geolocator.getCurrentPosition();
-  //
-  //       // Check if inside the geofence
-  //       if (await _isInsideGeofence(position)) {
-  //         firstEntryTime = DateTime.now();
-  //         print('First entry time: $firstEntryTime');
-  //         _storeAttendance(position, 'checked_in');
-  //       } else {
-  //         lastCheckoutTime = DateTime.now();
-  //         print('Last checkout time: $lastCheckoutTime');
-  //         _storeAttendance(position, 'checked_out');
-  //       }
-  //
-  //       // Other background tasks...
-  //
-  //       // You can also update the UI if needed
-  //       setState(() {
-  //         // Update UI based on background tasks
-  //       });
-  //     // IMPORTANT:  You must signal completion of your task or the OS can punish your app
-  //     // for taking too long in the background.
-  //     BackgroundFetch.finish(taskId);
-  //   }, (String taskId) async {  // <-- Task timeout handler.
-  //     // This task has exceeded its allowed running-time.  You must stop what you're doing and immediately .finish(taskId)
-  //     print("[BackgroundFetch] TASK TIMEOUT taskId: $taskId");
-  //     BackgroundFetch.finish(taskId);
-  //   });
-  //   print('[BackgroundFetch] configure success: $status');
-  //   setState(() {
-  //     _status = status;
-  //   });
-  //
-  //   // If the widget was removed from the tree while the asynchronous platform
-  //   // message was in flight, we want to discard the reply rather than calling
-  //   // setState to update our non-existent appearance.
-  //   if (!mounted) return;
-  // }
-  //
-  // Future<void> _storeAttendance(Position position, String status) async {
-  //   final now = DateTime.now();
-  //   // Format date as "01/01/2024, Monday"
-  //   String todayDate = DateFormat('MM/dd/yyyy, EEEE').format(now);
-  //   final attendanceData =AttendanceDataModel(
-  //     id: null,
-  //     user_id: '007',
-  //     latitude: position.latitude.toString(),
-  //     longitude: position.longitude.toString(),
-  //     timestamp: DateTime.now().millisecondsSinceEpoch,
-  //     date: todayDate,
-  //     status: status,
-  //   );
-  //   await DatabaseHelper.instance.insertUserData(attendanceData);
-  // }
-  //
-  // Future<void> _getCurrentAttendanceData() async {
-  //   final DateTime date = DateTime.now();
-  //   // Convert the date to milliseconds since epoch to match the stored timestamp format
-  //   final int startOfDay = DateTime(date.year, date.month, date.day).millisecondsSinceEpoch;
-  //   final int endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59).millisecondsSinceEpoch;
-  //
-  //   final attendanceData = await DatabaseHelper.instance.getAllCurrentAttendanceData(startOfDay, endOfDay);
-  //
-  //   for (final entry in attendanceData) {
-  //     final timestamp = entry['timestamp'] as int;
-  //     final status = entry['status'] as String;
-  //
-  //     final formattedTime = DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(timestamp));
-  //     print('Status: $status, Time: $formattedTime');
-  //   }
-  // }
-  //
-  // Future<void> _getTodayEntryData() async {
-  //   try {
-  //     final now = DateTime.now();
-  //     // Format date as "01/01/2024, Monday"
-  //     String todayDate = DateFormat('MM/dd/yyyy, EEEE').format(now);
-  //     final entryData = await DatabaseHelper.instance.getEntry(todayDate);
-  //
-  //     if (entryData.isNotEmpty) {
-  //       checkIn = DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(entryData.first.timestamp));
-  //       print('List: ' + entryData.first.timestamp.toString());
-  //     } else {
-  //       checkIn = '00:00 AM';
-  //       // Handle case when no entry data is found for today
-  //       print('No entry data found for today.');
-  //     }
-  //   } catch (error) {
-  //     // Handle the error, e.g., print an error message
-  //     print('Error fetching today\'s entry data: $error');
-  //   }
-  // }
-  //
-  // Future<void> _getTodayExitData() async {
-  //   try {
-  //     final now = DateTime.now();
-  //     // Format date as "01/01/2024, Monday"
-  //     String todayDate = DateFormat('MM/dd/yyyy, EEEE').format(now);
-  //     final exitData = await DatabaseHelper.instance.getExit(todayDate);
-  //
-  //     if (exitData.isNotEmpty) {
-  //       checkOut = DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(exitData.first.timestamp));
-  //       print('List: ' + exitData.first.timestamp.toString());
-  //     } else {
-  //       checkOut = '00:00 AM';
-  //       // Handle case when no exit data is found for today
-  //       print('No exit data found for today.');
-  //     }
-  //   } catch (error) {
-  //     // Handle the error, e.g., print an error message
-  //     print('Error fetching today\'s exit data: $error');
-  //   }
-  // }
-  String convertTo12HourFormat(String dateTimeString) {
-    // Parse the date-time string
-    DateTime dateTime = DateTime.parse(dateTimeString);
-
-    // Format the time in 12-hour format with AM/PM
-    String formattedTime = DateFormat('hh:mm a').format(dateTime);
-
-    return formattedTime;
+// Function to submit the dialog
+  Future<void> submitDialog(String reason) async {
+    print('======================>');
+    Provider.of<AttendanceProvider>(context, listen: false).toggleCheckInOut(
+      context,
+      token,
+      lat,
+      lan,
+      ipv6,
+      reason,
+      Provider.of<ProfileProvider>(context, listen: false).userData!.data.attendance.checkin.toString());
+    // Close the dialog
+    Navigator.pop(context);
   }
+
+  String convertToMainFormat(String dateTimeString) {
+    try {
+      // Check if the input string already includes AM/PM format
+      print('-+-+-+  $dateTimeString');
+      if (dateTimeString.contains('AM') || dateTimeString.contains('PM')) {
+        // No need to convert, return the original string
+        DateTime now = DateTime.now();
+
+        String fullDateTimeString = DateFormat('yyyy-MM-dd').format(now) + ' ' + dateTimeString;
+        print('-+-?-+  $fullDateTimeString');
+        DateTime dateTime = DateFormat('yyyy-MM-dd hh:mm a').parse(fullDateTimeString);
+
+        // Format the DateTime object to the desired format
+        String formattedTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime);
+        print('-+-?-+  $formattedTime');
+        return formattedTime;
+      } else {
+        // Parse the date-time string
+        return dateTimeString;
+      }
+    } catch (e) {
+      // Handle parsing errors
+      print('Error converting to 12-hour format: $e');
+      // Return a default value or handle the error in another way
+      return 'Invalid Date';
+    }
+  }
+
+  String convertTo12HourFormat(String dateTimeString) {
+    try {
+      // Check if the input string already includes AM/PM format
+      if (dateTimeString.contains('AM') || dateTimeString.contains('PM')) {
+        // No need to convert, return the original string
+        return dateTimeString;
+      } else {
+        // Parse the date-time string
+        DateTime dateTime = DateTime.parse(dateTimeString);
+
+        // Format the time in 12-hour format with AM/PM
+        String formattedTime = DateFormat('hh:mm a').format(dateTime);
+
+        return formattedTime;
+      }
+    } catch (e) {
+      // Handle parsing errors
+      print('Error converting to 12-hour format: $e');
+      // Return a default value or handle the error in another way
+      return 'Invalid Date';
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     // Load data on app startup
@@ -413,7 +330,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final profileProvider = Provider.of<ProfileProvider>(context);
     final profileData = profileProvider.userData;
     return Scaffold(
-        body: profileData != null?SingleChildScrollView(
+        body: (!profileProvider.isProLoading && profileData != null) ?SingleChildScrollView(
           child: Column(
             children: [
               Stack(children: [
@@ -702,6 +619,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color: Colors.green[900], fontWeight: FontWeight.bold)),
                             Consumer<ProfileProvider>(
                               builder: (context, provider, child) {
+                                //print('<======> '+ provider.userData!.data.attendance.checkout);
                                 return Text(provider.userData!.data.attendance.checkout == null?'--:--': convertTo12HourFormat(provider.userData!.data.attendance.checkout),
                                     style: GoogleFonts.mulish(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 14));
                               },
@@ -725,7 +643,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color: Colors.green[900], fontWeight: FontWeight.bold),),
                             Consumer<AttendanceProvider>(
                               builder: (context, provider, child) {
-                                return Text(provider.calculateTotalHours(profileData.data.attendance.checkin.toString(), profileData.data.attendance.checkout.toString()),
+                                return Text(provider.calculateTotalHours(convertToMainFormat(profileData.data.attendance.checkin.toString()), convertToMainFormat(profileData.data.attendance.checkout.toString())),
                                     style: GoogleFonts.mulish(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 14));
                               },
                             ),

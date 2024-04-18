@@ -10,6 +10,12 @@ import '../utill/app_constant.dart';
 class ProfileProvider with ChangeNotifier {
   ProfileModel? _userData;
   bool isLoading = false;
+  bool get isProLoading => isLoading;
+
+  void loader (bool value){
+    isLoading = value;
+    notifyListeners();
+  }
 
   ProfileModel? get userData => _userData;
 
@@ -18,8 +24,28 @@ class ProfileProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void updateCheckInData(String checkInTime) {
+    // Update the check-in data in the profile data
+    if (_userData != null) {
+      userData?.data.attendance.checkin = checkInTime;
+      notifyListeners();
+    }
+    // Notify listeners that the data has changed
+    notifyListeners();
+  }
+
+  void updateCheckOutData(String checkOutTime) {
+    // Update the check-in data in the profile data
+    if (_userData != null) {
+      _userData!.data.attendance.checkout = checkOutTime;
+      notifyListeners();
+    }
+    // Notify listeners that the data has changed
+    notifyListeners();
+  }
+
   Future<void> fetchProfile({required String token}) async {
-    isLoading = true;
+    loader(true);
     print('iiiiii:' + token);
     final url = Uri.parse(AppConstants.profileData);
     try {
@@ -32,7 +58,7 @@ class ProfileProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        isLoading = false;
+        loader(false);
         print("res: " + response.body.toString());
         final profileData = ProfileModel.fromJson(jsonDecode(response.body));
         setUserData(profileData);
@@ -43,7 +69,7 @@ class ProfileProvider with ChangeNotifier {
           print("res: " + response.body.toString());
         }
         if (response.statusCode == 422) {
-          isLoading = false;
+          loader(false);
           String responseData = response.body.toString();
           Get.snackbar(
             'Warning',
@@ -55,7 +81,7 @@ class ProfileProvider with ChangeNotifier {
             margin: EdgeInsets.all(10),
           );
         } else if (response.statusCode == 500) {
-          isLoading = false;
+          loader(false);
           Get.snackbar(
             'Warning',
             'Internal server issue !',
@@ -68,7 +94,7 @@ class ProfileProvider with ChangeNotifier {
         }
       }
     } catch (e) {
-      isLoading = false;
+      loader(false);
       if (kDebugMode) {
         print("Failed: $e");
       }
@@ -77,7 +103,7 @@ class ProfileProvider with ChangeNotifier {
   }
 
   Future<void> updateProfile(String token, String firstName, String lastName, String phone, String address, File? photo) async {
-    isLoading = true;
+    loader(true);
     Map<String, String> headers = {
       HttpHeaders.authorizationHeader: 'Bearer $token',
       HttpHeaders.contentTypeHeader: 'application/json',
@@ -100,7 +126,7 @@ class ProfileProvider with ChangeNotifier {
     var response = await request.send();
 
     if (response.statusCode == 200) {
-      isLoading = false;
+      loader(false);
       var responseJson = await response.stream.bytesToString();
       final profileData = ProfileModel.fromJson(jsonDecode(responseJson));
       setUserData(profileData); // Update user data
@@ -109,12 +135,12 @@ class ProfileProvider with ChangeNotifier {
       notifyListeners();
       print('Profile updated successfully');
     } else {
-      isLoading = false;
+      loader(false);
       if (kDebugMode) {
         print("res: " + response.statusCode.toString());
       }
       if (response.statusCode == 422) {
-        isLoading = false;
+        loader(false);
         var responseJson = await response.stream.bytesToString();
         final profileData = ProfileModel.fromJson(jsonDecode(responseJson));
         Get.snackbar(
@@ -127,7 +153,7 @@ class ProfileProvider with ChangeNotifier {
           margin: EdgeInsets.all(10),
         );
       } else if (response.statusCode == 500) {
-        isLoading = false;
+        loader(false);
         var responseJson = await response.stream.bytesToString();
         final profileData = ProfileModel.fromJson(jsonDecode(responseJson));
         Get.snackbar(
@@ -140,7 +166,7 @@ class ProfileProvider with ChangeNotifier {
           margin: EdgeInsets.all(10),
         );
       }else{
-        isLoading = false;
+        loader(false);
         print("res222: " + response.statusCode.toString());
       }
       notifyListeners();

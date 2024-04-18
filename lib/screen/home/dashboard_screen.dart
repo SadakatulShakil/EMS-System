@@ -37,13 +37,15 @@ class DashBoardScreenState extends State<DashBoardScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        if (_pageIndex != 0) {
-          _pageIndex = 0;
-          return false;
-        } else {
-          return true;
-        }
-      },
+      if (_pageIndex != 0) {
+        setState(() {
+          _pageIndex = 0; // Navigate back to the home page
+        });
+        return false; // Do not close the app
+      } else {
+        return true; // Close the app
+      }
+    },
       child: Scaffold(
         key: _scaffoldKey,
         bottomNavigationBar: Padding(
@@ -67,12 +69,12 @@ class DashBoardScreenState extends State<DashBoardScreen> {
                   rippleColor: Colors.grey[300]!,
                   hoverColor: Colors.grey[100]!,
                   gap: 8,
-                  activeColor: Colors.white,
+                  activeColor: primaryColor,
                   iconSize: 25,
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   duration: Duration(milliseconds: 400),
-                  tabBackgroundColor: Colors.orange[200]!,
-                  color: Colors.white,
+                  tabBackgroundColor: Colors.white,
+                  color: primaryColor,
                   tabs: [
                     GButton(
                       icon: LineIcons.home,

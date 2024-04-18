@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import 'package:employe_management_system/Model/checkin_model.dart';
 import 'package:employe_management_system/Model/checkout_model.dart';
+import 'package:employe_management_system/providers/profile_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,7 +29,7 @@ class AttendanceProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> toggleCheckInOut(String? token, String lat, String lan, String ipv6, String reason, String checkin) async {
+  Future<void> toggleCheckInOut(BuildContext context, String? token, String lat, String lan, String ipv6, String reason, String checkin) async {
     print('shdgfjhb: '+ checkin);
     if (checkin == 'null') {
       // Check-in
@@ -35,14 +37,14 @@ class AttendanceProvider with ChangeNotifier {
       _checkInTime = DateFormat.jm().format(now);
       String entryTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(now); // Format the datetime into desired format
       _action = 1;
-      checkIn(token!, entryTime, lat, lan, ipv6, reason, _action);
+      checkIn(context, token!, entryTime, lat, lan, ipv6, reason, _action);
     } else {
       // Check-out
       final now = DateTime.now();
       _checkOutTime = DateFormat.jm().format(now);
       String exitTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
       _action = 2;
-      checkOut(token!, exitTime, lat, lan, ipv6, reason, _action);
+      checkOut(context, token!, exitTime, lat, lan, ipv6, reason, _action);
     }
 
     notifyListeners();
@@ -83,7 +85,7 @@ class AttendanceProvider with ChangeNotifier {
     if (checkin == 'null' || checkout == 'null') {
       return '--:--';
     }
-
+    print('---------> $checkin # $checkout');
     try {
       final DateFormat timeFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
       DateTime checkIn = timeFormat.parse(checkin);
@@ -100,7 +102,7 @@ class AttendanceProvider with ChangeNotifier {
     }
   }
 
-  Future<CheckInModel?> checkIn(String token, String checkIn,
+  Future<CheckInModel?> checkIn(BuildContext context, String token, String checkIn,
       String request_lat, String request_long, String request_ip, String late_reason, int action) async {
     print('iiiiii: $checkIn....$checkOut');
     final url = Uri.parse(AppConstants.checkInData);
@@ -130,6 +132,8 @@ class AttendanceProvider with ChangeNotifier {
         _checkInTime = formattedTime;
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('checkInTime', _checkInTime);
+        Provider.of<ProfileProvider>(context, listen: false).updateCheckInData(_checkInTime);
+        notifyListeners();
         return profileData; // Update user data
       } else {
         if (kDebugMode) {
@@ -174,7 +178,7 @@ class AttendanceProvider with ChangeNotifier {
     }
   }
 
-  Future<CheckOutModel?> checkOut(String token, String checkOut,
+  Future<CheckOutModel?> checkOut(BuildContext context, String token, String checkOut,
       String request_lat, String request_long, String request_ip, String late_reason, int action) async {
     print('iiiiii: call this time');
     final url = Uri.parse(AppConstants.checkOutData);
@@ -204,6 +208,8 @@ class AttendanceProvider with ChangeNotifier {
         _checkOutTime = formattedTime;
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('checkOutTime', _checkOutTime);
+        Provider.of<ProfileProvider>(context, listen: false).updateCheckOutData(_checkOutTime);
+        notifyListeners();
         return profileData; // Update user data
       } else {
         if (kDebugMode) {

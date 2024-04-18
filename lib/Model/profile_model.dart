@@ -12,7 +12,7 @@ String profileModelToJson(ProfileModel data) => json.encode(data.toJson());
 class ProfileModel {
   final String status;
   final Data data;
-  final String message;
+  final dynamic message;
 
   ProfileModel({
     required this.status,
@@ -37,7 +37,7 @@ class Data {
   final String uuid;
   final String firstName;
   final String lastName;
-  final String email;
+  final dynamic email;
   final String phone;
   final dynamic address;
   final String department;
@@ -97,8 +97,8 @@ class Attendance {
   final int workingDays;
   final int onTime;
   final int lateTime;
-  final dynamic checkin;
-  final dynamic checkout;
+  dynamic checkin;
+  dynamic checkout;
 
   Attendance({
     required this.workingDays,

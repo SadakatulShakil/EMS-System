@@ -72,9 +72,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Align(
               alignment: Alignment.center,
               child: Text(
-                profileData.data.firstName != ''
+                profileData.data.firstName != null
                     ? '${profileData.data.firstName} ${profileData.data.lastName}'
-                    : 'Mr. Haasan Masud',
+                    : '',textAlign: TextAlign.center,
                 style: GoogleFonts.mulish(
                   fontSize: 28,
                   fontWeight: FontWeight.w600,
@@ -86,9 +86,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Align(
               alignment: Alignment.center,
               child: Text(
-                profileData.data.designation != ''
+                profileData.data.designation != null
                     ? profileData.data.designation
-                    : 'Senior Software Engineer',
+                    : '',
                 style: GoogleFonts.mulish(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -111,9 +111,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Text('Department: '),
                   Flexible(
                     child: Text(
-                      profileData.data.department != ''
+                      profileData.data.department != null
                           ? profileData.data.department
-                          : 'Technology',
+                          : '',
                       textAlign: TextAlign.end,
                     ),
                   )
@@ -128,9 +128,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Text('Email: '),
                   Flexible(
                     child: Text(
-                      profileData.data.email != ''
+                      profileData.data.email != null
                           ? profileData.data.email
-                          : 'haasanmanud@company.com',
+                          : '',
                       textAlign: TextAlign.end,
                     ),
                   )
@@ -145,9 +145,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Text('Phone: '),
                   Flexible(
                     child: Text(
-                      profileData.data.phone != ''
+                      profileData.data.phone != null
                           ? profileData.data.phone
-                          : '01751330394',
+                          : '',
                       textAlign: TextAlign.end,
                     ),
                   )
@@ -162,9 +162,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Text('Address: '),
                   Flexible(
                     child: Text(
-                      profileData.data.address != ''
+                      profileData.data.address != null
                           ? profileData.data.address
-                          : 'Dhaka, Bangladesh',
+                          : '',
                       textAlign: TextAlign.end,
                     ),
                   )
@@ -238,7 +238,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             Visibility(
-              visible: applicationProvider.leaveApplicationsData.length>0?true:false,
+              visible: applicationProvider.leaveApplicationsData.length > 0?true:false,
               child: GestureDetector(
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) => LeaveApplicationsPage(applicationProvider.leaveApplicationsData, token)));
