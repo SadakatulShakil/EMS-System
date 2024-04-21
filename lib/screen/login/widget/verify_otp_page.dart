@@ -114,7 +114,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Color(0xFF66A690),
-        title: Text('Verify OTP'),
+        title: Text('Verify OTP',style: GoogleFonts.mulish()),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),

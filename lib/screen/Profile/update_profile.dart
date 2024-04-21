@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../providers/profile_provider.dart';
-import '../../utill/stored_images.dart';
+
 class ProfileUpdateScreen extends StatefulWidget {
   const ProfileUpdateScreen({Key? key}) : super(key: key);
 
@@ -121,7 +121,7 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
           Padding(
             padding: const EdgeInsets.only(bottom: 100),
             child: Image.asset(
-              Images.toolbarBackground,
+              'assets/images/toolbar_background.png',
               fit: BoxFit.fill,
               height: 500,
             ),
@@ -213,7 +213,7 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                                 children: [
                                   Icon(Icons.person, color: Colors.red, size: 20),
                                   const SizedBox(width: 5),
-                                  Text('First Name'),
+                                  Text('First Name',style: GoogleFonts.mulish()),
                                 ],
                               ),
                               const SizedBox(height: 5),
@@ -245,7 +245,7 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                                 children: [
                                   Icon(Icons.person, color: Colors.red, size: 20),
                                   const SizedBox(width: 5),
-                                  Text('Last Name'),
+                                  Text('Last Name',style: GoogleFonts.mulish()),
                                 ],
                               ),
                               const SizedBox(height: 5),
@@ -277,7 +277,7 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                                 children: [
                                   Icon(Icons.alternate_email, color: Colors.red, size: 20),
                                   const SizedBox(width: 5),
-                                  Text('Email'),
+                                  Text('Email',style: GoogleFonts.mulish()),
                                 ],
                               ),
                               const SizedBox(height: 5),
@@ -310,7 +310,7 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                                 children: [
                                   Icon(Icons.dialpad, color: Colors.red, size: 20),
                                   const SizedBox(width: 5),
-                                  Text('Phone No'),
+                                  Text('Phone No',style: GoogleFonts.mulish()),
                                 ],
                               ),
                               const SizedBox(height: 5),
@@ -342,7 +342,7 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                                 children: [
                                   Icon(Icons.location_history_outlined, color: Colors.red, size: 20),
                                   const SizedBox(width: 5),
-                                  Text('Department'),
+                                  Text('Department',style: GoogleFonts.mulish()),
                                 ],
                               ),
                               const SizedBox(height: 5),
@@ -375,7 +375,7 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                                 children: [
                                   Icon(Icons.location_history_outlined, color: Colors.red, size: 20),
                                   const SizedBox(width: 5),
-                                  Text('Designation'),
+                                  Text('Designation',style: GoogleFonts.mulish()),
                                 ],
                               ),
                               const SizedBox(height: 5),
@@ -408,7 +408,7 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                                 children: [
                                   Icon(Icons.location_history_outlined, color: Colors.red, size: 20),
                                   const SizedBox(width: 5),
-                                  Text('Address'),
+                                  Text('Address',style: GoogleFonts.mulish()),
                                 ],
                               ),
                               const SizedBox(height: 5),

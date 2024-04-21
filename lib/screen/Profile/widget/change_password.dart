@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../providers/auth_provider.dart';
 import '../../../utill/color_resources.dart';
-import '../../../utill/dimensions.dart';
 import '../../login/login_screen.dart';
 
 
@@ -101,7 +100,7 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
     } catch (e) {
       if (kDebugMode) {
         print('Error fetching profile: $e');
-      }
+      };
       rethrow;
     }
   }

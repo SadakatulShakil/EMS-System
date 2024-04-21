@@ -6,7 +6,6 @@ import '../../utill/color_resources.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../utill/dimensions.dart';
 import 'alert_widget/alertWidget.dart';
 import 'package:provider/provider.dart';
 import 'package:get/get.dart';
@@ -265,7 +264,7 @@ class _LeaveScreenState extends State<LeaveScreen> {
                       items: leaveTypesProvider.leaveTypes.map((leaveType) {
                         return DropdownMenuItem<Datum>(
                           value: leaveType,
-                          child: Text(leaveType.name),
+                          child: Text(leaveType.name,style: GoogleFonts.mulish()),
                         );
                       }).toList(),
                       onChanged: (selectedLeaveType) {
@@ -305,7 +304,7 @@ class _LeaveScreenState extends State<LeaveScreen> {
                         children: [
                           Text(leaveFromDate == ''
                               ? 'Select date'
-                              : leaveFromDate),
+                              : leaveFromDate,style: GoogleFonts.mulish()),
                           Icon(Icons.calendar_month_rounded)
                         ],
                       ))),
@@ -325,7 +324,7 @@ class _LeaveScreenState extends State<LeaveScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(leaveToDate == '' ? 'Select date' : leaveToDate),
+                          Text(leaveToDate == '' ? 'Select date' : leaveToDate,style: GoogleFonts.mulish()),
                           Icon(Icons.calendar_month_rounded)
                         ],
                       ))),

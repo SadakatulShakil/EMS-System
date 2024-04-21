@@ -9,7 +9,6 @@ import '../../../providers/auth_provider.dart';
 import '../../../utill/color_resources.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../utill/dimensions.dart';
 class ForgetPasswordPage extends StatefulWidget {
   @override
   _ForgetPasswordPageState createState() => _ForgetPasswordPageState();
@@ -76,7 +75,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Color(0xFF66A690),
-        title: Text('Forget Password'),
+        title: Text('Forget Password',style: GoogleFonts.mulish(),),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
@@ -98,7 +97,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
                     color: cyanColor,
                   ),),
                 ),
-                const SizedBox(height: Dimensions.paddingSizeLarge),
+                const SizedBox(height: 20.0),
                 Padding(
                   padding: const EdgeInsets.only(left: 18.0, right: 18, top: 18),
                   child: Text('Email',   style: GoogleFonts.mulish(

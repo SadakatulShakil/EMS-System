@@ -79,7 +79,7 @@ class _LeaveApplicationsPageState extends State<LeaveApplicationsPage> {
             appBar: AppBar(
               elevation: 0,
               backgroundColor: Color(0xFF66A690),
-              title: Text('Pending Request'),
+              title: Text('Pending Request',style: GoogleFonts.mulish()),
               leading: IconButton(
                 icon: Icon(Icons.arrow_back_ios, color: Colors.white),
                 onPressed: () => Navigator.of(context).pop(),
@@ -111,11 +111,11 @@ class _LeaveApplicationsPageState extends State<LeaveApplicationsPage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Applied by: ' + record.employee.toString()),
-                            Text('Leave type: ' + record.type.toString()),
-                            Text('Start from: ' + record.startedAt.toString()),
-                            Text('Till at: ' + record.endedAt.toString()),
-                            Text('Reason: ' + record.reason.toString()),
+                            Text('Applied by: ' + record.employee.toString(),style: GoogleFonts.mulish()),
+                            Text('Leave type: ' + record.type.toString(),style: GoogleFonts.mulish()),
+                            Text('Start from: ' + record.startedAt.toString(),style: GoogleFonts.mulish()),
+                            Text('Till at: ' + record.endedAt.toString(),style: GoogleFonts.mulish()),
+                            Text('Reason: ' + record.reason.toString(),style: GoogleFonts.mulish()),
                             SizedBox(height: 8,),
                             Visibility(
                               visible: record.status == 'APPROVED' ? false : true,

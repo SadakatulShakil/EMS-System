@@ -57,7 +57,7 @@ class _AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Color(0xFF66A690),
-        title: Text('Attendance history'),
+        title: Text('Attendance history',style: GoogleFonts.mulish()),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
@@ -84,16 +84,16 @@ class _AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
                   ],
                 ),
                 child: ListTile(
-                  title: Text(convertToDateHourFormat(record.checkin.toString())),
+                  title: Text(convertToDateHourFormat(record.checkin.toString()),style: GoogleFonts.mulish()),
                   subtitle: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Checkin at: '+convertTo12HourFormat(record.checkin.toString())),
+                        Text('Checkin at: '+convertTo12HourFormat(record.checkin.toString()),style: GoogleFonts.mulish()),
                         SizedBox(height: 8,),
-                        Text('Checkout at: '+convertTo12HourFormat(record.checkout.toString())),
+                        Text('Checkout at: '+convertTo12HourFormat(record.checkout.toString()),style: GoogleFonts.mulish()),
                       ],
                     ),
                   ),
@@ -105,7 +105,7 @@ class _AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
                       child: Padding(
                         padding: const EdgeInsets.all(5.0),
                         child: Text('Late Entry', style: GoogleFonts.mulish(color: Colors.white, fontSize: 12),),
-                      )): Text('On time'),
+                      )): Text('On time',style: GoogleFonts.mulish()),
                   onTap: () {
                     // Handle tapping on a record if needed
                   },

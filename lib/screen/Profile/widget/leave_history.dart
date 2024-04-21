@@ -42,7 +42,7 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Color(0xFF66A690),
-        title: Text('Leave history'),
+        title: Text('Leave history',style: GoogleFonts.mulish()),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
@@ -77,7 +77,7 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Leave type: ' + record.type.toString()),
+                          Text('Leave type: ' + record.type.toString(),style: GoogleFonts.mulish()),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Align(
@@ -91,9 +91,9 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
                           )
                         ],
                       ),
-                      Text('Start from: ' + record.startedAt.toString()),
-                      Text('Till at: ' + record.endedAt.toString()),
-                      Text('Reason: ' + record.reason.toString()),
+                      Text('Start from: ' + record.startedAt.toString(),style: GoogleFonts.mulish()),
+                      Text('Till at: ' + record.endedAt.toString(),style: GoogleFonts.mulish()),
+                      Text('Reason: ' + record.reason.toString(),style: GoogleFonts.mulish()),
                       SizedBox(height: 5,),
                     ],
                   ),

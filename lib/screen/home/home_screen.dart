@@ -4,7 +4,7 @@ import 'package:employe_management_system/providers/leave_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:get/get.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -14,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../providers/attendence_provider.dart';
 import '../../providers/profile_provider.dart';
-import '../../utill/stored_images.dart';
+
 import '../Profile/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -195,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
       int hours = duration.inHours;
       int minutes = (duration.inMinutes % 60);
 
-      return '$hours:${minutes.toString().padLeft(2, '0')}';
+      return '$hours hr ${minutes.toString().padLeft(2, '0')} min';
     } catch (e) {
       return 'Error calculating total hours';
     }
@@ -220,7 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             actions: <Widget>[
               TextButton(
-                child: Text('Submit'),
+                child: Text('Submit',style: GoogleFonts.mulish()),
                 onPressed: () async{
                   await submitDialog(_entryReasonController.text);
                 },
@@ -250,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             actions: <Widget>[
               TextButton(
-                child: Text('Submit'),
+                child: Text('Submit',style: GoogleFonts.mulish()),
                 onPressed: () async { // Make the onPressed callback async
                   await submitDialog(_exitReasonController.text);
                 },
@@ -586,8 +586,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 Consumer<AttendanceProvider>(
                                   builder: (context, provider, child) {
-                                    return Image.asset(profileData.data.attendance.checkin == null
-                                        ? Images.checkInBtn : Images.checkoutBtn);
+                                    return SvgPicture.asset(
+                                      profileData.data.attendance.checkin == null
+                                          ? 'assets/images/checkin_btn.svg'
+                                          : 'assets/images/checkout_btn.svg',
+                                    );
                                   },
                                 ),
                               ],
@@ -605,7 +608,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontSize: 13 / MediaQuery.textScaleFactorOf(context), color: isLocMatched?Colors.green:Colors.redAccent,letterSpacing: 1.5),),
                 ],
               ),
-              Text('Working hours : ${calculateHours(convertToMainFormat(profileData.data.attendance.checkin.toString()))}', style: GoogleFonts.mulish(color: int.parse(calculateHours(convertToMainFormat(profileData.data.attendance.checkin.toString())).split(':')[0]) < 9 ? Colors.red:Colors.green),),
+              Text('Working hours : ${calculateHours(convertToMainFormat(profileData.data.attendance.checkin.toString()))}',
+                style: GoogleFonts.mulish(
+                    color: int.parse(calculateHours(convertToMainFormat(profileData.data.attendance.checkin.toString()))
+                        .split('')[0].replaceAll('hr', '')) < 9 ? Colors.red:Colors.green),),
               SizedBox(height: 40,),
               Padding(
                 padding: const EdgeInsets.all(10.0),
@@ -614,7 +620,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Row(
                       children: [
-                        Image.asset(Images.checkin),
+                        SvgPicture.asset('assets/images/checkin.svg'),
                         SizedBox(width: 5,),
                         Column(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -635,7 +641,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     Row(
                       children: [
-                        Image.asset(Images.checkout),
+                        SvgPicture.asset('assets/images/checkout.svg'),
                         SizedBox(width: 5,),
                         Column(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -659,7 +665,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     Row(
                       children: [
-                        Image.asset(Images.total),
+                        SvgPicture.asset('assets/images/total.svg'),
                         SizedBox(width: 5,),
                         Column(
                           mainAxisAlignment: MainAxisAlignment.start,

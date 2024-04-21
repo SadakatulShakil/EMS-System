@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../providers/profile_provider.dart';
+import '../../utill/color_resources.dart';
 import '../Profile/update_profile.dart';
 import '../login/login_screen.dart';
 import '../report/report_page.dart';
@@ -60,7 +61,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: widget.isBackExit?AppBar(
       elevation: 0,
       backgroundColor: Color(0xFF66A690),
-      title: Text('Profile'),
+      title: Text('Profile',style: GoogleFonts.mulish()),
       leading: IconButton(
         icon: Icon(Icons.arrow_back_ios, color: Colors.white),
         onPressed: () => Navigator.of(context).pop(),
@@ -113,68 +114,72 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             SizedBox(height: 8),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.only(left: 12.0, right: 12, top: 8, bottom: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Department: '),
+                  Text('Department: ', style: GoogleFonts.mulish(fontSize: 16),),
                   Flexible(
                     child: Text(
                       profileData.data.department != null
                           ? profileData.data.department
                           : '',
                       textAlign: TextAlign.end,
+                      style: GoogleFonts.mulish(fontSize: 16),
                     ),
                   )
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.only(left: 12.0, right: 12, top: 8, bottom: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Email: '),
+                  Text('Email: ', style: GoogleFonts.mulish(fontSize: 16),),
                   Flexible(
                     child: Text(
                       profileData.data.email != null
                           ? profileData.data.email
                           : '',
                       textAlign: TextAlign.end,
+                      style: GoogleFonts.mulish(fontSize: 16),
                     ),
                   )
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.only(left: 12.0, right: 12, top: 8, bottom: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Phone: '),
+                  Text('Phone: ', style: GoogleFonts.mulish(fontSize: 16),),
                   Flexible(
                     child: Text(
                       profileData.data.phone != null
                           ? profileData.data.phone
                           : '',
                       textAlign: TextAlign.end,
+                      style: GoogleFonts.mulish(fontSize: 16),
                     ),
                   )
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.only(left: 12.0, right: 12, top: 8, bottom: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Address: '),
+                  Text('Address: ', style: GoogleFonts.mulish(fontSize: 16),),
                   Flexible(
                     child: Text(
                       profileData.data.address != null
                           ? profileData.data.address
                           : '',
                       textAlign: TextAlign.end,
+                      style: GoogleFonts.mulish(fontSize: 16),
                     ),
                   )
                 ],
@@ -201,7 +206,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(Icons.settings, size: 25, color: Theme.of(context).colorScheme.primary),
+                      Icon(Icons.settings, size: 25, color: accent),
                       SizedBox(width: 10),
                       Expanded(
                         child: Text(
@@ -239,7 +244,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(Icons.lock, size: 25, color: Theme.of(context).colorScheme.primary,),
+                      Icon(Icons.lock, size: 25, color: accent,),
                       SizedBox(width: 10),
                       Expanded(
                         child: Text(
@@ -306,7 +311,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(Icons.touch_app, size: 25, color: Theme.of(context).colorScheme.primary),
+                        Icon(Icons.touch_app, size: 25, color: accent),
                         SizedBox(width: 10),
                         Expanded(
                           child: Text(
@@ -344,7 +349,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(Icons.history_edu, size: 25, color: Theme.of(context).colorScheme.primary),
+                      Icon(Icons.history_edu, size: 25, color: accent),
                       SizedBox(width: 10),
                       Expanded(
                         child: Text(
@@ -378,7 +383,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(Icons.history, size: 25, color: Theme.of(context).colorScheme.primary),
+                      Icon(Icons.history, size: 25, color: accent),
                       SizedBox(width: 10),
                       Expanded(
                         child: Text(

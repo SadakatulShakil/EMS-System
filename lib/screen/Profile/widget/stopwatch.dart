@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import '../../../utill/stored_images.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class StopwatchPage extends StatefulWidget {
   @override
@@ -95,7 +94,7 @@ class _StopwatchPageState extends State<StopwatchPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Image.asset(Images.checkInBtn),
+                            SvgPicture.asset('assets/images/checkin.svg'),
                           ],
                         ),
                       )
