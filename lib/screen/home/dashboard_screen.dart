@@ -27,7 +27,7 @@ class DashBoardScreenState extends State<DashBoardScreen> {
     _screens = [
       HomeScreen(),
       LeaveScreen(backExits: false),
-      ProfileScreen(backExits: false),
+      ProfileScreen(false),
     ];
 
     // NetworkInfo.checkConnectivity(context);

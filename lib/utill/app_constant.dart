@@ -14,6 +14,9 @@ class AppConstants {
   static const String leaveHistory = '${baseUrl}leave';//https://hda.whosomalia.com/v1/profile-update
   static const String leaveApplications = '${baseUrl}leave/applications';//https://hda.whosomalia.com/v1/profile-update
   static const String updateLeaveApplications = '${baseUrl}leave/approved';//https://hda.whosomalia.com/v1/profile-update
+  static const String verifyOtp = '${baseUrl}auth/reset-password';
+  static const String sendOtp = '${baseUrl}auth/forget-password';//https://hda.whosomalia.com/v1/profile-update
+  static const String updatePassword = '${baseUrl}auth/change-password';
   //App colors
   static const Color chwColor =  Color(0xffD35520) ;
 

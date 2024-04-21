@@ -15,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../providers/attendence_provider.dart';
 import '../../providers/profile_provider.dart';
 import '../../utill/stored_images.dart';
+import '../Profile/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -155,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
     currentTime = DateFormat.jm().format(now);
 
     // Format date as "01/01/2024, Monday"
-    currentDate = DateFormat('MM/dd/yyyy, EEEE').format(now);
+    currentDate = DateFormat('dd MMMM, yyyy, EEEE').format(now);
     setState(() {
 
     });
@@ -178,13 +179,26 @@ class _HomeScreenState extends State<HomeScreen> {
     return distance <= geofenceRadius;
   }
 
-  double calculateHours(String startTimes, String endTimes) {
-    final DateFormat timeFormat = DateFormat('HH:mm');
-    DateTime startTime = timeFormat.parse(startTimes);
-    DateTime endTime = timeFormat.parse(endTimes);
-    Duration difference = endTime.difference(startTime);
-    double hours = difference.inMinutes / 60.0;
-    return hours;
+  String calculateHours(String startTimes) {
+    if (startTimes == 'null') {
+      return '--:--';
+    }
+    try {
+      DateTime now = DateTime.now();
+      final DateFormat timeFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+      String formattedNow = timeFormat.format(now);
+      DateTime checkIn = timeFormat.parse(startTimes);
+      DateTime checkOut = timeFormat.parse(formattedNow);
+
+      Duration duration = checkOut.difference(checkIn);
+
+      int hours = duration.inHours;
+      int minutes = (duration.inMinutes % 60);
+
+      return '$hours:${minutes.toString().padLeft(2, '0')}';
+    } catch (e) {
+      return 'Error calculating total hours';
+    }
   }
 
   void showLateEntryDialog() {
@@ -374,9 +388,20 @@ class _HomeScreenState extends State<HomeScreen> {
                               ],
                             ),
                           ),
-                          CircleAvatar(
-                            backgroundImage: NetworkImage(profileData.data.photo !=null?profileData.data.photo:'https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg'),
-                            radius: 30,
+                          InkWell(
+                            onTap: (){
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProfileScreen(true),
+                                ),
+                              );
+                            },
+                            child: CircleAvatar(
+                              backgroundImage: NetworkImage(profileData.data.photo !=null?profileData.data.photo
+                                  :'https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg'),
+                              radius: 30,
+                            ),
                           ),
                         ],
                       ),
@@ -512,7 +537,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],),
               SizedBox(height: 40,),
               GestureDetector(
-                onTap: (){
+                onTap: () async{
                   if(isLocMatched){
                     DateTime now = DateTime.now();
                     DateTime entryTime = DateFormat('hh:mm a').parse(profileData.data.settings.office.startTime);
@@ -527,18 +552,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         && isBeforeExitTime){
                       showEarlyExitDialog();
                     }else{
-                      showEarlyExitDialog();
+                      await submitDialog('On time');
                     }
                   }else{
-                    Get.snackbar(
-                      'Warning',
-                      'You are not in the Office!',
-                      snackPosition: SnackPosition.TOP,
-                      backgroundColor: Colors.redAccent,
-                      colorText: Colors.white,
-                      borderRadius: 10,
-                      margin: EdgeInsets.all(10),
-                    );
+                    await submitDialog('Out side from Office');
+                    // Get.snackbar(
+                    //   'Warning',
+                    //   'You are not in the Office!',
+                    //   snackPosition: SnackPosition.TOP,
+                    //   backgroundColor: Colors.redAccent,
+                    //   colorText: Colors.white,
+                    //   borderRadius: 10,
+                    //   margin: EdgeInsets.all(10),
+                    // );
                   }
                 },
                 child: Container(
@@ -579,6 +605,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontSize: 13 / MediaQuery.textScaleFactorOf(context), color: isLocMatched?Colors.green:Colors.redAccent,letterSpacing: 1.5),),
                 ],
               ),
+              Text('Working hours : ${calculateHours(convertToMainFormat(profileData.data.attendance.checkin.toString()))}', style: GoogleFonts.mulish(color: int.parse(calculateHours(convertToMainFormat(profileData.data.attendance.checkin.toString())).split(':')[0]) < 9 ? Colors.red:Colors.green),),
               SizedBox(height: 40,),
               Padding(
                 padding: const EdgeInsets.all(10.0),

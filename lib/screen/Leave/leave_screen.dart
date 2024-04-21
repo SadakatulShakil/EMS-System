@@ -38,7 +38,6 @@ class _LeaveScreenState extends State<LeaveScreen> {
   ];
   List<String> _selectedItems = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  TextEditingController titleController = TextEditingController();
   TextEditingController reasonController = TextEditingController();
   // Variables to store selected values
   String? selectedLeaveType;
@@ -181,10 +180,9 @@ class _LeaveScreenState extends State<LeaveScreen> {
     }else{
       if(_formKey.currentState!.validate()){
         try {
-          leaveProvider.applyLeave(token!, titleController.text, reasonController.text, leaveTypeId!, leaveFromDate, leaveToDate);
+          leaveProvider.applyLeave(token!, 'Apply from App', reasonController.text, leaveTypeId!, leaveFromDate, leaveToDate);
 
           setState(() {
-            titleController.text = ''; // Resetting title field
             reasonController.text = ''; // Resetting reason field
             selectedLeaveType = null; // Resetting selected leave type
             leaveTypeId = null; // Resetting leave type ID
@@ -199,74 +197,6 @@ class _LeaveScreenState extends State<LeaveScreen> {
         }
       }
     }
-  }
-
-  // Function to display photo data in a dialog
-  void _showPhotoPicker() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Upload photo from'),
-          content: Container(
-            height: 100,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                  onTap: () async {
-                    Navigator.pop(context);
-                    final ImagePicker picker = ImagePicker();
-                    final XFile? image =
-                        await picker.pickImage(source: ImageSource.camera);
-                    if (kDebugMode) {
-                      print('file Name: ' + image!.name.toString());
-                    }
-                    setState(() {
-                      fileName = image!.name.toString();
-                    });
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Image.asset('assets/images/camera.png'),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      Text('Camera'),
-                    ],
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () async {
-                    Navigator.pop(context);
-                    final ImagePicker picker = ImagePicker();
-                    final XFile? image =
-                        await picker.pickImage(source: ImageSource.gallery);
-                    if (kDebugMode) {
-                      print('file Name: ' + image!.name.toString());
-                    }
-                    setState(() {
-                      fileName = image!.name.toString();
-                    });
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Image.asset('assets/images/gallery.png'),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      Text('Gallery')
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
   @override
@@ -289,35 +219,35 @@ class _LeaveScreenState extends State<LeaveScreen> {
         elevation: 0,
         backgroundColor: accent,
         title: Text('Apply Leave'),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12.0),
-            child: IconButton(
-              onPressed: () {
-                //Navigator.of(context).push(MaterialPageRoute(builder: (context) => FinalView()));
-              },
-              icon: Stack(clipBehavior: Clip.none, children: [
-                Icon(
-                  Icons.notifications,
-                  size: 30,
-                ),
-                Positioned(
-                  top: -2,
-                  right: -2,
-                  child: CircleAvatar(
-                    radius: 7,
-                    backgroundColor: Colors.red,
-                    child: Text('0', // need a consumer for cart data
-                        style: GoogleFonts.mulish(
-                          color: Colors.white,
-                          fontSize: Dimensions.fontSizeExtraSmall,
-                        )),
-                  ),
-                ),
-              ]),
-            ),
-          ),
-        ],
+        // actions: [
+        //   Padding(
+        //     padding: const EdgeInsets.only(right: 12.0),
+        //     child: IconButton(
+        //       onPressed: () {
+        //         //Navigator.of(context).push(MaterialPageRoute(builder: (context) => FinalView()));
+        //       },
+        //       icon: Stack(clipBehavior: Clip.none, children: [
+        //         Icon(
+        //           Icons.notifications,
+        //           size: 30,
+        //         ),
+        //         Positioned(
+        //           top: -2,
+        //           right: -2,
+        //           child: CircleAvatar(
+        //             radius: 7,
+        //             backgroundColor: Colors.red,
+        //             child: Text('0', // need a consumer for cart data
+        //                 style: GoogleFonts.mulish(
+        //                   color: Colors.white,
+        //                   fontSize: Dimensions.fontSizeExtraSmall,
+        //                 )),
+        //           ),
+        //         ),
+        //       ]),
+        //     ),
+        //   ),
+        // ],
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
@@ -326,25 +256,6 @@ class _LeaveScreenState extends State<LeaveScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextFormField(
-                controller: titleController,
-                onChanged: (value) {
-                  setState(() {
-                    leaveReason = value;
-                  });
-                },
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter leave title';
-                  }
-                  return null; // Return null if the input is valid
-                },
-                decoration: InputDecoration(
-                  labelText: 'Leave Title',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 16.0),
               Consumer<LeaveProvider>(
                 builder: (context, leaveTypesProvider, _) {
                   if (leaveTypesProvider.leaveTypes.isEmpty) {
@@ -419,75 +330,6 @@ class _LeaveScreenState extends State<LeaveScreen> {
                         ],
                       ))),
               SizedBox(height: 16.0),
-              // Column(
-              //   crossAxisAlignment: CrossAxisAlignment.start,
-              //   children: [
-              //     GestureDetector(
-              //       onTap: (){
-              //         _showMultiSelect();
-              //       },
-              //       child: Container(
-              //         padding: EdgeInsets.all(16.0),
-              //         decoration:BoxDecoration(
-              //           borderRadius: BorderRadius.circular(10),
-              //           color: Colors.white,
-              //           boxShadow: [
-              //             BoxShadow(color: Colors.grey.shade500, spreadRadius: .8),
-              //           ],
-              //         ),
-              //         child: Row(
-              //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //           children: [
-              //             Text('Select Your Reporting person'),
-              //             Icon(Icons.arrow_drop_down, color: Colors.grey.shade700,)
-              //           ],
-              //         ),
-              //       ),
-              //     ),
-              //     if (_selectedItems.isEmpty)
-              //       const SizedBox(
-              //         width: double.infinity,
-              //         child: Column(
-              //           children: [
-              //             SizedBox(height: 10),
-              //             Text("Please select at least one person"),
-              //           ],
-              //         ),
-              //       )
-              //     else
-              //       Wrap(
-              //         children: _selectedItems
-              //             .map(
-              //               (e) => Padding(
-              //             padding: const EdgeInsets.symmetric(
-              //                 horizontal: 4, vertical: 2),
-              //             child: Chip(
-              //               label: GestureDetector(
-              //                 onTap: () {
-              //                   _removeFromList(e);
-              //                 },
-              //                 child: Row(
-              //                   mainAxisSize: MainAxisSize.min,
-              //                   children: [
-              //                     Text(e),
-              //                     const SizedBox(
-              //                       width: 3,
-              //                     ),
-              //                     const Icon(Icons.delete_forever, color: Colors.red,),
-              //                   ],
-              //                 ),
-              //               ),
-              //             ),
-              //           ),
-              //         )
-              //             .toList(),
-              //       )
-              //   ],
-              // ),
-              // const Divider(
-              //   height: 10,
-              // ),
-              // SizedBox(height: 16.0),
               TextFormField(
                 controller: reasonController,
                 onChanged: (value) {
@@ -509,35 +351,30 @@ class _LeaveScreenState extends State<LeaveScreen> {
                 ),
               ),
               SizedBox(height: 16.0),
-              // GestureDetector(
-              //     onTap: () {
-              //       _showPhotoPicker();
-              //     },
-              //     child: InputDecorator(
-              //         decoration: InputDecoration(
-              //           labelText: 'Necessary file',
-              //           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              //           border: OutlineInputBorder(
-              //               borderRadius: BorderRadius.circular(10.0)),
-              //         ),
-              //         child:
-              //         Row(
-              //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //           children: [
-              //             Container(
-              //               width: MediaQuery.of(context).size.width*.7,
-              //                 child: Text(fileName == ''? 'Upload a photo': fileName, maxLines: 1,overflow: TextOverflow.ellipsis,)),
-              //             Icon(Icons.photo)
-              //           ],
-              //         ))),
-              // SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  // Show the entered data in a dialog
-                  //_saveForm();
+              InkWell(
+                onTap: () async{
                   _applyNewLeave();
                 },
-                child: Text('Submit'),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8),
+                  child: Container(
+                    height: 45.0,
+                    decoration: BoxDecoration(
+                      color: accent,
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Submit',
+                        style: GoogleFonts.mulish(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 20.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

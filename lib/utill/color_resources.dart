@@ -10,6 +10,7 @@ Color greyShade = Color(0xFF93B3AA);
 Color accentShade = Color(0xFF78C2A7);
 Color cyanColor = Color(0xFF6D7E6E);
 Color arabicColor = Color(0xFFA4790D);
+Color hintColor = Color(0xFFCBCED4);
 
 class AppColors {
   static const Color primary = contentColorCyan;

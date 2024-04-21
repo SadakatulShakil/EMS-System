@@ -38,7 +38,9 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
   String? selectedBloodType;
   List<String> bloodGroups = ['', 'A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
   File? file;
+  bool isLoading = false;
   String path ='';
+  String? token;
   final picker = ImagePicker();
   final GlobalKey<ScaffoldMessengerState> _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
 
@@ -57,6 +59,7 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
   }
 
   _updateUserAccount() async {
+    isLoading = true;
     final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
     String fName = _firstNameController.text.trim();
     String lName = _lastNameController.text.trim();
@@ -66,9 +69,33 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
     /// Do update functionality here
     SharedPreferences sp = await SharedPreferences.getInstance();
     String? token = sp.getString("tokenId");
-    profileProvider.updateProfile(token??'', fName, lName, phoneNumber, address, file);
+    profileProvider.updateProfile(token??'', fName, lName, phoneNumber, address, file).then((value){
+      getProfileData();
+    });
     if (kDebugMode) {
       print('Update button clicked');
+    }
+  }
+
+  Future<void> getProfileData() async {
+    final profileProvider =
+    Provider.of<ProfileProvider>(context, listen: false);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? savedToken = prefs.getString('tokenId');
+    if (savedToken != null) {
+      setState(() {
+        token = savedToken;
+      });
+    }
+
+    try {
+      await profileProvider.fetchProfile(token: token!).then((value) {
+        isLoading = false;
+        Navigator.of(context).pop();
+      });
+    } catch (e) {
+      print('Error fetching profile: $e');
+      rethrow;
     }
   }
 
@@ -83,12 +110,10 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
     _departmentNameController.text = profileData.data.department;
     _designationController.text = profileData.data.designation;
     _addressController.text = profileData.data.address != null ? profileData.data.address : '';
-    return profileProvider.isProLoading?Center(
-      child: LoadingAnimationWidget.threeRotatingDots(
-        color: Colors.green,
-        size: 30,
-      ),
-    ):Scaffold(
+    return isLoading?Center(child: LoadingAnimationWidget.threeRotatingDots(
+      color: Colors.blue,
+      size: 30,
+    ),):Scaffold(
       key: _scaffoldKey,
       body:Stack(
         clipBehavior: Clip.none,
@@ -406,18 +431,28 @@ class ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        Container(
-                          margin: const EdgeInsets.all(10),
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              _updateUserAccount();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              primary: accent,
-                            ),
-                            child: Text(
-                              'Update profile ',
-                              style: GoogleFonts.mulish(fontSize: 16, color: Colors.white),
+                        InkWell(
+                          onTap: () async{
+                            _updateUserAccount();
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8.0, right: 8),
+                            child: Container(
+                              height: 45.0,
+                              decoration: BoxDecoration(
+                                color: accent,
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'Update Now',
+                                  style: GoogleFonts.mulish(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 20.0,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),

@@ -79,7 +79,7 @@ class _LeaveApplicationsPageState extends State<LeaveApplicationsPage> {
             appBar: AppBar(
               elevation: 0,
               backgroundColor: Color(0xFF66A690),
-              title: Text('Leave history'),
+              title: Text('Pending Request'),
               leading: IconButton(
                 icon: Icon(Icons.arrow_back_ios, color: Colors.white),
                 onPressed: () => Navigator.of(context).pop(),

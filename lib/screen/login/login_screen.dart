@@ -1,4 +1,4 @@
-import 'package:employe_management_system/screen/login/widget/email_verify_widget.dart';
+import 'package:employe_management_system/screen/login/widget/forget_password.dart';
 import 'package:employe_management_system/screen/login/widget/text_from_field.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -62,11 +62,6 @@ class _LoginScreenState extends State<LoginScreen> {
         final currentTime = DateTime.now();
         final expirationTime = currentTime.add(Duration(hours: authResponse.data.expiry));
         sp.setString('session_expiry', expirationTime.toIso8601String());
-        // AuthSessionModel authSessionModel = AuthSessionModel(
-        //     authToken: authResponse.data.token.toString());
-        // sessionProvider.saveLoginSession();
-        // sessionProvider.saveUser(authSessionModel, authResponse.data.expiry);
-        // sessionProvider.setAuthData(authResponse);
         Get.snackbar(
           'Success',
           'Logged in Successfully !',
@@ -77,10 +72,13 @@ class _LoginScreenState extends State<LoginScreen> {
           margin: EdgeInsets.all(10),
         );
         authenticationProvider.updateDataLoadingIndicator(false);
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => DashBoardScreen()));
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DashBoardScreen(),
+          ),
+              (route) => false, // Removes all routes from the stack
+        );
       }
     } catch (e) {
       authenticationProvider.updateDataLoadingIndicator(false);
@@ -168,6 +166,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       isObscureText: true,
                       validator: _validatePassword,
                     ),
+                    SizedBox(height: 5,),
+                    GestureDetector(
+                        onTap: (){
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ForgetPasswordPage(),
+                            ),
+                          );
+                        },
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Text('Forget Password', style: GoogleFonts.mulish(color: accent, fontWeight: FontWeight.bold),),
+                            ))),
                     SizedBox(height: 10),
                     Visibility(
                       visible: authenticationProvider.isLoadingProfile
@@ -180,7 +193,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 10),
                     Container(
                       width: 200,
                       child: ElevatedButton(
@@ -205,20 +217,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 10),
-                    Row(children: [
-                      Text('Do not have account? '),
-                      SizedBox(width: 10,),
-                      GestureDetector(
-                        onTap: (){
-                          // Navigator.of(context).push(
-                          //   MaterialPageRoute(
-                          //     builder: (context) => EmailVerifyPage(),
-                          //   ),
-                          // );
-                        },
-                          child: Text('Create Now', style: GoogleFonts.mulish(color: accent, fontWeight: FontWeight.bold),))
-                    ],)
                   ],
                 ),
               ),

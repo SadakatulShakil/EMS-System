@@ -19,26 +19,30 @@ class _SplashScreenState extends State<SplashScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //bool isDomainVerified = prefs.getBool('isDomainVerified') ?? false;
 
-   String expiryTime = prefs.getString('session_expiry')??'';
-   print('cccccccccc: '+ expiryTime);
-    if(expiryTime != ''){
-      final expirationTime = DateTime.parse(expiryTime);
-      final currentTime = DateTime.now();
-      if(currentTime.isAfter(expirationTime)){
-        prefs.setString('tokenId', '');
-        prefs.setString('session_expiry', '');
-        await Future.delayed(const Duration(seconds: 2));
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => LoginScreen()),
-        );
-      }else{
+    String token = prefs.getString('tokenId')??'';
+    print('cccccccccc: '+ token);
+    if(token != ''){
+      ///Session code hide as requirement
+      // final expirationTime = DateTime.parse(expiryTime);
+      // final currentTime = DateTime.now();
+      // if(currentTime.isAfter(expirationTime)){
+      //   prefs.setString('tokenId', '');
+      //   prefs.setString('session_expiry', '');
+      //   await Future.delayed(const Duration(seconds: 2));
+      //   Navigator.pushReplacement(
+      //     context,
+      //     MaterialPageRoute(builder: (context) => LoginScreen()),
+      //   );
+      // }else
+      {
+        await Future.delayed(const Duration(microseconds: 2));
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => DashBoardScreen()),
         );
       }
     }else{
+      await Future.delayed(const Duration(seconds: 2));
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LoginScreen()),

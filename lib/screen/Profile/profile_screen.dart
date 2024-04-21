@@ -1,6 +1,7 @@
 import 'package:employe_management_system/providers/auth_provider.dart';
 import 'package:employe_management_system/providers/leave_application_provider.dart';
 import 'package:employe_management_system/screen/Profile/widget/attendance_history.dart';
+import 'package:employe_management_system/screen/Profile/widget/change_password.dart';
 import 'package:employe_management_system/screen/Profile/widget/leave_applications.dart';
 import 'package:employe_management_system/screen/Profile/widget/leave_history.dart';
 import 'package:flutter/foundation.dart';
@@ -16,9 +17,8 @@ import '../login/login_screen.dart';
 import '../report/report_page.dart';
 
 class ProfileScreen extends StatefulWidget {
-  final bool backExits;
-
-  ProfileScreen({Key? key, required this.backExits}) : super(key: key);
+  bool isBackExit;
+  ProfileScreen(this.isBackExit);
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -26,6 +26,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String? token;
+  bool loggingOut = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -56,15 +57,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
     final profileData = profileProvider.userData;
     return Scaffold(
-      body: profileData != null
-          ? SingleChildScrollView(
+      appBar: widget.isBackExit?AppBar(
+      elevation: 0,
+      backgroundColor: Color(0xFF66A690),
+      title: Text('Profile'),
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
+    ):null,
+      body: !loggingOut ? SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(height: 40),
             Align(
               alignment: Alignment.center,
               child: CircleAvatar(
-                backgroundImage: NetworkImage(profileData.data.photo !=null?profileData.data.photo:'https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg'),
+                backgroundImage: NetworkImage(profileData!.data.photo !=null?profileData.data.photo:'https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg'),
                 radius: 60,
               ),
             ),
@@ -177,7 +186,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 thickness: 1,
               ),
             ),
-            GestureDetector(
+            InkWell(
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -187,50 +196,127 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
               child: Padding(
                 padding: const EdgeInsets.only(left: 8.0, right: 8),
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Icon(Icons.settings, size: 25),
-                        SizedBox(width: 10),
-                        Text(
-                          'Settings',
+                child: Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Icon(Icons.settings, size: 25, color: Theme.of(context).colorScheme.primary),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'Edit Profile',
                           style: GoogleFonts.mulish(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 18,
-                          ),
-                        )
-                      ],
-                    ),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 18),
+                        ),
+                      ),
+                      Icon(Icons.arrow_forward_ios, size: 20),
+                    ],
                   ),
                 ),
               ),
             ),
-            GestureDetector(
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Divider(
+                thickness: 1,
+                height: 2,
+              ),
+            ),
+            InkWell(
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => ReportPageSection(),
+                    builder: (context) => ChangePasswordScreen(),
                   ),
                 );
               },
               child: Padding(
                 padding: const EdgeInsets.only(left: 8.0, right: 8),
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Icon(Icons.report_outlined, size: 25),
-                        SizedBox(width: 10),
-                        Text(
-                          'Reports',
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Icon(Icons.lock, size: 25, color: Theme.of(context).colorScheme.primary,),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'Change password',
                           style: GoogleFonts.mulish(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 18),
+                        ),
+                      ),
+                      Icon(Icons.arrow_forward_ios, size: 20),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Divider(
+                thickness: 1,
+                height: 2,
+              ),
+            ),
+            // GestureDetector(
+            //   onTap: () {
+            //     Navigator.of(context).push(
+            //       MaterialPageRoute(
+            //         builder: (context) => ReportPageSection(),
+            //       ),
+            //     );
+            //   },
+            //   child: Padding(
+            //     padding: const EdgeInsets.only(left: 8.0, right: 8),
+            //     child: Card(
+            //       child: Padding(
+            //         padding: const EdgeInsets.all(8.0),
+            //         child: Row(
+            //           children: [
+            //             Icon(Icons.report_outlined, size: 25),
+            //             SizedBox(width: 10),
+            //             Text(
+            //               'Reports',
+            //               style: GoogleFonts.mulish(
+            //                 fontWeight: FontWeight.w400,
+            //                 fontSize: 18,
+            //               ),
+            //             )
+            //           ],
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            Visibility(
+              visible: applicationProvider.leaveApplicationsData.length > 0?true:false,
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
+                      LeaveApplicationsPage(applicationProvider.leaveApplicationsData, token)));
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8),
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Icon(Icons.touch_app, size: 25, color: Theme.of(context).colorScheme.primary),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'Pending request',
+                            style: GoogleFonts.mulish(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 18),
                           ),
-                        )
+                        ),
+                        Icon(Icons.arrow_forward_ios, size: 20),
                       ],
                     ),
                   ),
@@ -239,128 +325,133 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             Visibility(
               visible: applicationProvider.leaveApplicationsData.length > 0?true:false,
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => LeaveApplicationsPage(applicationProvider.leaveApplicationsData, token)));
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8.0, right: 8),
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: [
-                          Icon(Icons.history, size: 25),
-                          SizedBox(width: 10),
-                          Text(
-                            'Pending request',
-                            style: GoogleFonts.mulish(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 18,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Divider(
+                  thickness: 1,
+                  height: 2,
                 ),
               ),
             ),
-            GestureDetector(
-              onTap: (){
+            InkWell(
+              onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) => LeaveHistoryPage()));
               },
               child: Padding(
                 padding: const EdgeInsets.only(left: 8.0, right: 8),
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Icon(Icons.history_edu, size: 25),
-                        SizedBox(width: 10),
-                        Text(
+                child: Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Icon(Icons.history_edu, size: 25, color: Theme.of(context).colorScheme.primary),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
                           'Leave History',
                           style: GoogleFonts.mulish(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 18,
-                          ),
-                        )
-                      ],
-                    ),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 18),
+                        ),
+                      ),
+                      Icon(Icons.arrow_forward_ios, size: 20),
+                    ],
                   ),
                 ),
               ),
             ),
-            GestureDetector(
-              onTap:(){
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Divider(
+                thickness: 1,
+                height: 2,
+              ),
+            ),
+            InkWell(
+              onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) => AttendanceHistoryPage()));
               },
               child: Padding(
                 padding: const EdgeInsets.only(left: 8.0, right: 8),
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Icon(Icons.history, size: 25),
-                        SizedBox(width: 10),
-                        Text(
+                child: Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Icon(Icons.history, size: 25, color: Theme.of(context).colorScheme.primary),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
                           'Attendance History',
                           style: GoogleFonts.mulish(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 18,
-                          ),
-                        )
-                      ],
-                    ),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 18),
+                        ),
+                      ),
+                      Icon(Icons.arrow_forward_ios, size: 20),
+                    ],
                   ),
                 ),
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Divider(
+                thickness: 1,
+                height: 2,
+              ),
+            ),
+
             SizedBox(height: 15),
             GestureDetector(
               onTap: () async {
+                setState(() {
+                  loggingOut = true;
+                });
                 SharedPreferences sp = await SharedPreferences.getInstance();
                 String? token = sp.getString("tokenId");
                 final logResponse = authProvider.logout(token: token!);
                 logResponse.then((value)async{
                   if(value.status == 'SUCCESS'){
+                    loggingOut = false;
                     SharedPreferences sp = await SharedPreferences.getInstance();
                     sp.setString('tokenId', '');
                     sp.setString('session_expiry', '');
-                    Navigator.pushReplacement(
+                    Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
                         builder: (context) => LoginScreen(),
                       ),
+                          (route) => false, // Removes all routes from the stack
                     );
+                  }else{
+                    loggingOut = false;
                   }
                 });
 
               },
               child: Container(
-                width: MediaQuery.of(context).size.width * .5,
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(Icons.logout, size: 25, color: Colors.red),
-                        SizedBox(width: 10),
-                        Text(
-                          'Logout',
-                          style: GoogleFonts.mulish(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 20,
-                            color: Colors.red,
-                          ),
-                        )
-                      ],
+                height: 50.0,
+                width: MediaQuery.of(context).size.width/2,
+                decoration: BoxDecoration(
+                  color: Colors.redAccent,
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(Icons.logout, color: Colors.white,),
+                    SizedBox(width: 20,),
+                    Text(
+                      'Logout',
+                      style: GoogleFonts.mulish(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 20.0,
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
