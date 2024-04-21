@@ -104,7 +104,11 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
       }
       rethrow;
     }
-  }
+  }2. Login session infinity
+  3. Attendance remarks logic update
+  4. Profile photo clickable to update
+  5. Forget Password
+  6. Change the date pattern to 21 April, 2024
 
   @override
   Widget build(BuildContext context) {
