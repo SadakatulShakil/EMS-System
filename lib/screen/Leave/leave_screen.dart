@@ -48,36 +48,6 @@ class _LeaveScreenState extends State<LeaveScreen> {
   String fileName = '';
   int? leaveTypeId;
 
-  void _removeFromList(String item) {
-    setState(() {
-      _selectedItems.remove(item);
-    });
-  }
-
-  void _itemChange(String itemValue, bool isSelected) {
-    setState(() {
-      if (isSelected) {
-        _selectedItems.add(itemValue);
-      } else {
-        _selectedItems.remove(itemValue);
-      }
-    });
-  }
-
-  void _showMultiSelect() async {
-    final List<String>? results = await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return MultiSelect(items: reportingPersons);
-      },
-    );
-
-    if (results != null) {
-      setState(() {
-        _selectedItems = results;
-      });
-    }
-  }
 
   _showFromDatePicker() {
     /// TODO changing the color of date picker
@@ -119,37 +89,6 @@ class _LeaveScreenState extends State<LeaveScreen> {
     });
   }
 
-  // Function to display entered data in a dialog
-  // void _showSubmittedData() {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: Text('Submitted Data'),
-  //         content: Container(
-  //           height: 250,
-  //           child: Column(
-  //             crossAxisAlignment: CrossAxisAlignment.start,
-  //             children: [
-  //               Text('Leave Type: $leaveTypeId'),
-  //               Text('From Date: ${leaveFromDate}'),
-  //               Text('To Date: ${leaveFromDate}'),
-  //               Text('Leave Reason: $leaveReason'),
-  //             ],
-  //           ),
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //             child: Text('OK'),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
 
   void _applyNewLeave() async{
     final leaveProvider = Provider.of<LeaveProvider>(context, listen: false);

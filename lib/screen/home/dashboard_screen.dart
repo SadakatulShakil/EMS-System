@@ -2,7 +2,9 @@ import 'package:employe_management_system/utill/color_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:provider/provider.dart';
 
+import '../../providers/connectivity_provider.dart';
 import '../Leave/leave_screen.dart';
 import '../Profile/profile_screen.dart';
 import 'home_screen.dart';
@@ -29,23 +31,42 @@ class DashBoardScreenState extends State<DashBoardScreen> {
       LeaveScreen(backExits: false),
       ProfileScreen(false),
     ];
-
+    Provider.of<ConnectivityProvider>(context, listen: false).addListener(_handleConnectivityChange);
     // NetworkInfo.checkConnectivity(context);
+  }
+
+  void _handleConnectivityChange() {
+    final connectivityProvider = Provider.of<ConnectivityProvider>(context, listen: false);
+    if (connectivityProvider.status != ConnectivityStatus.Offline) {
+      _screens = [
+        HomeScreen(),
+        LeaveScreen(backExits: false),
+        ProfileScreen(false),
+      ];
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
+    var connectivityProvider = Provider.of<ConnectivityProvider>(context);
+    if(connectivityProvider.status == ConnectivityStatus.Offline){
+      return Scaffold(
+        body: Center(
+            child: Image.asset('assets/images/no_internet.png')
+        ),
+      );
+    }else{
+      return WillPopScope(
       onWillPop: () async {
-      if (_pageIndex != 0) {
-        setState(() {
-          _pageIndex = 0; // Navigate back to the home page
-        });
-        return false; // Do not close the app
-      } else {
-        return true; // Close the app
-      }
-    },
+        if (_pageIndex != 0) {
+          setState(() {
+            _pageIndex = 0; // Navigate back to the home page
+          });
+          return false; // Do not close the app
+        } else {
+          return true; // Close the app
+        }
+      },
       child: Scaffold(
         key: _scaffoldKey,
         bottomNavigationBar: Padding(
@@ -64,7 +85,7 @@ class DashBoardScreenState extends State<DashBoardScreen> {
             child: SafeArea(
               child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+                const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
                 child: GNav(
                   rippleColor: Colors.grey[300]!,
                   hoverColor: Colors.grey[100]!,
@@ -105,5 +126,6 @@ class DashBoardScreenState extends State<DashBoardScreen> {
         ),
       ),
     );
+    }
   }
 }

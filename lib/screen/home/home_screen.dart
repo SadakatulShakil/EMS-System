@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:employe_management_system/providers/leave_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -13,8 +13,8 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../providers/attendence_provider.dart';
+import '../../providers/connectivity_provider.dart';
 import '../../providers/profile_provider.dart';
-
 import '../Profile/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -50,8 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _startLocationTracking();
     // Initial update
     _updateDateTime();
-    //get current entry status
-    //_getCurrentAttendanceData();
     getProfileData();
     getLeaveData();
     // Start a periodic timer to update every minute
@@ -261,35 +259,6 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
-  void showLegalAlert() {
-    final profileProvider = Provider.of<ProfileProvider>(context);
-    final profileData = profileProvider.userData;
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          height: MediaQuery.of(context).size.height/3,
-          child: AlertDialog(
-            title: Text('Today Information', textAlign: TextAlign.center, style: GoogleFonts.mulish(fontWeight: FontWeight.bold),),
-            content: Align(
-              alignment: Alignment.center,
-              child: Text('Your total working hour is ${calculateHours(convertToMainFormat(profileData!.data.attendance.checkin.toString()))}',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.mulish(fontWeight: FontWeight.bold),),
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: Text('OK',style: GoogleFonts.mulish()),
-                onPressed: () async{
-                  await submitDialog('On time');
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
 // Function to submit the dialog
   Future<void> submitDialog(String reason) async {
@@ -385,6 +354,8 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     final profileProvider = Provider.of<ProfileProvider>(context);
     final profileData = profileProvider.userData;
+    var connectivityProvider = Provider.of<ConnectivityProvider>(context);
+    print('Connectivity Status: ${connectivityProvider.status}');
     return Scaffold(
         body: (!profileProvider.isProLoading && profileData != null) ?SingleChildScrollView(
           child: Column(
@@ -406,7 +377,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                   child: Container(
-                    width: MediaQuery.of(context).size.width,
+                      width: MediaQuery.of(context).size.width,
                       child: Image.asset('assets/images/home_background.png', fit: BoxFit.cover,)),
                 ),
                 Positioned(child: Column(
@@ -475,7 +446,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         child: Padding(
                                           padding: const EdgeInsets.all(5.0),
                                           child: Align(
-                                              alignment: Alignment.centerLeft,
+                                              alignment: Alignment.center,
                                               child: Text('Attendance', style: GoogleFonts.mulish(fontSize: 15, color: Colors.white),)),
                                         )),
                                     Image.asset('assets/images/line.png'),
@@ -496,7 +467,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text('On time: ',style: GoogleFonts.mulish(color: Colors.white)),
-                                          Text(profileData.data.attendance.onTime.toString() != ''?profileData.data.attendance.onTime.toString():'N/A',style: GoogleFonts.mulish(color: Colors.white)),
+                                          Consumer<ProfileProvider>(
+                                            builder: (context, profileProvider, _) {
+                                              final profileData = profileProvider.userData;
+                                              return Text(
+                                                profileData != null && profileData.data.attendance.onTime.toString() != ''
+                                                    ? profileData.data.attendance.onTime.toString()
+                                                    : 'N/A',
+                                                style: GoogleFonts.mulish(color: Colors.white),
+                                              );
+                                            },
+                                          )
                                         ],
                                       ),
                                     ),
@@ -506,7 +487,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text('Late entry: ', style: GoogleFonts.mulish(color: Colors.white),),
-                                          Text(profileData.data.attendance.lateTime.toString() != ''?profileData.data.attendance.lateTime.toString():'N/A', style: GoogleFonts.mulish(color: Colors.white)),
+                                          Consumer<ProfileProvider>(
+                                            builder: (context, profileProvider, _) {
+                                              final profileData = profileProvider.userData;
+                                              return Text(
+                                                profileData != null && profileData.data.attendance.lateTime.toString() != ''
+                                                    ? profileData.data.attendance.lateTime.toString()
+                                                    : 'N/A',
+                                                style: GoogleFonts.mulish(color: Colors.white),
+                                              );
+                                            },
+                                          )
                                         ],
                                       ),
                                     ),
@@ -532,7 +523,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         width: MediaQuery.of(context).size.width *.42,
                                         child: Padding(
                                           padding: const EdgeInsets.all(5.0),
-                                          child: Text('Leave', style: GoogleFonts.mulish(fontSize: 15, color: Colors.white),),
+                                          child: Align(
+                                              alignment: Alignment.center,
+                                              child: Text('Leave', style: GoogleFonts.mulish(fontSize: 15, color: Colors.white),)),
                                         )),
                                     Image.asset('assets/images/line.png'),
                                     SizedBox(height: 8,),
@@ -610,11 +603,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       showEarlyExitDialog();
                     }else{
                       legalSubmit(context, 'On time');
-                      //submitDialog('On time');
                     }
                   }else{
                     legalSubmit(context, 'Submit from Outside office');
-                      //submitDialog('Out side from Office');
                   }
                 },
                 child: Container(

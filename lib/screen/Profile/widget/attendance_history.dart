@@ -27,7 +27,9 @@ class _AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
     token = sp.getString("tokenId");
     print('hgvf: '+token!);
     try {
-      historyProvider.fetchHistory(token: token!);
+      historyProvider.fetchHistory(token: token!).then((value){
+        historyProvider.historyData!.data.sort((a, b) => b.checkin.compareTo(a.checkin));
+      });
     } catch (e) {
       if (kDebugMode) {
         print('Error fetching profile: $e');
@@ -56,74 +58,77 @@ class _AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
   @override
   Widget build(BuildContext context) {
     final historyProvider = Provider.of<AttendanceHistoryProvider>(context);
-    historyProvider.historyData!.data.sort((a, b) => b.checkin.compareTo(a.checkin));
-    return historyProvider.historyData != null?Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Color(0xFF66A690),
-        title: Text('Attendance history',style: GoogleFonts.mulish()),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
+    if(historyProvider.historyData != null){
+      return Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Color(0xFF66A690),
+          title: Text('Attendance history',style: GoogleFonts.mulish()),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         ),
-      ),
-      body: Container(
-        child: ListView.builder(
-          itemCount: historyProvider.historyData!.data.length,
-          itemBuilder: (context, index) {
-            final record = historyProvider.historyData!.data[index];
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: ListTile(
-                  title: Text(convertToDateHourFormat(record.checkin.toString()),style: GoogleFonts.mulish()),
-                  subtitle: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Checkin at: '+convertTo12HourFormat(record.checkin.toString()),style: GoogleFonts.mulish()),
-                        SizedBox(height: 8,),
-                        Text('Checkout at: '+convertTo12HourFormat(record.checkout.toString()),style: GoogleFonts.mulish()),
-                      ],
-                    ),
-                  ),
-                  trailing: record.lateReason != ''? Container(
-                      decoration: BoxDecoration(
-                        color: Colors.redAccent,
-                        borderRadius: BorderRadius.circular(12.0),
+        body: Container(
+          child: ListView.builder(
+            itemCount: historyProvider.historyData!.data.length,
+            itemBuilder: (context, index) {
+              final record = historyProvider.historyData!.data[index];
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: Offset(0, 3),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Text('Late Entry', style: GoogleFonts.mulish(color: Colors.white, fontSize: 12),),
-                      )): Text('On time',style: GoogleFonts.mulish()),
-                  onTap: () {
-                    // Handle tapping on a record if needed
-                  },
+                    ],
+                  ),
+                  child: ListTile(
+                    title: Text(convertToDateHourFormat(record.checkin.toString()),style: GoogleFonts.mulish()),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Checkin at: '+convertTo12HourFormat(record.checkin.toString()),style: GoogleFonts.mulish()),
+                          SizedBox(height: 8,),
+                          Text('Checkout at: '+convertTo12HourFormat(record.checkout.toString()),style: GoogleFonts.mulish()),
+                        ],
+                      ),
+                    ),
+                    trailing: record.lateReason != ''? Container(
+                        decoration: BoxDecoration(
+                          color: Colors.redAccent,
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Text('Late Entry', style: GoogleFonts.mulish(color: Colors.white, fontSize: 12),),
+                        )): Text('On time',style: GoogleFonts.mulish()),
+                    onTap: () {
+                      // Handle tapping on a record if needed
+                    },
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
-      ),
-    ):Scaffold(
-      body: Center(child: LoadingAnimationWidget.threeRotatingDots(
-        color: Colors.green,
-        size: 30,
-      )),
-    );
+      );
+    }else{
+      return Scaffold(
+        body: Center(child: LoadingAnimationWidget.threeRotatingDots(
+          color: Colors.green,
+          size: 30,
+        )),
+      );
+    }
   }
 }

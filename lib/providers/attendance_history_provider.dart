@@ -36,6 +36,7 @@ class AttendanceHistoryProvider with ChangeNotifier {
         isLoading = false;
         print("res: " + response.body.toString());
         final historyData = AttendanceHistoryModel.fromJson(jsonDecode(response.body));
+        historyData.data.sort((a, b) => b.checkin.compareTo(a.checkin));
         setHistoryData(historyData);
         notifyListeners();
         return AttendanceHistoryModel.fromJson(jsonDecode(response.body));// Update user data

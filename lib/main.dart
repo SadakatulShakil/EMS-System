@@ -1,6 +1,7 @@
 import 'package:employe_management_system/providers/attendance_history_provider.dart';
 import 'package:employe_management_system/providers/attendence_provider.dart';
 import 'package:employe_management_system/providers/auth_provider.dart';
+import 'package:employe_management_system/providers/connectivity_provider.dart';
 import 'package:employe_management_system/providers/leave_application_provider.dart';
 import 'package:employe_management_system/providers/leave_history_provider.dart';
 import 'package:employe_management_system/providers/leave_provider.dart';
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AttendanceHistoryProvider()),
         ChangeNotifierProvider(create: (_) => LeaveHistoryProvider()),
         ChangeNotifierProvider(create: (_) => LeaveApplicationProvider()),
+        ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
         ChangeNotifierProvider(create: (_) => LeaveProvider())
       ],
       child: GetMaterialApp(

@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../providers/auth_provider.dart';
+import '../../providers/connectivity_provider.dart';
 import '../../utill/color_resources.dart';
 import '../home/dashboard_screen.dart';
 class LoginScreen extends StatefulWidget {
@@ -107,6 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final authenticationProvider = Provider.of<AuthProvider>(context);
+    var connectivityProvider = Provider.of<ConnectivityProvider>(context);
     return Scaffold(
       body: Form(
         key: _formKey,
@@ -198,10 +200,22 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: ElevatedButton(
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            _authenticate(
-                              emailController.text,
-                              passwordTextEditingController.text,
-                            );
+                            if(connectivityProvider.status != ConnectivityStatus.Offline){
+                              _authenticate(
+                                emailController.text,
+                                passwordTextEditingController.text,
+                              );
+                            }else{
+                              Get.snackbar(
+                                'No Internet',
+                                'Please check you connection!',
+                                snackPosition: SnackPosition.TOP,
+                                backgroundColor: Colors.redAccent,
+                                colorText: Colors.white,
+                                borderRadius: 10,
+                                margin: EdgeInsets.all(10),
+                              );
+                            }
                           }
                         },
                         style: ElevatedButton.styleFrom(
