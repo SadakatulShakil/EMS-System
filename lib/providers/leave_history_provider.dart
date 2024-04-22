@@ -39,18 +39,12 @@ class LeaveHistoryProvider with ChangeNotifier {
         setHistoryData(historyData);
         notifyListeners();
         return LeaveHistoryModel.fromJson(jsonDecode(response.body));// Update user data
-      } else {
-        if (kDebugMode) {
-          print("res: " + response.statusCode.toString());
-          print("res: " + response.body.toString());
-          return LeaveHistoryModel.fromJson(jsonDecode(response.body));
-        }
-        if (response.statusCode == 422) {
+      } else if (response.statusCode == 422) {
           isLoading = false;
           final historyData = LeaveHistoryModel.fromJson(jsonDecode(response.body));
           Get.snackbar(
             'Warning',
-            historyData.message.toString(),
+            jsonDecode(response.body.toString())["message"],
             snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.redAccent,
             colorText: Colors.white,
@@ -61,16 +55,16 @@ class LeaveHistoryProvider with ChangeNotifier {
           isLoading = false;
           Get.snackbar(
             'Warning',
-            'Internal server issue !',
+            jsonDecode(response.body.toString())["message"],
             snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.redAccent,
             colorText: Colors.white,
             borderRadius: 10,
             margin: EdgeInsets.all(10),
           );
-        }
         return LeaveHistoryModel.fromJson(jsonDecode(response.body));
       }
+      return LeaveHistoryModel.fromJson(jsonDecode(response.body));
     } catch (e) {
       isLoading = false;
       if (kDebugMode) {

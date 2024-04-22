@@ -315,7 +315,7 @@ class AuthProvider extends ChangeNotifier {
         setResetInfoData(resetData);
         Get.snackbar(
           'Success',
-          resetData.message.toString(),
+          jsonDecode(response.body.toString())["message"],
           snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.green,
           colorText: Colors.white,
@@ -329,7 +329,7 @@ class AuthProvider extends ChangeNotifier {
           final resetData = ResetPasswordModel.fromJson(jsonDecode(response.body));
           Get.snackbar(
             'Warning',
-            resetData.message.toString(),
+            jsonDecode(response.body.toString())["message"],
             snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.redAccent,
             colorText: Colors.white,
@@ -341,7 +341,7 @@ class AuthProvider extends ChangeNotifier {
           updateDataLoadingIndicator(false);
           Get.snackbar(
             'Warning',
-            'Internal server issue !',
+            jsonDecode(response.body.toString())["message"],
             snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.redAccent,
             colorText: Colors.white,

@@ -34,16 +34,11 @@ class LeaveProvider extends ChangeNotifier {
         _leaveTypes = fetchedLeaveTypes;
         notifyListeners();
         _saveLeaveTypesToCache(_leaveTypes);
-      } else {
-        if (kDebugMode) {
-          print("res: " + response.statusCode.toString());
-          print("res: " + response.body.toString());
-        }
-        if (response.statusCode == 422) {
+      } else if (response.statusCode == 422) {
           String responseData = response.body.toString();
           Get.snackbar(
             'Warning',
-            responseData[0].toString(),
+            jsonDecode(response.body.toString())["message"],
             snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.redAccent,
             colorText: Colors.white,
@@ -53,14 +48,13 @@ class LeaveProvider extends ChangeNotifier {
         } else if (response.statusCode == 500) {
           Get.snackbar(
             'Warning',
-            'Internal server issue !',
+            jsonDecode(response.body.toString())["message"],
             snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.redAccent,
             colorText: Colors.white,
             borderRadius: 10,
             margin: EdgeInsets.all(10),
           );
-        }
       }
     } catch (e) {
       if (kDebugMode) {
@@ -122,19 +116,13 @@ class LeaveProvider extends ChangeNotifier {
         notifyListeners();
         return profileData; // Update user data
       }
-      else {
-        isLoading = false;
-        if (kDebugMode) {
-          print("res: " + response.statusCode.toString());
-          print("res: " + response.body.toString());
-        }
-        if (response.statusCode == 422) {
+      else if (response.statusCode == 422) {
           isLoading = false;
           print("res: " + response.body.toString());
           final profileData = LeaveApplyModel.fromJson(jsonDecode(response.body));
           Get.snackbar(
             'Warning',
-            profileData.message,
+            jsonDecode(response.body.toString())["message"],
             snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.redAccent,
             colorText: Colors.white,
@@ -147,7 +135,7 @@ class LeaveProvider extends ChangeNotifier {
           final leaveData = LeaveApplyModel.fromJson(jsonDecode(response.body));
           Get.snackbar(
             'Warning',
-            leaveData.message,
+            jsonDecode(response.body.toString())["message"],
             snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.redAccent,
             colorText: Colors.white,
@@ -161,7 +149,6 @@ class LeaveProvider extends ChangeNotifier {
         }
         notifyListeners();
         return null; // Add a return statement
-      }
     } catch (e) {
       isLoading = false;
       if (kDebugMode) {

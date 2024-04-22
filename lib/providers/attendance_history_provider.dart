@@ -39,18 +39,12 @@ class AttendanceHistoryProvider with ChangeNotifier {
         setHistoryData(historyData);
         notifyListeners();
         return AttendanceHistoryModel.fromJson(jsonDecode(response.body));// Update user data
-      } else {
-        if (kDebugMode) {
-          print("res: " + response.statusCode.toString());
-          print("res: " + response.body.toString());
-          return AttendanceHistoryModel.fromJson(jsonDecode(response.body));
-        }
-        if (response.statusCode == 422) {
+      } else if (response.statusCode == 422) {
           isLoading = false;
           final historyData = AttendanceHistoryModel.fromJson(jsonDecode(response.body));
           Get.snackbar(
             'Warning',
-            historyData.message.toString(),
+            jsonDecode(response.body.toString())["message"],
             snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.redAccent,
             colorText: Colors.white,
@@ -61,7 +55,7 @@ class AttendanceHistoryProvider with ChangeNotifier {
           isLoading = false;
           Get.snackbar(
             'Warning',
-            'Internal server issue !',
+            jsonDecode(response.body.toString())["message"],
             snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.redAccent,
             colorText: Colors.white,
@@ -70,7 +64,6 @@ class AttendanceHistoryProvider with ChangeNotifier {
           );
         }
         return AttendanceHistoryModel.fromJson(jsonDecode(response.body));
-      }
     } catch (e) {
       isLoading = false;
       if (kDebugMode) {

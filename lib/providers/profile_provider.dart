@@ -63,17 +63,12 @@ class ProfileProvider with ChangeNotifier {
         final profileData = ProfileModel.fromJson(jsonDecode(response.body));
         setUserData(profileData);
         notifyListeners();// Update user data
-      } else {
-        if (kDebugMode) {
-          print("res: " + response.statusCode.toString());
-          print("res: " + response.body.toString());
-        }
-        if (response.statusCode == 422) {
+      } else if (response.statusCode == 422) {
           loader(false);
           String responseData = response.body.toString();
           Get.snackbar(
             'Warning',
-            responseData[0].toString(),
+            jsonDecode(response.body.toString())["message"],
             snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.redAccent,
             colorText: Colors.white,
@@ -84,14 +79,13 @@ class ProfileProvider with ChangeNotifier {
           loader(false);
           Get.snackbar(
             'Warning',
-            'Internal server issue !',
+            jsonDecode(response.body.toString())["message"],
             snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.redAccent,
             colorText: Colors.white,
             borderRadius: 10,
             margin: EdgeInsets.all(10),
           );
-        }
       }
     } catch (e) {
       loader(false);

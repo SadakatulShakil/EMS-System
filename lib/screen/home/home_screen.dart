@@ -181,7 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String calculateHours(String startTimes) {
     if (startTimes == 'null') {
-      return '--:--';
+      return '00 hr 00 min';
     }
     try {
       DateTime now = DateTime.now();
@@ -251,8 +251,37 @@ class _HomeScreenState extends State<HomeScreen> {
             actions: <Widget>[
               TextButton(
                 child: Text('Submit',style: GoogleFonts.mulish()),
-                onPressed: () async { // Make the onPressed callback async
-                  await submitDialog(_exitReasonController.text);
+                onPressed: () { // Make the onPressed callback async
+                  submitDialog(_exitReasonController.text);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+  void showLegalAlert() {
+    final profileProvider = Provider.of<ProfileProvider>(context);
+    final profileData = profileProvider.userData;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: MediaQuery.of(context).size.height/3,
+          child: AlertDialog(
+            title: Text('Today Information', textAlign: TextAlign.center, style: GoogleFonts.mulish(fontWeight: FontWeight.bold),),
+            content: Align(
+              alignment: Alignment.center,
+              child: Text('Your total working hour is ${calculateHours(convertToMainFormat(profileData!.data.attendance.checkin.toString()))}',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.mulish(fontWeight: FontWeight.bold),),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK',style: GoogleFonts.mulish()),
+                onPressed: () async{
+                  await submitDialog('On time');
                 },
               ),
             ],
@@ -275,6 +304,19 @@ class _HomeScreenState extends State<HomeScreen> {
       Provider.of<ProfileProvider>(context, listen: false).userData!.data.attendance.checkin.toString());
     // Close the dialog
     Navigator.pop(context);
+  }
+
+  // Function to submit the dialog
+  Future<void> legalSubmit(BuildContext context, String reason) async {
+    print('======================>');
+    Provider.of<AttendanceProvider>(context, listen: false).toggleCheckInOut(
+        context,
+        token,
+        lat,
+        lan,
+        ipv6,
+        reason,
+        Provider.of<ProfileProvider>(context, listen: false).userData!.data.attendance.checkin.toString());
   }
 
   String convertToMainFormat(String dateTimeString) {
@@ -537,34 +579,42 @@ class _HomeScreenState extends State<HomeScreen> {
               ],),
               SizedBox(height: 40,),
               GestureDetector(
-                onTap: () async{
+                onTap: () {
                   if(isLocMatched){
                     DateTime now = DateTime.now();
                     DateTime entryTime = DateFormat('hh:mm a').parse(profileData.data.settings.office.startTime);
                     DateTime exitTime = DateFormat('hh:mm a').parse(profileData.data.settings.office.endTime);
+// Combine the parsed times with the current date
+                    DateTime combinedEntryTime = DateTime(
+                      now.year,
+                      now.month,
+                      now.day,
+                      entryTime.hour,
+                      entryTime.minute,
+                    );
+                    DateTime combinedExitTime = DateTime(
+                      now.year,
+                      now.month,
+                      now.day,
+                      exitTime.hour,
+                      exitTime.minute,
+                    );
 
-                    bool isAfterEntryTime = now.isAfter(entryTime);
-                    bool isBeforeExitTime = now.isBefore(exitTime);
+                    bool isAfterEntryTime = now.isAfter(combinedEntryTime);
+                    bool isBeforeExitTime = now.isBefore(combinedExitTime);
                     if(profileData.data.attendance.checkin == null && isAfterEntryTime){
                       showLateEntryDialog();
-                    }else if(profileData.data.attendance.checkin != null &&
-                        profileData.data.attendance.checkout == null
-                        && isBeforeExitTime){
+                    }else if (profileData.data.attendance.checkout == null && isBeforeExitTime) {
+                      showEarlyExitDialog();
+                    }else if(isBeforeExitTime){
                       showEarlyExitDialog();
                     }else{
-                      await submitDialog('On time');
+                      legalSubmit(context, 'On time');
+                      //submitDialog('On time');
                     }
                   }else{
-                    await submitDialog('Out side from Office');
-                    // Get.snackbar(
-                    //   'Warning',
-                    //   'You are not in the Office!',
-                    //   snackPosition: SnackPosition.TOP,
-                    //   backgroundColor: Colors.redAccent,
-                    //   colorText: Colors.white,
-                    //   borderRadius: 10,
-                    //   margin: EdgeInsets.all(10),
-                    // );
+                    legalSubmit(context, 'Submit from Outside office');
+                      //submitDialog('Out side from Office');
                   }
                 },
                 child: Container(

@@ -37,6 +37,9 @@ class _AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
   }
 
   String convertTo12HourFormat(String dateTimeString) {
+    if(dateTimeString == ''){
+      return '--:--';
+    }
     // Parse the date-time string
     DateTime dateTime = DateTime.parse(dateTimeString);
 
@@ -53,6 +56,7 @@ class _AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
   @override
   Widget build(BuildContext context) {
     final historyProvider = Provider.of<AttendanceHistoryProvider>(context);
+    historyProvider.historyData!.data.sort((a, b) => b.checkin.compareTo(a.checkin));
     return historyProvider.historyData != null?Scaffold(
       appBar: AppBar(
         elevation: 0,
