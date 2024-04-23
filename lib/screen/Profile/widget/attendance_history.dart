@@ -7,6 +7,8 @@ import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../utill/color_resources.dart';
 class AttendanceHistoryPage extends StatefulWidget {
   @override
   _AttendanceHistoryPageState createState() => _AttendanceHistoryPageState();
@@ -104,15 +106,29 @@ class _AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
                         ],
                       ),
                     ),
-                    trailing: record.lateReason != ''? Container(
-                        decoration: BoxDecoration(
-                          color: Colors.redAccent,
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Text('Late Entry', style: GoogleFonts.mulish(color: Colors.white, fontSize: 12),),
-                        )): Text('On time',style: GoogleFonts.mulish()),
+                    trailing: record.lateReason != ''? Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xFFFFD7D7),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 15.0, right: 15, top: 8, bottom: 8),
+                            child: Text('Late', style: GoogleFonts.mulish(color: Colors.red, fontSize: 12),),
+                          )),
+                    ): Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xFFD7FFE0),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 15.0, right: 15, top: 8, bottom: 8),
+                            child: Text('On time',style: GoogleFonts.mulish(color: textAccent, fontSize: 12)),
+                          )),
+                    ),
                     onTap: () {
                       // Handle tapping on a record if needed
                     },
