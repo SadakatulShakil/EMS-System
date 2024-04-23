@@ -153,10 +153,11 @@ class _LeaveScreenState extends State<LeaveScreen> {
         size: 30,
       ),
     ):Scaffold(
+      backgroundColor: Color(0xFFF6F8FE),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: accent,
-        title: Text('Apply Leave'),
+        title: Text('Apply Leave', style: GoogleFonts.mulish()),
         // actions: [
         //   Padding(
         //     padding: const EdgeInsets.only(right: 12.0),

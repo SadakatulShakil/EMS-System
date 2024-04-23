@@ -60,6 +60,7 @@ class _AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
     final historyProvider = Provider.of<AttendanceHistoryProvider>(context);
     if(historyProvider.historyData != null){
       return Scaffold(
+        backgroundColor: Color(0xFFF6F8FE),
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Color(0xFF66A690),
@@ -78,7 +79,7 @@ class _AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Color(0xFFF6F8FE),
                     borderRadius: BorderRadius.circular(16.0),
                     boxShadow: [
                       BoxShadow(

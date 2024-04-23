@@ -39,6 +39,7 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
   Widget build(BuildContext context) {
     final historyProvider = Provider.of<LeaveHistoryProvider>(context);
     return historyProvider.historyData != null?Scaffold(
+      backgroundColor: Color(0xFFF6F8FE),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Color(0xFF66A690),
@@ -57,7 +58,7 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
               padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Color(0xFFF6F8FE),
                   borderRadius: BorderRadius.circular(16.0),
                   boxShadow: [
                     BoxShadow(

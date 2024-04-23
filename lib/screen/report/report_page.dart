@@ -2,7 +2,7 @@ import 'package:employe_management_system/screen/report/widget/extention.dart';
 import 'package:employe_management_system/screen/report/widget/indicator.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import '../../utill/color_resources.dart';
 
 
@@ -54,7 +54,7 @@ class ReportPageSectionState extends State<ReportPageSection> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Color(0xFF66A690),
-        title: Text('Daily Report'),
+        title: Text('Daily Report', style: GoogleFonts.mulish()),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),

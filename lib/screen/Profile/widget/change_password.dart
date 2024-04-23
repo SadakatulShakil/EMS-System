@@ -108,10 +108,11 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     final authenticationProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
+        backgroundColor: Color(0xFFF6F8FE),
         appBar:AppBar(
           elevation: 0,
           backgroundColor: Color(0xFF66A690),
-          title: Text('Change Password'),
+          title: Text('Change Password', style: GoogleFonts.mulish(),),
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios, color: Colors.white),
             onPressed: () => Navigator.of(context).pop(),

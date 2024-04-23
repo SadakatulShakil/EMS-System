@@ -1,5 +1,6 @@
 import 'package:employe_management_system/providers/auth_provider.dart';
 import 'package:employe_management_system/providers/leave_application_provider.dart';
+import 'package:employe_management_system/screen/Profile/widget/admin_dashboard.dart';
 import 'package:employe_management_system/screen/Profile/widget/attendance_history.dart';
 import 'package:employe_management_system/screen/Profile/widget/change_password.dart';
 import 'package:employe_management_system/screen/Profile/widget/leave_applications.dart';
@@ -58,6 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
     final profileData = profileProvider.userData;
     return Scaffold(
+      backgroundColor: Color(0xFFF6F8FE),
       appBar: widget.isBackExit?AppBar(
       elevation: 0,
       backgroundColor: Color(0xFF66A690),
@@ -297,6 +299,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
             //     ),
             //   ),
             // ),
+            InkWell(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => AdminDashBoardScreen(),
+                  ),
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0, right: 8),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Icon(Icons.analytics_outlined, size: 25, color: accent,),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'Dashboard',
+                          style: GoogleFonts.mulish(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 18),
+                        ),
+                      ),
+                      Icon(Icons.arrow_forward_ios, size: 20),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Divider(
+                thickness: 1,
+                height: 2,
+              ),
+            ),
             Visibility(
               visible: applicationProvider.leaveApplicationsData.length > 0?true:false,
               child: InkWell(
