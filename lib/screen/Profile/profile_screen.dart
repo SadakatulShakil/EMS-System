@@ -60,7 +60,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     token = sp.getString("tokenId");
     final now = DateTime.now();
     String formattedDate = DateFormat('yyyy-MM-dd').format(now);
-    print('hgvf: '+token!);
+    print('hgvf: '+formattedDate!);
     try {
       profileProvider.fetchDashBoard(token: token!, date: formattedDate).then((value){
       });
@@ -90,7 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         onPressed: () => Navigator.of(context).pop(),
       ),
     ):null,
-      body: !loggingOut ? SingleChildScrollView(
+      body: (!loggingOut || !profileProvider.isProLoading) ? SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(height: 40),

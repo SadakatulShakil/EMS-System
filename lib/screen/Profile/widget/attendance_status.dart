@@ -9,6 +9,8 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../providers/profile_provider.dart';
+
 class AttendanceStatusPage extends StatefulWidget {
   @override
   _AttendanceStatusPageState createState() => _AttendanceStatusPageState();
@@ -21,23 +23,6 @@ class _AttendanceStatusPageState extends State<AttendanceStatusPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getHistoryData();
-  }
-  Future<void> getHistoryData() async {
-    final historyProvider = Provider.of<AttendanceHistoryProvider>(context, listen: false);
-    SharedPreferences sp = await SharedPreferences.getInstance();
-    token = sp.getString("tokenId");
-    print('hgvf: '+token!);
-    try {
-      historyProvider.fetchHistory(token: token!).then((value){
-        historyProvider.historyData!.data.sort((a, b) => b.checkin.compareTo(a.checkin));
-      });
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error fetching profile: $e');
-      }
-      rethrow;
-    }
   }
 
   String convertTo12HourFormat(String dateTimeString) {
@@ -61,8 +46,9 @@ class _AttendanceStatusPageState extends State<AttendanceStatusPage> {
 
   @override
   Widget build(BuildContext context) {
-    final historyProvider = Provider.of<AttendanceHistoryProvider>(context);
-    if(historyProvider.historyData != null){
+    final profileProvider = Provider.of<ProfileProvider>(context);
+    final dashBoardData = profileProvider.dashBoardData;
+    if(dashBoardData != null){
       return Scaffold(
         backgroundColor: Color(0xFFF6F8FE),
         appBar: AppBar(
@@ -76,9 +62,9 @@ class _AttendanceStatusPageState extends State<AttendanceStatusPage> {
         ),
         body: Container(
           child: ListView.builder(
-            itemCount: historyProvider.historyData!.data.length,
+            itemCount: dashBoardData.data.attendance.length,
             itemBuilder: (context, index) {
-              final record = historyProvider.historyData!.data[index];
+              final record = dashBoardData.data.attendance[index];
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
                 child: Container(
@@ -105,7 +91,7 @@ class _AttendanceStatusPageState extends State<AttendanceStatusPage> {
                                 borderRadius: BorderRadius.circular(40),
                                 clipBehavior: Clip.antiAlias,
                                 child: FadeInImage.assetNetwork(
-                                  image: 'https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg',
+                                  image: record.photo != null?record.photo:'https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg',
                                   width: 40.0 * 1.5,
                                   height: 40.0 * 1.5,
                                   fit: BoxFit.cover,
@@ -117,8 +103,8 @@ class _AttendanceStatusPageState extends State<AttendanceStatusPage> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                            Text('Sadakatul Ajam Md. Shakil',style: GoogleFonts.mulish(color: textAccent, fontSize: 15, fontWeight: FontWeight.w600)),
-                            Text('Mobile App developer',style: GoogleFonts.mulish(color: Colors.grey)),
+                            Text(record.name,style: GoogleFonts.mulish(color: textAccent, fontSize: 15, fontWeight: FontWeight.w600)),
+                            Text(record.designation,style: GoogleFonts.mulish(color: Colors.grey)),
                           ],
                           ),
                           Spacer(),
@@ -152,15 +138,15 @@ class _AttendanceStatusPageState extends State<AttendanceStatusPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Checkin at: '+convertTo12HourFormat(record.checkin.toString()),style: GoogleFonts.mulish(fontWeight: FontWeight.w500)),
+                            Text(record.checkin != null?'Checkin at: '+convertTo12HourFormat(record.checkin.toString()) : 'Checkin at: --:--',style: GoogleFonts.mulish(fontWeight: FontWeight.w500)),
                             SizedBox(height: 8,),
-                            Text('Checkout at: '+convertTo12HourFormat(record.checkout.toString()),style: GoogleFonts.mulish(fontWeight: FontWeight.w500)),
+                            Text(record.checkout != null?'Checkout at: '+convertTo12HourFormat(record.checkout.toString()) : 'Checkin at: --:--',style: GoogleFonts.mulish(fontWeight: FontWeight.w500)),
                           ],
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 8.0, right: 8, bottom: 8),
-                        child: Text('Total work hours: 9 hr 33 min',style: GoogleFonts.mulish(color: textAccent, fontWeight: FontWeight.w600)),
+                        child: Text('Total working hour: '+record.totalHours.toString()+' hr',style: GoogleFonts.mulish(color: textAccent, fontWeight: FontWeight.w600)),
                       )
                     ],
                   )

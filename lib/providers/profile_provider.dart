@@ -177,30 +177,30 @@ class ProfileProvider with ChangeNotifier {
   }
 
   Future<DashBoardModel> fetchDashBoard({required String token, required String date}) async {
-    isLoading = true;
+    loader(true);
     print('iiiiii:' + token);
     final url = Uri.parse(AppConstants.dashboard);
     try {
-      final response = await http.post(
+      final response = await http.get(
           url,
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',
           },
-          body: json.encode({
-            'date': date
-          })
+          // body: json.encode({
+          //   'date': date
+          // })
       );
-
+      print("res: " + response.body.toString());
       if (response.statusCode == 200) {
-        isLoading = false;
+        loader(false);
         print("res: " + response.body.toString());
         final historyData = DashBoardModel.fromJson(jsonDecode(response.body));
         setDashBoardData(historyData);
         notifyListeners();
         return DashBoardModel.fromJson(jsonDecode(response.body));// Update user data
       } else if (response.statusCode == 422) {
-        isLoading = false;
+        loader(false);
         final historyData = DashBoardModel.fromJson(jsonDecode(response.body));
         Get.snackbar(
           'Warning',
@@ -212,7 +212,7 @@ class ProfileProvider with ChangeNotifier {
           margin: EdgeInsets.all(10),
         );
       } else if (response.statusCode == 500) {
-        isLoading = false;
+        loader(false);
         Get.snackbar(
           'Warning',
           jsonDecode(response.body.toString())["message"],
@@ -226,7 +226,7 @@ class ProfileProvider with ChangeNotifier {
       }
       return DashBoardModel.fromJson(jsonDecode(response.body));
     } catch (e) {
-      isLoading = false;
+      loader(false);
       if (kDebugMode) {
         print("Failed: $e");
       }

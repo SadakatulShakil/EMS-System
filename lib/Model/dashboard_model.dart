@@ -64,9 +64,9 @@ class Attendance {
   final dynamic photo;
   final String designation;
   final String department;
-  final DateTime checkin;
+  final dynamic checkin;
   final dynamic checkout;
-  final String lateReason;
+  final dynamic lateReason;
   final int totalHours;
 
   Attendance({
@@ -89,8 +89,8 @@ class Attendance {
     photo: json["photo"],
     designation: json["designation"],
     department: json["department"],
-    checkin: DateTime.parse(json["checkin"]),
-    checkout: DateTime.parse(json["checkout"]),
+    checkin: json["checkin"],
+    checkout: json["checkout"],
     lateReason: json["late_reason"],
     totalHours: json["total_hours"],
   );
@@ -102,8 +102,8 @@ class Attendance {
     "photo": photo,
     "designation": designation,
     "department": department,
-    "checkin": checkin.toIso8601String(),
-    "checkout": checkout.toIso8601String(),
+    "checkin": checkin,
+    "checkout": checkout,
     "late_reason": lateReason,
     "total_hours": totalHours,
   };

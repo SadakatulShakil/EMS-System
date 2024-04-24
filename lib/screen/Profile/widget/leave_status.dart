@@ -9,6 +9,8 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../providers/profile_provider.dart';
+
 class LeaveStatusPage extends StatefulWidget {
   @override
   _LeaveStatusPageState createState() => _LeaveStatusPageState();
@@ -21,24 +23,6 @@ class _LeaveStatusPageState extends State<LeaveStatusPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getHistoryData();
-  }
-
-  Future<void> getHistoryData() async {
-    final historyProvider = Provider.of<AttendanceHistoryProvider>(context, listen: false);
-    SharedPreferences sp = await SharedPreferences.getInstance();
-    token = sp.getString("tokenId");
-    print('hgvf: '+token!);
-    try {
-      historyProvider.fetchHistory(token: token!).then((value){
-        historyProvider.historyData!.data.sort((a, b) => b.checkin.compareTo(a.checkin));
-      });
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error fetching profile: $e');
-      }
-      rethrow;
-    }
   }
 
   String convertTo12HourFormat(String dateTimeString) {
@@ -49,19 +33,16 @@ class _LeaveStatusPageState extends State<LeaveStatusPage> {
     DateTime dateTime = DateTime.parse(dateTimeString);
 
     // Format the time in 12-hour format with AM/PM
-    String formattedTime = DateFormat('hh:mm a').format(dateTime);
+    String formattedTime = DateFormat('dd MMMM, yyyy').format(dateTime);
 
     return formattedTime;
   }
-  String convertToDateHourFormat(String dateTimeString) {
-    // Parse the date-time string
-    DateTime dateTime = DateTime.parse(dateTimeString);
-    return "${dateTime.year}-${dateTime.month}-${dateTime.day}";
-  }
+
   @override
   Widget build(BuildContext context) {
-    final historyProvider = Provider.of<AttendanceHistoryProvider>(context);
-    if(historyProvider.historyData != null){
+    final profileProvider = Provider.of<ProfileProvider>(context);
+    final dashBoardData = profileProvider.dashBoardData;
+    if(dashBoardData != null){
       return Scaffold(
         backgroundColor: Color(0xFFF6F8FE),
         appBar: AppBar(
@@ -75,9 +56,9 @@ class _LeaveStatusPageState extends State<LeaveStatusPage> {
         ),
         body: Container(
           child: ListView.builder(
-            itemCount: historyProvider.historyData!.data.length,
+            itemCount: dashBoardData.data.leaves.length,
             itemBuilder: (context, index) {
-              final record = historyProvider.historyData!.data[index];
+              final record = dashBoardData.data.leaves[index];
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
                 child: Container(
@@ -104,7 +85,7 @@ class _LeaveStatusPageState extends State<LeaveStatusPage> {
                                   borderRadius: BorderRadius.circular(40),
                                   clipBehavior: Clip.antiAlias,
                                   child: FadeInImage.assetNetwork(
-                                    image: 'https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg',
+                                    image: record.photo != null?record.photo:'https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg',
                                     width: 40.0 * 1.5,
                                     height: 40.0 * 1.5,
                                     fit: BoxFit.cover,
@@ -116,10 +97,22 @@ class _LeaveStatusPageState extends State<LeaveStatusPage> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Sadakatul Ajam Md. Shakil',style: GoogleFonts.mulish(color: textAccent, fontSize: 15, fontWeight: FontWeight.w600)),
-                                Text('Mobile App developer',style: GoogleFonts.mulish(color: Colors.grey)),
+                                Text(record.name,style: GoogleFonts.mulish(color: textAccent, fontSize: 15, fontWeight: FontWeight.w600)),
+                                Text(record.designation,style: GoogleFonts.mulish(color: Colors.grey)),
                               ],
                             ),
+                            Spacer(),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 12.0),
+                              child: Align(
+                                  alignment: Alignment.center,
+                                  child: Text(record.status == "APPROVED"
+                                      ? 'Approved': record.status == "PENDING"
+                                      ? 'Pending': 'Decline',
+                                    style: GoogleFonts.mulish(color: record.status == "APPROVED"
+                                        ?Colors.green : record.status == "PENDING"
+                                        ? Colors.blue : Colors.redAccent, fontSize: 15),)),
+                            )
                           ],
                         ),
                         Padding(
@@ -127,9 +120,9 @@ class _LeaveStatusPageState extends State<LeaveStatusPage> {
                           child: Row(
                             children: [
                               Text('Leave : from ',style: GoogleFonts.mulish(fontWeight: FontWeight.w500)),
-                              Text('12 Nov, 2024 ',style: GoogleFonts.mulish(fontWeight: FontWeight.w700, color: textAccent)),
-                              Text('to ',style: GoogleFonts.mulish(fontWeight: FontWeight.w500)),
-                              Text('13 Nov, 2024',style: GoogleFonts.mulish(fontWeight: FontWeight.w700, color: textAccent)),
+                              Text(convertTo12HourFormat(record.from.toString()),style: GoogleFonts.mulish(fontWeight: FontWeight.w700, color: textAccent)),
+                              Text(' to ',style: GoogleFonts.mulish(fontWeight: FontWeight.w500)),
+                              Text(convertTo12HourFormat(record.to.toString()),style: GoogleFonts.mulish(fontWeight: FontWeight.w700, color: textAccent)),
                             ],
                           ),
                         ),

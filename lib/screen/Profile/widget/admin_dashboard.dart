@@ -135,7 +135,7 @@ class _AdminDashBoardScreenState extends State<AdminDashBoardScreen> {
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),
-        body: dashBoardData !=null?SingleChildScrollView(
+        body: !profileProvider.isProLoading ?SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Padding(
             padding: const EdgeInsets.all(12.0),
@@ -183,7 +183,7 @@ class _AdminDashBoardScreenState extends State<AdminDashBoardScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text('Attendance Status', style: GoogleFonts.mulish(fontSize: 20, color: textAccent, fontWeight: FontWeight.w600)),
-                          Text('${dashBoardData.data.reportData.attendance}', style: GoogleFonts.mulish(fontSize: 20, color: textAccent, fontWeight: FontWeight.w600)),
+                          Text('${dashBoardData!.data.reportData.attendance}', style: GoogleFonts.mulish(fontSize: 20, color: textAccent, fontWeight: FontWeight.w600)),
                         ],
                       ),
                     ),
