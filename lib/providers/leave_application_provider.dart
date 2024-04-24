@@ -86,6 +86,7 @@ class LeaveApplicationProvider with ChangeNotifier {
     }
   }
 
+
   Future<UpdateApplicationModel> updateApplication(String token, int leaveId, int statusId) async {
     isLoading = true;
 

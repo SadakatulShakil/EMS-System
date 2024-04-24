@@ -6,6 +6,7 @@ import 'package:employe_management_system/screen/Profile/widget/change_password.
 import 'package:employe_management_system/screen/Profile/widget/leave_applications.dart';
 import 'package:employe_management_system/screen/Profile/widget/leave_history.dart';
 import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -34,6 +35,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // TODO: implement initState
     super.initState();
     getApplicationHistoryData();
+    getDashBoardData();
   }
 
   Future<void> getApplicationHistoryData() async {
@@ -52,12 +54,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> getDashBoardData() async {
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    token = sp.getString("tokenId");
+    final now = DateTime.now();
+    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+    print('hgvf: '+token!);
+    try {
+      profileProvider.fetchDashBoard(token: token!, date: formattedDate).then((value){
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching application: $e');
+      }
+      rethrow;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<ProfileProvider>(context);
     final applicationProvider = Provider.of<LeaveApplicationProvider>(context);
     final authProvider = Provider.of<AuthProvider>(context);
     final profileData = profileProvider.userData;
+    final dashBoardData = profileProvider.dashBoardData;
     return Scaffold(
       backgroundColor: Color(0xFFF6F8FE),
       appBar: widget.isBackExit?AppBar(

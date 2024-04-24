@@ -832,7 +832,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               profileData.data.settings.office.startTime);
                           DateTime exitTime = DateFormat('hh:mm a')
                               .parse(profileData.data.settings.office.endTime);
-// Combine the parsed times with the current date
+                          print('==>exitTime: $exitTime');
+                                // Combine the parsed times with the current date
                           DateTime combinedEntryTime = DateTime(
                             now.year,
                             now.month,
@@ -847,16 +848,17 @@ class _HomeScreenState extends State<HomeScreen> {
                             exitTime.hour,
                             exitTime.minute,
                           );
-
+                          print('==>combinedExitTime: $combinedExitTime');
                           bool isAfterEntryTime =
                               now.isAfter(combinedEntryTime);
                           bool isBeforeExitTime =
                               now.isBefore(combinedExitTime);
-                          if (profileData.data.attendance.checkin == null &&
+                          print('==>isBeforeExitTime: $isBeforeExitTime');
+                          if (profileData.data.attendance.checkin == 'null' &&
                               isAfterEntryTime) {
                             showLateEntryDialog();
                           } else if (profileData.data.attendance.checkout ==
-                                  null &&
+                                  'null' &&
                               isBeforeExitTime) {
                             showEarlyExitDialog();
                           } else if (isBeforeExitTime) {

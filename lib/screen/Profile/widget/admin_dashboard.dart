@@ -1,9 +1,14 @@
 import 'package:employe_management_system/screen/Profile/widget/attendance_status.dart';
 import 'package:employe_management_system/screen/Profile/widget/leave_status.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../providers/profile_provider.dart';
 import '../../../utill/color_resources.dart';
 
 
@@ -17,6 +22,12 @@ class _AdminDashBoardScreenState extends State<AdminDashBoardScreen> {
 
   String? token;
   String? birthDate;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
   _showDatePicker() {
     /// TODO changing the color of date picker
     DateTime currentDate = DateTime.now();
@@ -60,10 +71,30 @@ class _AdminDashBoardScreenState extends State<AdminDashBoardScreen> {
         setState(() {
           birthDate = convertReadableDate(value.toString());
           print('===> '+birthDate.toString());
+          getDashBoardData();
         });
       }
     });
   }
+
+  Future<void> getDashBoardData() async {
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    token = sp.getString("tokenId");
+    final now = DateTime.now();
+    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+    print('hgvf: '+token!);
+    try {
+      profileProvider.fetchDashBoard(token: token!, date: formattedDate).then((value){
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching application: $e');
+      }
+      rethrow;
+    }
+  }
+
   String convertReadableDate(String dob) {
     DateTime doBirth = DateTime.parse(dob);
 
@@ -76,8 +107,23 @@ class _AdminDashBoardScreenState extends State<AdminDashBoardScreen> {
     return formattedDOB;
   }
 
+  String convertMainDate(String date){
+    DateTime doBirth = DateTime.parse(date);
+
+    // Create a DateFormat object to format the DateTime
+    DateFormat formatter = DateFormat('dd MMMM, yyyy, EEEE');
+
+    // Format the DateTime to the desired format
+    String formattedDate = formatter.format(doBirth);
+
+    return formattedDate;
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    final profileProvider = Provider.of<ProfileProvider>(context);
+    final dashBoardData = profileProvider.dashBoardData;
     return Scaffold(
         backgroundColor: Color(0xFFF6F8FE),
         appBar:AppBar(
@@ -89,7 +135,7 @@ class _AdminDashBoardScreenState extends State<AdminDashBoardScreen> {
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),
-        body:SingleChildScrollView(
+        body: dashBoardData !=null?SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Padding(
             padding: const EdgeInsets.all(12.0),
@@ -99,7 +145,7 @@ class _AdminDashBoardScreenState extends State<AdminDashBoardScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('12 November, 2024', style: GoogleFonts.mulish(fontSize: 22, color: textAccent, fontWeight: FontWeight.w600),),
+                    Text(birthDate != null?'${convertMainDate(birthDate!)}':'${convertMainDate(DateTime.now().toString())}', style: GoogleFonts.mulish(fontSize: 22, color: textAccent, fontWeight: FontWeight.w600),),
                     GestureDetector(
                       onTap: (){
                         _showDatePicker();
@@ -137,7 +183,7 @@ class _AdminDashBoardScreenState extends State<AdminDashBoardScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text('Attendance Status', style: GoogleFonts.mulish(fontSize: 20, color: textAccent, fontWeight: FontWeight.w600)),
-                          Text('14', style: GoogleFonts.mulish(fontSize: 20, color: textAccent, fontWeight: FontWeight.w600)),
+                          Text('${dashBoardData.data.reportData.attendance}', style: GoogleFonts.mulish(fontSize: 20, color: textAccent, fontWeight: FontWeight.w600)),
                         ],
                       ),
                     ),
@@ -173,7 +219,7 @@ class _AdminDashBoardScreenState extends State<AdminDashBoardScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text('Leave Status', style: GoogleFonts.mulish(fontSize: 20, color: textAccent, fontWeight: FontWeight.w600)),
-                          Text('12', style: GoogleFonts.mulish(fontSize: 20, color: textAccent, fontWeight: FontWeight.w600)),
+                          Text('${dashBoardData.data.reportData.attendance}', style: GoogleFonts.mulish(fontSize: 20, color: textAccent, fontWeight: FontWeight.w600)),
                         ],
                       ),
                     ),
@@ -181,6 +227,11 @@ class _AdminDashBoardScreenState extends State<AdminDashBoardScreen> {
                 ),
               ],
             ),
+          ),
+        ):Center(
+          child: LoadingAnimationWidget.threeRotatingDots(
+            color: Colors.green,
+            size: 30,
           ),
         )
     );

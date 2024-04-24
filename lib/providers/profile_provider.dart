@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:employe_management_system/Model/dashboard_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -9,9 +10,16 @@ import '../utill/app_constant.dart';
 
 class ProfileProvider with ChangeNotifier {
   ProfileModel? _userData;
+  DashBoardModel? _dashBoardData;
   bool isLoading = false;
   bool get isProLoading => isLoading;
 
+  DashBoardModel? get dashBoardData => _dashBoardData;
+
+  void setDashBoardData(DashBoardModel data){
+    _dashBoardData = data;
+    notifyListeners();
+  }
   void loader (bool value){
     isLoading = value;
     notifyListeners();
@@ -165,6 +173,64 @@ class ProfileProvider with ChangeNotifier {
       }
       notifyListeners();
       return null; // Add a return statement
+    }
+  }
+
+  Future<DashBoardModel> fetchDashBoard({required String token, required String date}) async {
+    isLoading = true;
+    print('iiiiii:' + token);
+    final url = Uri.parse(AppConstants.dashboard);
+    try {
+      final response = await http.post(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: json.encode({
+            'date': date
+          })
+      );
+
+      if (response.statusCode == 200) {
+        isLoading = false;
+        print("res: " + response.body.toString());
+        final historyData = DashBoardModel.fromJson(jsonDecode(response.body));
+        setDashBoardData(historyData);
+        notifyListeners();
+        return DashBoardModel.fromJson(jsonDecode(response.body));// Update user data
+      } else if (response.statusCode == 422) {
+        isLoading = false;
+        final historyData = DashBoardModel.fromJson(jsonDecode(response.body));
+        Get.snackbar(
+          'Warning',
+          jsonDecode(response.body.toString())["message"],
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+          borderRadius: 10,
+          margin: EdgeInsets.all(10),
+        );
+      } else if (response.statusCode == 500) {
+        isLoading = false;
+        Get.snackbar(
+          'Warning',
+          jsonDecode(response.body.toString())["message"],
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+          borderRadius: 10,
+          margin: EdgeInsets.all(10),
+        );
+        return DashBoardModel.fromJson(jsonDecode(response.body));
+      }
+      return DashBoardModel.fromJson(jsonDecode(response.body));
+    } catch (e) {
+      isLoading = false;
+      if (kDebugMode) {
+        print("Failed: $e");
+      }
+      throw Exception('Failed: $e');
     }
   }
 

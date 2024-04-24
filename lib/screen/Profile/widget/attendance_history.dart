@@ -103,10 +103,13 @@ class _AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
                           Text('Checkin at: '+convertTo12HourFormat(record.checkin.toString()),style: GoogleFonts.mulish()),
                           SizedBox(height: 8,),
                           Text('Checkout at: '+convertTo12HourFormat(record.checkout.toString()),style: GoogleFonts.mulish()),
+                          SizedBox(height: 5,),
+                          if(record.lateReason != '')
+                          Text('Remarks: '+record.lateReason,style: GoogleFonts.mulish()),
                         ],
                       ),
                     ),
-                    trailing: record.lateReason != ''? Padding(
+                    trailing: record.status == 0? Padding(
                       padding: const EdgeInsets.only(right: 8.0),
                       child: Container(
                           decoration: BoxDecoration(

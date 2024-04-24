@@ -1,3 +1,7 @@
+// To parse this JSON data, do
+//
+//     final attendanceHistoryModel = attendanceHistoryModelFromJson(jsonString);
+
 import 'package:meta/meta.dart';
 import 'dart:convert';
 
@@ -33,22 +37,30 @@ class Datum {
   final DateTime checkin;
   final String checkout;
   final String lateReason;
+  final int duration;
+  final int status;
 
   Datum({
     required this.checkin,
     required this.checkout,
     required this.lateReason,
+    required this.duration,
+    required this.status,
   });
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
     checkin: DateTime.parse(json["checkin"]),
     checkout: json["checkout"],
     lateReason: json["late_reason"],
+    duration: json["duration"],
+    status: json["status"],
   );
 
   Map<String, dynamic> toJson() => {
     "checkin": checkin.toIso8601String(),
     "checkout": checkout,
     "late_reason": lateReason,
+    "duration": duration,
+    "status": status,
   };
 }
