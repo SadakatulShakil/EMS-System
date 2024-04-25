@@ -29,6 +29,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String? token;
+  String? email;
   bool loggingOut = false;
   @override
   void initState() {
@@ -42,6 +43,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final historyProvider = Provider.of<LeaveApplicationProvider>(context, listen: false);
     SharedPreferences sp = await SharedPreferences.getInstance();
     token = sp.getString("tokenId");
+    email = sp.getString("email");
     print('hgvf: '+token!);
     try {
       historyProvider.fetchApplications(token: token!).then((value){
@@ -320,6 +322,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             //     ),
             //   ),
             // ),
+            if(email == 'mahfuz.rahman@softwindtech.com' || email =='kabir.hasan@softwindtech.com' || email =='moinur.hussain@softwindtech.com')
             InkWell(
               onTap: () {
                 Navigator.of(context).push(
@@ -351,6 +354,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
+            if(email == 'mahfuz.rahman@softwindtech.com' || email =='kabir.hasan@softwindtech.com' || email =='moinur.hussain@softwindtech.com')
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: Divider(
@@ -358,33 +362,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 height: 2,
               ),
             ),
-            Visibility(
-              visible: applicationProvider.leaveApplicationsData.length > 0?true:false,
-              child: InkWell(
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
-                      LeaveApplicationsPage(applicationProvider.leaveApplicationsData, token)));
-                },
+            if(applicationProvider.leaveApplicationsData.length > 0)
+            InkWell(
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
+                    LeaveApplicationsPage(applicationProvider.leaveApplicationsData, token)));
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0, right: 8),
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 8.0, right: 8),
-                  child: Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Icon(Icons.touch_app, size: 25, color: accent),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            'Pending request',
-                            style: GoogleFonts.mulish(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 18),
-                          ),
+                  padding: const EdgeInsets.all(5.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Icon(Icons.touch_app, size: 25, color: accent),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'Pending request',
+                          style: GoogleFonts.mulish(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 18),
                         ),
-                        Icon(Icons.arrow_forward_ios, size: 20),
-                      ],
-                    ),
+                      ),
+                      Icon(Icons.arrow_forward_ios, size: 20),
+                    ],
                   ),
                 ),
               ),

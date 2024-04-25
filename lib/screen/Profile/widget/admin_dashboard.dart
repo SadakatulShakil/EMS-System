@@ -27,6 +27,11 @@ class _AdminDashBoardScreenState extends State<AdminDashBoardScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    DateTime doBirth = DateTime.now();
+    DateFormat formatter = DateFormat('yyyy-MM-dd');
+
+    String formattedDOB = formatter.format(doBirth);
+    getDashBoardData(formattedDOB);
   }
   _showDatePicker() {
     /// TODO changing the color of date picker
@@ -71,18 +76,18 @@ class _AdminDashBoardScreenState extends State<AdminDashBoardScreen> {
         setState(() {
           birthDate = convertReadableDate(value.toString());
           print('===> '+birthDate.toString());
-          getDashBoardData();
+          getDashBoardData(birthDate!);
         });
       }
     });
   }
 
-  Future<void> getDashBoardData() async {
+  Future<void> getDashBoardData(String birthDate) async {
     final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
     SharedPreferences sp = await SharedPreferences.getInstance();
     token = sp.getString("tokenId");
-    final now = DateTime.now();
-    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+    DateTime doBirth = DateTime.parse(birthDate);
+    String formattedDate = DateFormat('yyyy-MM-dd').format(doBirth);
     print('hgvf: '+token!);
     try {
       profileProvider.fetchDashBoard(token: token!, date: formattedDate).then((value){
@@ -219,7 +224,7 @@ class _AdminDashBoardScreenState extends State<AdminDashBoardScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text('Leave Status', style: GoogleFonts.mulish(fontSize: 20, color: textAccent, fontWeight: FontWeight.w600)),
-                          Text('${dashBoardData.data.reportData.attendance}', style: GoogleFonts.mulish(fontSize: 20, color: textAccent, fontWeight: FontWeight.w600)),
+                          Text('${dashBoardData.data.reportData.leave}', style: GoogleFonts.mulish(fontSize: 20, color: textAccent, fontWeight: FontWeight.w600)),
                         ],
                       ),
                     ),

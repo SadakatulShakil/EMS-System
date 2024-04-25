@@ -179,9 +179,9 @@ class ProfileProvider with ChangeNotifier {
   Future<DashBoardModel> fetchDashBoard({required String token, required String date}) async {
     loader(true);
     print('iiiiii:' + token);
-    final url = Uri.parse(AppConstants.dashboard);
+    final url = Uri.parse(AppConstants.dashboard+'?date=$date');
     try {
-      final response = await http.get(
+      final response = await http.get(//if post method than enable body section
           url,
           headers: {
             'Content-Type': 'application/json',

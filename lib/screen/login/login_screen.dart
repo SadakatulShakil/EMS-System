@@ -27,6 +27,18 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     requestPermission();
+    getEmailFromSharedPrefs(); // Load saved email on init
+  }
+
+  // Function to load saved email from SharedPreferences
+  Future<void> getEmailFromSharedPrefs() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    String? savedEmail = sp.getString('email');
+    if (savedEmail != null) {
+      setState(() {
+        emailController.text = savedEmail;
+      });
+    }
   }
 
   Future<void> requestPermission() async {
@@ -60,6 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (authResponse.status == 'SUCCESS') {
         SharedPreferences sp = await SharedPreferences.getInstance();
         sp.setString('tokenId', authResponse.data.token.toString());
+        sp.setString('email', emailController.text.trim());
         final currentTime = DateTime.now();
         final expirationTime = currentTime.add(Duration(hours: authResponse.data.expiry));
         sp.setString('session_expiry', expirationTime.toIso8601String());
