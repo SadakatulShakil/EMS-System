@@ -939,7 +939,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       .replaceAll('hr', '')) <
                                   9
                               ? Colors.red
-                              : Colors.green),
+                              : Color(0xFFF6F8FE)
+                      ),
                     ),
                     SizedBox(
                       height: 40,

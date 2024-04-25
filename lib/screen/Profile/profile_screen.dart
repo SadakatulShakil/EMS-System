@@ -36,7 +36,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // TODO: implement initState
     super.initState();
     getApplicationHistoryData();
-    getDashBoardData();
   }
 
   Future<void> getApplicationHistoryData() async {
@@ -47,24 +46,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     print('hgvf: '+token!);
     try {
       historyProvider.fetchApplications(token: token!).then((value){
-      });
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error fetching application: $e');
-      }
-      rethrow;
-    }
-  }
-
-  Future<void> getDashBoardData() async {
-    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
-    SharedPreferences sp = await SharedPreferences.getInstance();
-    token = sp.getString("tokenId");
-    final now = DateTime.now();
-    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
-    print('hgvf: '+formattedDate!);
-    try {
-      profileProvider.fetchDashBoard(token: token!, date: formattedDate).then((value){
       });
     } catch (e) {
       if (kDebugMode) {
@@ -292,36 +273,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 height: 2,
               ),
             ),
-            // GestureDetector(
-            //   onTap: () {
-            //     Navigator.of(context).push(
-            //       MaterialPageRoute(
-            //         builder: (context) => ReportPageSection(),
-            //       ),
-            //     );
-            //   },
-            //   child: Padding(
-            //     padding: const EdgeInsets.only(left: 8.0, right: 8),
-            //     child: Card(
-            //       child: Padding(
-            //         padding: const EdgeInsets.all(8.0),
-            //         child: Row(
-            //           children: [
-            //             Icon(Icons.report_outlined, size: 25),
-            //             SizedBox(width: 10),
-            //             Text(
-            //               'Reports',
-            //               style: GoogleFonts.mulish(
-            //                 fontWeight: FontWeight.w400,
-            //                 fontSize: 18,
-            //               ),
-            //             )
-            //           ],
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            // ),
             if(email == 'mahfuz.rahman@softwindtech.com' || email =='kabir.hasan@softwindtech.com' || email =='moinur.hussain@softwindtech.com')
             InkWell(
               onTap: () {
