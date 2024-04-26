@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:employe_management_system/providers/leave_provider.dart';
+import 'package:employe_management_system/utill/color_resources.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -935,11 +936,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: int.parse(calculateHours(convertToMainFormat(
                                           profileData.data.attendance.checkin
                                               .toString()))
-                                      .split('')[0]
-                                      .replaceAll('hr', '')) <
-                                  9
+                                      .split('')[0]) <
+                                  1
                               ? Colors.red
-                              : Color(0xFFF6F8FE)
+                              : accent
                       ),
                     ),
                     SizedBox(
