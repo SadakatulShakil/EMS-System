@@ -850,11 +850,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             exitTime.minute,
                           );
                           print('==>combinedExitTime: $combinedExitTime');
+                          print('==>combinedEntryTime: $combinedEntryTime');
                           bool isAfterEntryTime =
                               now.isAfter(combinedEntryTime);
                           bool isBeforeExitTime =
                               now.isBefore(combinedExitTime);
                           print('==>isBeforeExitTime: $isBeforeExitTime');
+                          print('==>isAfterEntryTime: $isAfterEntryTime');
                           if (profileData.data.attendance.checkin == 'null' &&
                               isAfterEntryTime) {
                             showLateEntryDialog();
@@ -937,7 +939,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           profileData.data.attendance.checkin
                                               .toString()))
                                       .split('')[0]) <
-                                  1
+                                  8
                               ? Colors.red
                               : accent
                       ),
