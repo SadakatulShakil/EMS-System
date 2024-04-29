@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../providers/attendence_provider.dart';
-import '../../providers/connectivity_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../providers/profile_provider.dart';
 import '../Profile/profile_screen.dart';
 
@@ -48,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _checkLocation();
+    _requestPermissionAndLocation();
     _startLocationTracking();
     // Initial update
     _updateDateTime();
@@ -58,6 +58,83 @@ class _HomeScreenState extends State<HomeScreen> {
     Timer.periodic(Duration(seconds: 50), (timer) {
       _updateDateTime();
     });
+  }
+
+  Future<void> _requestPermissionAndLocation() async {
+    // Check if permission is granted
+    var permissionStatus = await Permission.location.status;
+    print('==>1 $permissionStatus');
+    if (permissionStatus.isDenied) {
+      // Request permission
+      print('==>2 $permissionStatus');
+      permissionStatus = await Permission.location.request();
+      print('==>3 $permissionStatus');
+      if (permissionStatus.isGranted) {
+        // Permission granted, proceed to get current location
+        _checkLocation();
+      } else if (permissionStatus.isDenied) {
+        // Permission denied, show dialog to the user
+        _showPermissionDeniedDialog();
+      } else if (permissionStatus.isPermanentlyDenied) {
+        // Permission permanently denied, show dialog to open settings
+        _showSettingsDialog();
+      }
+    } else {
+      // Permission already granted, proceed to get current location
+      print('==>4 $permissionStatus');
+      _checkLocation();
+    }
+  }
+
+  void _showSettingsDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Location Permission"),
+          content: Text("Location permission is permanently denied. Please enable it in app settings to use this feature."),
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                _requestPermissionAndLocation();
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: Text("Settings"),
+              onPressed: () {
+                // Open app settings
+                openAppSettings();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+  void _showPermissionDeniedDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Location Permission Denied"),
+          content: Text("Please grant location permission to use this app."),
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text("OK"),
+              onPressed: () {
+                _requestPermissionAndLocation();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> getProfileData() async {
@@ -108,7 +185,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _checkLocation() async {
     Position currentPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-
+    lat = currentPosition.latitude.toString();
+    lan = currentPosition.longitude.toString();
     // Round the latitude and longitude values to 3 digits after the decimal point
     double latDifference = (currentPosition.latitude - officeLat).abs();
     double lanDifference = (currentPosition.longitude - officeLan).abs();
@@ -208,7 +286,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void showLateEntryDialog() {
+  void showLateEntryDialog(bool isLoc) {
     TextEditingController _entryReasonController = TextEditingController();
     showDialog(
       context: context,
@@ -217,7 +295,7 @@ class _HomeScreenState extends State<HomeScreen> {
           height: MediaQuery.of(context).size.height / 3,
           child: AlertDialog(
             title: Text(
-              'Entry Validation',
+              isLoc?'Entry Validation':'You are outside from office. Give Entry Validation remarks!',
               textAlign: TextAlign.center,
               style: GoogleFonts.mulish(fontWeight: FontWeight.bold),
             ),
@@ -241,7 +319,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void showEarlyExitDialog() {
+  void showEarlyExitDialog(bool isLoc) {
     TextEditingController _exitReasonController = TextEditingController();
     showDialog(
       context: context,
@@ -250,7 +328,7 @@ class _HomeScreenState extends State<HomeScreen> {
           height: MediaQuery.of(context).size.height / 3,
           child: AlertDialog(
             title: Text(
-              'Exit Validation',
+              isLoc?'Exit Validation':'You are outside from office. Give Exit Validation remarks!',
               textAlign: TextAlign.center,
               style: GoogleFonts.mulish(fontWeight: FontWeight.bold),
             ),
@@ -263,9 +341,9 @@ class _HomeScreenState extends State<HomeScreen> {
             actions: <Widget>[
               TextButton(
                 child: Text('Submit', style: GoogleFonts.mulish()),
-                onPressed: () {
+                onPressed: () async{
                   // Make the onPressed callback async
-                  submitDialog(_exitReasonController.text);
+                  await submitDialog(_exitReasonController.text);
                 },
               ),
             ],
@@ -277,7 +355,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 // Function to submit the dialog
   Future<void> submitDialog(String reason) async {
-    print('======================>');
+    print('======================># $lat');
     Provider.of<AttendanceProvider>(context, listen: false)
         .toggleCheckInOut(
             context,
@@ -301,7 +379,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Function to submit the dialog
   Future<void> legalSubmit(BuildContext context, String reason) async {
-    print('======================>');
+    print('======================># $lat');
     Provider.of<AttendanceProvider>(context, listen: false)
         .toggleCheckInOut(
             context,
@@ -827,6 +905,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
+
                         if (isLocMatched) {
                           DateTime now = DateTime.now();
                           DateTime entryTime = DateFormat('hh:mm a').parse(
@@ -834,7 +913,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           DateTime exitTime = DateFormat('hh:mm a')
                               .parse(profileData.data.settings.office.endTime);
                           print('==>exitTime: $exitTime');
-                                // Combine the parsed times with the current date
+                          // Combine the parsed times with the current date
                           DateTime combinedEntryTime = DateTime(
                             now.year,
                             now.month,
@@ -852,25 +931,67 @@ class _HomeScreenState extends State<HomeScreen> {
                           print('==>combinedExitTime: $combinedExitTime');
                           print('==>combinedEntryTime: $combinedEntryTime');
                           bool isAfterEntryTime =
-                              now.isAfter(combinedEntryTime);
+                          now.isAfter(combinedEntryTime);
                           bool isBeforeExitTime =
-                              now.isBefore(combinedExitTime);
+                          now.isBefore(combinedExitTime);
                           print('==>isBeforeExitTime: $isBeforeExitTime');
                           print('==>isAfterEntryTime: $isAfterEntryTime');
-                          if (profileData.data.attendance.checkin == 'null' &&
+                          if (profileData.data.attendance.checkin == null &&
                               isAfterEntryTime) {
-                            showLateEntryDialog();
-                          } else if (profileData.data.attendance.checkout ==
-                                  'null' &&
+                            showLateEntryDialog(false);
+                          } else if (profileData.data.attendance.checkin !=
+                              null &&
                               isBeforeExitTime) {
-                            showEarlyExitDialog();
-                          } else if (isBeforeExitTime) {
-                            showEarlyExitDialog();
+                            showEarlyExitDialog(false);
+                          } else if (profileData.data.attendance.checkout !=
+                              null && isBeforeExitTime) {
+                            showEarlyExitDialog(false);
                           } else {
                             legalSubmit(context, 'On time');
                           }
                         } else {
-                          legalSubmit(context, 'Submit from Outside office');
+                          DateTime now = DateTime.now();
+                          DateTime entryTime = DateFormat('hh:mm a').parse(
+                              profileData.data.settings.office.startTime);
+                          DateTime exitTime = DateFormat('hh:mm a')
+                              .parse(profileData.data.settings.office.endTime);
+                          print('==>exitTime: $exitTime');
+                          // Combine the parsed times with the current date
+                          DateTime combinedEntryTime = DateTime(
+                            now.year,
+                            now.month,
+                            now.day,
+                            entryTime.hour,
+                            entryTime.minute,
+                          );
+                          DateTime combinedExitTime = DateTime(
+                            now.year,
+                            now.month,
+                            now.day,
+                            exitTime.hour,
+                            exitTime.minute,
+                          );
+                          print('==>combinedExitTime: $combinedExitTime');
+                          print('==>combinedEntryTime: $combinedEntryTime');
+                          bool isAfterEntryTime =
+                          now.isAfter(combinedEntryTime);
+                          bool isBeforeExitTime =
+                          now.isBefore(combinedExitTime);
+                          print('==>isBeforeExitTime: $isBeforeExitTime');
+                          print('==>isAfterEntryTime: $isAfterEntryTime');
+                          if (profileData.data.attendance.checkin == null &&
+                              isAfterEntryTime) {
+                            showLateEntryDialog(false);
+                          } else if (profileData.data.attendance.checkin !=
+                              null &&
+                              isBeforeExitTime) {
+                            showEarlyExitDialog(false);
+                          } else if (profileData.data.attendance.checkout !=
+                              null && isBeforeExitTime) {
+                            showEarlyExitDialog(false);
+                          } else {
+                            legalSubmit(context, 'On time');
+                          }
                         }
                       },
                       child: Container(

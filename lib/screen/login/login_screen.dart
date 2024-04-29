@@ -26,7 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    requestPermission();
+    _requestPermissionAndLocation();
     getEmailFromSharedPrefs(); // Load saved email on init
   }
 
@@ -41,20 +41,83 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> requestPermission() async {
-    final permission = Permission.location;
 
-    if (await permission.isDenied) {
-      final result = await permission.request();
-
-      if (result.isGranted) {
-        // Permission is granted
-      } else if (result.isDenied) {
-        // Permission is denied
-      } else if (result.isPermanentlyDenied) {
-        // Permission is permanently denied
+  Future<void> _requestPermissionAndLocation() async {
+    // Check if permission is granted
+    var permissionStatus = await Permission.location.status;
+    print('==>1 $permissionStatus');
+    if (permissionStatus.isDenied) {
+      // Request permission
+      print('==>2 $permissionStatus');
+      permissionStatus = await Permission.location.request();
+      print('==>3 $permissionStatus');
+      if (permissionStatus.isGranted) {
+        // Permission granted, proceed to get current location
+        //_checkLocation();
+      } else if (permissionStatus.isDenied) {
+        // Permission denied, show dialog to the user
+        _showPermissionDeniedDialog();
+      } else if (permissionStatus.isPermanentlyDenied) {
+        // Permission permanently denied, show dialog to open settings
+        _showSettingsDialog();
       }
+    } else {
+      // Permission already granted, proceed to get current location
+      print('==>4 $permissionStatus');
+      //_checkLocation();
     }
+  }
+
+  void _showSettingsDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Location Permission"),
+          content: Text("Location permission is permanently denied. Please enable it in app settings to use this feature."),
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                //_requestPermissionAndLocation();
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: Text("Settings"),
+              onPressed: () {
+                // Open app settings
+                openAppSettings();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+  void _showPermissionDeniedDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Location Permission Denied"),
+          content: Text("Please grant location permission to use this app."),
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text("OK"),
+              onPressed: () {
+                _requestPermissionAndLocation();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _authenticate(String username, String password) async {
