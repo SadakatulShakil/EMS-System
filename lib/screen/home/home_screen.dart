@@ -63,8 +63,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _requestPermissionAndLocation() async {
     // Check if permission is granted
     var permissionStatus = await Permission.location.status;
-    print('==>1 $permissionStatus');
-    if (permissionStatus.isDenied) {
+    print('==>1 ${permissionStatus}');
+    if (permissionStatus.isDenied || permissionStatus.isLimited) {
       // Request permission
       print('==>2 $permissionStatus');
       permissionStatus = await Permission.location.request();
@@ -73,6 +73,9 @@ class _HomeScreenState extends State<HomeScreen> {
         // Permission granted, proceed to get current location
         _checkLocation();
       } else if (permissionStatus.isDenied) {
+        // Permission denied, show dialog to the user
+        _showPermissionDeniedDialog();
+      }else if (permissionStatus.isLimited) {
         // Permission denied, show dialog to the user
         _showPermissionDeniedDialog();
       } else if (permissionStatus.isPermanentlyDenied) {
@@ -200,6 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
         (latDifference.toStringAsFixed(3) +
             '__' +
             lanDifference.toStringAsFixed(3)));
+    print('check22: $isLocMatched');
   }
 
   Future<void> _startLocationTracking() async {
@@ -938,14 +942,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           print('==>isAfterEntryTime: $isAfterEntryTime');
                           if (profileData.data.attendance.checkin == null &&
                               isAfterEntryTime) {
-                            showLateEntryDialog(false);
+                            showLateEntryDialog(true);
                           } else if (profileData.data.attendance.checkin !=
                               null &&
                               isBeforeExitTime) {
-                            showEarlyExitDialog(false);
+                            showEarlyExitDialog(true);
                           } else if (profileData.data.attendance.checkout !=
                               null && isBeforeExitTime) {
-                            showEarlyExitDialog(false);
+                            showEarlyExitDialog(true);
                           } else {
                             legalSubmit(context, 'On time');
                           }
