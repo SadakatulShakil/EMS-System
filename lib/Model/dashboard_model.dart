@@ -68,6 +68,7 @@ class Attendance {
   final dynamic checkout;
   final dynamic lateReason;
   final int totalHours;
+  final int status;
 
   Attendance({
     required this.name,
@@ -80,6 +81,7 @@ class Attendance {
     required this.checkout,
     required this.lateReason,
     required this.totalHours,
+    required this.status,
   });
 
   factory Attendance.fromJson(Map<String, dynamic> json) => Attendance(
@@ -93,6 +95,7 @@ class Attendance {
     checkout: json["checkout"],
     lateReason: json["late_reason"],
     totalHours: json["total_hours"],
+    status: json["status"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -106,6 +109,7 @@ class Attendance {
     "checkout": checkout,
     "late_reason": lateReason,
     "total_hours": totalHours,
+    "status": status,
   };
 }
 

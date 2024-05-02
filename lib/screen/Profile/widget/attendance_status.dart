@@ -108,7 +108,7 @@ class _AttendanceStatusPageState extends State<AttendanceStatusPage> {
                           ],
                           ),
                           Spacer(),
-                          record.lateReason != ''? Padding(
+                          record.status == 0? Padding(
                             padding: const EdgeInsets.only(right: 8.0),
                             child: Container(
                                 decoration: BoxDecoration(
