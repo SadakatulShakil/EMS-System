@@ -118,7 +118,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-
   void _showPermissionDeniedDialog() {
     showDialog(
       context: context,
@@ -985,6 +984,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           print('==>isAfterEntryTime: $isAfterEntryTime');
                           if (profileData.data.attendance.checkin == null &&
                               isAfterEntryTime) {
+                            showLateEntryDialog(false);
+                          }else if (profileData.data.attendance.checkin == null &&
+                              !isAfterEntryTime) {
                             showLateEntryDialog(false);
                           } else if (profileData.data.attendance.checkin !=
                               null &&
